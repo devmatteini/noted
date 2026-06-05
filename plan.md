@@ -15,7 +15,7 @@
 - Enable Room schema export if desired.
 - Verify app builds with an empty Compose screen.
 
-## 2. Add Architecture Skeleton
+## 2. Add Architecture Skeleton (Done)
 
 - Create `domain/`.
 - Create `features/`.

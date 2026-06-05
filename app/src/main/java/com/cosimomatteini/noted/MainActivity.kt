@@ -9,24 +9,28 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.cosimomatteini.noted.ui.theme.NotedTheme
 
 class MainActivity : ComponentActivity() {
+    private lateinit var appContainer: NotedAppContainer
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        appContainer = NotedAppContainer()
         enableEdgeToEdge()
         setContent {
             NotedTheme {
-                NotedApp()
+                NotedApp(appContainer)
             }
         }
     }
 }
 
 @Composable
-fun NotedApp() = Unit
+@Suppress("UNUSED_PARAMETER")
+fun NotedApp(appContainer: NotedAppContainer) = Unit
 
 @Preview(showBackground = true)
 @Composable
 fun NotedAppPreview() {
     NotedTheme {
-        NotedApp()
+        NotedApp(NotedAppContainer())
     }
 }
