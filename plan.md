@@ -27,7 +27,7 @@
 - Wire app container into the app entry point.
 - Verify app still builds.
 
-## 3. Show Notes On Homepage
+## 3. Show Notes On Homepage (Done)
 
 - Add `NoteId` backed by UUID.
 - Add `NoteTitle`.
