@@ -1,6 +1,7 @@
 # Jetpack Compose Notes For Noted
 
-Compose is Android's modern declarative UI toolkit. UI is written as Kotlin functions instead of XML.
+Compose is Android's modern declarative UI toolkit. UI is written as Kotlin functions instead of
+XML.
 
 ## Mental Model
 
@@ -43,7 +44,8 @@ fun HomeScreen(state: HomeUiState) {
 }
 ```
 
-Keep composables mostly UI. Avoid database, repository, alarm scheduling, or domain transitions inside them.
+Keep composables mostly UI. Avoid database, repository, alarm scheduling, or domain transitions
+inside them.
 
 Good:
 
@@ -203,7 +205,8 @@ But if Android recreates the Activity, `remember` state can be lost. Common caus
 var title by rememberSaveable { mutableStateOf("") }
 ```
 
-If the user typed `Buy milk` and rotates the phone, the field is more likely to still contain `Buy milk`.
+If the user typed `Buy milk` and rotates the phone, the field is more likely to still contain
+`Buy milk`.
 
 Rule:
 
@@ -214,7 +217,8 @@ ViewModel = better for screen/app state
 database = permanent
 ```
 
-For Noted editor, prefer ViewModel for title/description if the editor coordinates validation, reminders, permissions, and loading existing notes.
+For Noted editor, prefer ViewModel for title/description if the editor coordinates validation,
+reminders, permissions, and loading existing notes.
 
 Use local state for temporary UI-only values.
 
@@ -398,7 +402,8 @@ fun NoteEditorScreen(
 }
 ```
 
-For Noted, description is mandatory. UI can disable save while blank, show an error after save attempt, or both. Feature/domain validation must still exist.
+For Noted, description is mandatory. UI can disable save while blank, show an error after save
+attempt, or both. Feature/domain validation must still exist.
 
 ## One-Time Effects
 
@@ -463,7 +468,8 @@ fun NoteEditorRoute(viewModel: NoteEditorViewModel) {
 }
 ```
 
-Do not put navigation or snackbar calls directly in the normal composable body. Recomposition can run the body many times.
+Do not put navigation or snackbar calls directly in the normal composable body. Recomposition can
+run the body many times.
 
 ## Side Effects
 
@@ -563,9 +569,11 @@ fun onReminderSelected(dateTime: LocalDateTime) {
 }
 ```
 
-Without permission, this sends the event and stops the coroutine block. `saveReminder(dateTime)` does not run.
+Without permission, this sends the event and stops the coroutine block. `saveReminder(dateTime)`
+does not run.
 
-This is needed because `launch { ... }` takes a lambda. Labeled returns say which lambda/function to exit.
+This is needed because `launch { ... }` takes a lambda. Labeled returns say which lambda/function to
+exit.
 
 ```text
 return@launch = exit the launch lambda
@@ -653,7 +661,8 @@ val canSave = description.isNotBlank()
 
 Usually simple local values are enough.
 
-Use `derivedStateOf` only when the derived value is expensive or changes much less often than inputs.
+Use `derivedStateOf` only when the derived value is expensive or changes much less often than
+inputs.
 
 ```kotlin
 val canSave by remember(description) {
@@ -689,7 +698,8 @@ data class NoteListItem(
 )
 ```
 
-Avoid passing huge domain objects everywhere if the UI only needs display fields. Mapping to UI models keeps screens simple.
+Avoid passing huge domain objects everywhere if the UI only needs display fields. Mapping to UI
+models keeps screens simple.
 
 ## Previews
 
@@ -968,7 +978,8 @@ Use `collectAsStateWithLifecycle()` for `StateFlow`.
 val state by viewModel.uiState.collectAsStateWithLifecycle()
 ```
 
-Use ViewModel for note editor state if it must coordinate save, permissions, reminders, loading existing note.
+Use ViewModel for note editor state if it must coordinate save, permissions, reminders, loading
+existing note.
 
 Use `LaunchedEffect` for one-time event collection.
 

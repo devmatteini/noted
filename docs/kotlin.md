@@ -99,7 +99,8 @@ sealed interface Note {
 }
 ```
 
-`ActiveNote` and `ArchivedNote` override the shared fields because they promise to implement the `Note` contract.
+`ActiveNote` and `ArchivedNote` override the shared fields because they promise to implement the
+`Note` contract.
 
 ```kotlin
 data class ActiveNote(
@@ -138,7 +139,8 @@ fun reminderOrNull(note: Note): Reminder? =
     }
 ```
 
-Important Noted rule: `ArchivedNote` has no `reminder` field, so the type system prevents archived reminders.
+Important Noted rule: `ArchivedNote` has no `reminder` field, so the type system prevents archived
+reminders.
 
 ## Value Classes
 

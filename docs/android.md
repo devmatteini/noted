@@ -4,7 +4,8 @@ These notes cover Android basics and app-specific practices useful for implement
 
 ## Mental Model
 
-Android apps are component-based. The system can start, stop, pause, recreate, or kill parts of your app.
+Android apps are component-based. The system can start, stop, pause, recreate, or kill parts of your
+app.
 
 For Noted, main Android responsibilities are:
 
@@ -111,7 +112,8 @@ class MainActivity : ComponentActivity() {
 
 ## Application
 
-`Application` lives as long as the app process. It is a practical place to create the manual dependency container.
+`Application` lives as long as the app process. It is a practical place to create the manual
+dependency container.
 
 ```kotlin
 class NotedApplication : Application() {
@@ -128,10 +130,8 @@ class NotedApplication : Application() {
 Register it in `AndroidManifest.xml`:
 
 ```xml
-<application
-    android:name=".NotedApplication"
-    ...>
-</application>
+
+<application android:name=".NotedApplication"...></application>
 ```
 
 ## Manifest
@@ -141,28 +141,28 @@ The manifest declares app components and permissions.
 Noted likely needs:
 
 ```xml
-<uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
-<uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
-<uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+
+<uses-permission android:name="android.permission.POST_NOTIFICATIONS" /><uses-permission
+android:name="android.permission.SCHEDULE_EXACT_ALARM" /><uses-permission
+android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 ```
 
 Receivers:
 
 ```xml
-<receiver
-    android:name=".infrastructure.ReminderReceiver"
-    android:exported="false" />
 
-<receiver
-    android:name=".infrastructure.ReminderBootReceiver"
-    android:exported="false">
-    <intent-filter>
-        <action android:name="android.intent.action.BOOT_COMPLETED" />
-    </intent-filter>
+<receiver android:name=".infrastructure.ReminderReceiver" android:exported="false" />
+
+<receiver android:name=".infrastructure.ReminderBootReceiver" android:exported="false">
+<intent-filter>
+    <action android:name="android.intent.action.BOOT_COMPLETED" />
+</intent-filter>
 </receiver>
 ```
 
-Use `android:exported="false"` unless another app/system must send explicit broadcasts to it. Boot receiver needs the system broadcast, but can still usually be non-exported with the boot intent filter.
+Use `android:exported="false"` unless another app/system must send explicit broadcasts to it. Boot
+receiver needs the system broadcast, but can still usually be non-exported with the boot intent
+filter.
 
 Manifest-declared receivers are for events that can trigger app code outside the normal UI flow.
 
@@ -173,6 +173,7 @@ Android/system or another sender may deliver this event to our app
 For example:
 
 ```xml
+
 <receiver android:name=".infrastructure.ReminderBootReceiver">
     <intent-filter>
         <action android:name="android.intent.action.BOOT_COMPLETED" />
@@ -189,6 +190,7 @@ when device boots, Android can wake our receiver
 For reminders:
 
 ```xml
+
 <receiver android:name=".infrastructure.ReminderReceiver" />
 ```
 
@@ -514,9 +516,11 @@ class ReminderReceiver : BroadcastReceiver() {
 }
 ```
 
-Receivers should be quick. Do not do long database work directly in `onReceive` unless carefully handled.
+Receivers should be quick. Do not do long database work directly in `onReceive` unless carefully
+handled.
 
-For reboot restore, use a coroutine carefully or delegate to a worker-like component if needed. For MVP, a simple controlled implementation is acceptable.
+For reboot restore, use a coroutine carefully or delegate to a worker-like component if needed. For
+MVP, a simple controlled implementation is acceptable.
 
 ## Notifications
 
@@ -565,6 +569,7 @@ Noted includes reboot restore in MVP.
 Manifest permission:
 
 ```xml
+
 <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 ```
 

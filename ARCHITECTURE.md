@@ -4,7 +4,8 @@
 
 Noted is an Android-only app for quick notes.
 
-Main feature: each note can optionally have an exact reminder that triggers a notification at the selected date/time.
+Main feature: each note can optionally have an exact reminder that triggers a notification at the
+selected date/time.
 
 ## Product Scope
 
