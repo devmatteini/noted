@@ -1,6 +1,6 @@
 # Noted Implementation Plan
 
-## 1. Bootstrap Project
+## 1. Bootstrap Project (Done)
 
 - Create native Android project.
 - Use Kotlin.
