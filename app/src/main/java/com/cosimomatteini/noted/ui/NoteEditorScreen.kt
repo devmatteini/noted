@@ -2,8 +2,12 @@ package com.cosimomatteini.noted.ui
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -41,11 +45,7 @@ fun NoteEditorScreen(
     val coroutineScope = rememberCoroutineScope()
     var title by remember(initialTitle) { mutableStateOf(TextFieldValue(initialTitle)) }
     var description by remember(initialDescription) {
-        mutableStateOf(
-            TextFieldValue(
-                initialDescription
-            )
-        )
+        mutableStateOf(TextFieldValue(initialDescription))
     }
     var lastSavedTitle by remember(initialTitle) { mutableStateOf(initialTitle) }
     var lastSavedDescription by remember(initialDescription) { mutableStateOf(initialDescription) }
@@ -85,14 +85,16 @@ fun NoteEditorScreen(
             modifier = Modifier
                 .padding(innerPadding)
                 .fillMaxSize()
-                .padding(16.dp),
+                .navigationBarsPadding()
+                .imePadding()
+                .padding(horizontal = 20.dp, vertical = 12.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             OutlinedTextField(
                 value = title,
                 onValueChange = { title = it },
                 modifier = Modifier.fillMaxWidth(),
-                label = { Text("Title optional") },
+                label = { Text("Title") },
                 singleLine = true,
             )
             OutlinedTextField(
@@ -103,6 +105,11 @@ fun NoteEditorScreen(
                     .weight(1f),
                 label = { Text("Description") },
             )
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(48.dp),
+            ) {}
         }
     }
 }

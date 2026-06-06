@@ -101,7 +101,7 @@
 - Update title/description tests for trimming and empty values.
 - Verify created empty notes appear on homepage.
 
-## 7. Polish Note Editor UI
+## 7. Polish Note Editor UI (Done)
 
 - Match `docs/ui/noted-editor-screen.png`.
 - Use full-screen editor layout.
