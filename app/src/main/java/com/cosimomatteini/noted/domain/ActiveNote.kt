@@ -26,4 +26,13 @@ data class ActiveNote(
         description = NoteDescription.parse(description),
         updatedAt = updatedAt
     )
+
+    fun archive(archivedAt: Instant): ArchivedNote = ArchivedNote(
+        id = id,
+        title = title,
+        description = description,
+        createdAt = createdAt,
+        updatedAt = archivedAt,
+        archivedAt = archivedAt
+    )
 }

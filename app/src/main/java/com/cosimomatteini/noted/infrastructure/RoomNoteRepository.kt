@@ -25,7 +25,7 @@ class RoomNoteRepository(private val noteDao: NoteDao) : NoteRepository {
         }
     }
 
-    override suspend fun save(note: ActiveNote) {
+    override suspend fun save(note: Note) {
         noteDao.upsert(note.toEntity())
     }
 
@@ -33,16 +33,29 @@ class RoomNoteRepository(private val noteDao: NoteDao) : NoteRepository {
         noteDao.delete(id.value)
     }
 
-    private fun ActiveNote.toEntity(): NoteEntity = NoteEntity(
-        id = id.value,
-        title = title.value,
-        description = description.value,
-        reminderAtMillis = null,
-        status = STATUS_ACTIVE,
-        archivedAtMillis = null,
-        createdAtMillis = createdAt.toEpochMilli(),
-        updatedAtMillis = updatedAt.toEpochMilli()
-    )
+    private fun Note.toEntity(): NoteEntity = when (this) {
+        is ActiveNote -> NoteEntity(
+            id = id.value,
+            title = title.value,
+            description = description.value,
+            reminderAtMillis = null,
+            status = STATUS_ACTIVE,
+            archivedAtMillis = null,
+            createdAtMillis = createdAt.toEpochMilli(),
+            updatedAtMillis = updatedAt.toEpochMilli()
+        )
+
+        is ArchivedNote -> NoteEntity(
+            id = id.value,
+            title = title.value,
+            description = description.value,
+            reminderAtMillis = null,
+            status = STATUS_ARCHIVED,
+            archivedAtMillis = archivedAt.toEpochMilli(),
+            createdAtMillis = createdAt.toEpochMilli(),
+            updatedAtMillis = updatedAt.toEpochMilli()
+        )
+    }
 
     private fun NoteEntity.toDomain(): Result<Note> {
         val noteId = NoteId(id)

@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Archive
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -46,6 +47,7 @@ fun NoteEditorScreen(
     initialDescription: String = "",
     onAutosave: suspend (title: String, description: String) -> Unit,
     onBack: suspend (title: String, description: String) -> Unit,
+    onArchive: suspend (title: String, description: String) -> Unit,
     onDelete: suspend () -> Unit
 ) {
     val coroutineScope = rememberCoroutineScope()
@@ -116,6 +118,18 @@ fun NoteEditorScreen(
                     .fillMaxWidth()
                     .height(48.dp)
             ) {
+                ActionIcon(
+                    onClick = {
+                        coroutineScope.launch {
+                            onArchive(title.text, description.text)
+                        }
+                    }
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.Archive,
+                        contentDescription = "Archive note"
+                    )
+                }
                 Box(
                     modifier = Modifier
                         .size(48.dp)
@@ -136,6 +150,21 @@ fun NoteEditorScreen(
     }
 }
 
+@Composable
+private fun ActionIcon(
+    onClick: () -> Unit,
+    content: @Composable () -> Unit
+) {
+    Box(
+        modifier = Modifier
+            .size(48.dp)
+            .clickable(onClick = onClick),
+        contentAlignment = Alignment.CenterStart
+    ) {
+        content()
+    }
+}
+
 @Preview(showBackground = true)
 @Composable
 fun NoteEditorScreenPreview() {
@@ -143,6 +172,7 @@ fun NoteEditorScreenPreview() {
         NoteEditorScreen(
             onAutosave = { _, _ -> },
             onBack = { _, _ -> },
+            onArchive = { _, _ -> },
             onDelete = {}
         )
     }

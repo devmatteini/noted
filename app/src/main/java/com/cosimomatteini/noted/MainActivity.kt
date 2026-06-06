@@ -69,6 +69,11 @@ fun NotedApp(appContainer: NotedAppContainer) {
                 appContainer.updateNote(currentScreen.note.id, title, description)
                 screen = NotedScreen.Home
             },
+            onArchive = { title, description ->
+                appContainer.updateNote(currentScreen.note.id, title, description)
+                appContainer.archiveNote(currentScreen.note.id)
+                screen = NotedScreen.Home
+            },
             onDelete = {
                 appContainer.deleteNote(currentScreen.note.id)
                 screen = NotedScreen.Home

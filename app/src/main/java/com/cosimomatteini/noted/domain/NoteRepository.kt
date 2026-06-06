@@ -7,7 +7,7 @@ interface NoteRepository {
 
     suspend fun load(id: NoteId): ActiveNote?
 
-    suspend fun save(note: ActiveNote)
+    suspend fun save(note: Note)
 
     suspend fun delete(id: NoteId)
 }

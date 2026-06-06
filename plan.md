@@ -125,7 +125,7 @@
 - Add tests for deleting notes.
 - Verify deleted notes disappear from homepage.
 
-## 9. Archive Note
+## 9. Archive Note (Done)
 
 - Add pure function to archive an active note.
 - Ensure `ArchivedNote` has no reminder field.

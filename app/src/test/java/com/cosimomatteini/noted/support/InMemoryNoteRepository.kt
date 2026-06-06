@@ -7,14 +7,14 @@ import com.cosimomatteini.noted.domain.NoteRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 
-class InMemoryNoteRepository(vararg notes: ActiveNote) : NoteRepository {
+class InMemoryNoteRepository(vararg notes: Note) : NoteRepository {
     val notes = notes.toMutableList()
 
     override fun observe(): Flow<List<Note>> = flowOf(notes)
 
-    override suspend fun load(id: NoteId): ActiveNote? = notes.firstOrNull { it.id == id }
+    override suspend fun load(id: NoteId): ActiveNote? = notes.firstOrNull { it.id == id } as? ActiveNote
 
-    override suspend fun save(note: ActiveNote) {
+    override suspend fun save(note: Note) {
         notes.removeAll { it.id == note.id }
         notes += note
     }
