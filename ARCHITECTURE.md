@@ -240,6 +240,8 @@ When manually setting a reminder:
 - If notification permission is denied, no reminder is saved.
 - If exact alarm access is denied, no reminder is saved.
 - If both permissions are granted, save reminder and schedule alarm.
+- Saving a note must not fail solely because reminder permission is denied.
+- If reminder permissions fail, save the note without the reminder.
 
 Reminder lifecycle:
 
@@ -267,6 +269,8 @@ User selects reminder
 ```
 
 If either permission is denied, no reminder is set.
+
+The note itself can still be saved without a reminder.
 
 ## Reboot Restore
 
@@ -298,10 +302,22 @@ Homepage:
 Editor:
 
 - Full-screen note editor.
+- Top bar has back icon and create/edit title.
+- Back discards unsaved changes.
 - Optional title field.
 - Mandatory description field.
-- Optional reminder picker.
-- Save action disabled or rejected if description is empty.
+- Title field is above description field.
+- Description field fills remaining space.
+- Bottom action row stays visible above navigation bar and keyboard.
+- Save action is a text button at bottom-right.
+- Save action is disabled or rejected if description is empty.
+- Icon actions have content descriptions and no visible labels.
+- Create mode only shows actions for implemented create-mode features.
+- Edit mode only shows actions for implemented edit-mode features.
+- Reminder action appears when reminders are implemented.
+- Archive action appears when archive is implemented.
+- Delete action appears when delete is implemented.
+- Delete immediately for MVP.
 
 ## Testing Focus
 
@@ -321,6 +337,13 @@ Import/export is intentionally excluded from MVP.
 Keep UUID IDs from day one so import/export can be added later without changing the identity model.
 
 Tags are intentionally excluded from MVP.
+
+Trash/restore deleted notes is intentionally excluded from MVP.
+
+Future deleted-note rules:
+
+- Add trash for deleted notes.
+- Restore deleted notes from trash.
 
 Future tag rules:
 

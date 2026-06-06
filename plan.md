@@ -82,17 +82,34 @@
 - Add tests for editing note content.
 - Verify edits appear on homepage.
 
-## 6. Delete Note
+## 6. Polish Note Editor UI
+
+- Match `docs/ui/noted-create-screen.png`.
+- Match `docs/ui/noted-edit-screen.png`.
+- Use full-screen editor layout.
+- Add top bar with back icon and create/edit title.
+- Back discards unsaved changes.
+- Show title field above description field.
+- Make description field fill remaining space.
+- Keep bottom action row visible above navigation bar and keyboard.
+- Keep save action as text button at bottom-right.
+- Do not add future action icons yet.
+- Do not show visible icon labels.
+- Add content descriptions for icon buttons.
+- Verify portrait/landscape rotation keeps actions working.
+
+## 7. Delete Note
 
 - Add repository delete support.
 - Add `DeleteNote` feature.
 - Wire `DeleteNote` in `NotedAppContainer`.
-- Add delete action in editor.
+- Add delete bottom action in edit mode.
+- Delete immediately for MVP.
 - Return to homepage after delete.
 - Add tests for deleting notes.
 - Verify deleted notes disappear from homepage.
 
-## 7. Archive Note
+## 8. Archive Note
 
 - Add pure function to archive an active note.
 - Ensure `ArchivedNote` has no reminder field.
@@ -100,14 +117,14 @@
 - Add repository archive/save support if missing.
 - Add `ArchiveNote` feature.
 - Wire `ArchiveNote` in `NotedAppContainer`.
-- Add archive action for existing active notes.
+- Add archive bottom action in edit mode.
 - Return to homepage after archive.
 - Hide archived notes from default homepage view.
 - Add tests for active note archive transition.
 - Add tests proving archived notes have no reminder.
 - Verify archived notes disappear from default homepage view.
 
-## 8. Filter Archived Notes
+## 9. Filter Archived Notes
 
 - Add archived filter state to `HomeViewModel`.
 - Add archived filter UI.
@@ -116,7 +133,7 @@
 - Add tests for archived filtering.
 - Verify active and archived filters work.
 
-## 9. Add Reminder Storage
+## 10. Add Reminder Storage
 
 - Add reminder field to `ActiveNote` if not already present.
 - Add pure function to set reminder on active note.
@@ -124,12 +141,13 @@
 - Persist `reminderAtMillis` in `NoteEntity`.
 - Map reminder storage to `ActiveNote` only.
 - Ensure archived notes do not expose reminders.
+- Add reminder bottom action in create/edit mode.
 - Add reminder picker in `NoteEditorScreen`.
 - Save reminder value only after permission flow succeeds in later step.
 - Add tests for setting and clearing reminders.
 - Verify reminder value displays in editor and list if shown.
 
-## 10. Add Reminder Permission UX
+## 11. Add Reminder Permission UX
 
 - Add notification permission to manifest.
 - Add exact alarm permission to manifest.
@@ -139,9 +157,11 @@
 - Open exact alarm settings if needed.
 - Save reminder only if both permissions are granted.
 - If either permission is denied, do not set reminder.
+- Saving a note must not fail solely because reminder permission is denied.
+- If reminder permissions fail, save note without reminder.
 - Verify denied permissions do not save reminders.
 
-## 11. Schedule And Cancel Exact Alarms
+## 12. Schedule And Cancel Exact Alarms
 
 - Add `ReminderScheduler` port.
 - Add `AlarmReminderScheduler`.
@@ -160,7 +180,7 @@
 - Add tests for reminder update rescheduling alarms.
 - Verify alarms are scheduled/cancelled during note changes.
 
-## 12. Show Reminder Notifications
+## 13. Show Reminder Notifications
 
 - Add `ReminderReceiver`.
 - Add `ReminderNotification`.
@@ -170,7 +190,7 @@
 - Open app/note from notification if practical.
 - Verify notification appears at reminder time.
 
-## 13. Restore Reminders After Reboot
+## 14. Restore Reminders After Reboot
 
 - Add `ReminderBootReceiver`.
 - Add `RECEIVE_BOOT_COMPLETED` permission.
@@ -180,7 +200,7 @@
 - Add tests for reboot restore selecting only active future reminders.
 - Verify reboot restore manually if feasible.
 
-## 14. Final Verify
+## 15. Final Verify
 
 - Run unit tests.
 - Run Android build.
@@ -191,5 +211,6 @@
 
 ## Post-MVP
 
+- Add trash/restore deleted notes.
 - Add tags to notes.
 - Filter by tags.
