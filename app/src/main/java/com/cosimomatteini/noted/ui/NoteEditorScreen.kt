@@ -1,5 +1,6 @@
 package com.cosimomatteini.noted.ui
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -57,6 +58,12 @@ fun NoteEditorScreen(
     }
     var lastSavedTitle by remember(initialTitle) { mutableStateOf(initialTitle) }
     var lastSavedDescription by remember(initialDescription) { mutableStateOf(initialDescription) }
+
+    BackHandler {
+        coroutineScope.launch {
+            onBack(title.text, description.text)
+        }
+    }
 
     LaunchedEffect(title.text, description.text) {
         if (title.text == lastSavedTitle && description.text == lastSavedDescription) {
