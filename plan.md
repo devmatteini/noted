@@ -82,23 +82,39 @@
 - Add tests for editing note content.
 - Verify edits appear on homepage.
 
-## 6. Polish Note Editor UI
+## 6. Refactor Editor To Autosave
 
-- Match `docs/ui/noted-create-screen.png`.
-- Match `docs/ui/noted-edit-screen.png`.
+- Refactor `NoteTitle` to trim values and allow empty strings.
+- Refactor `NoteDescription` to trim values and allow empty strings.
+- Make note title non-null in domain model.
+- Keep note description non-null in domain model.
+- Allow notes where title and description are both empty.
+- Update persistence shape so title and description are non-null strings.
+- Create empty notes immediately from homepage action.
+- Open editor for the created note.
+- Remove create/edit mode title from editor top bar.
+- Remove save button.
+- Autosave title/description changes after 300ms debounce.
+- Back flushes pending autosave before returning home.
+- Update create tests for empty notes.
+- Update edit tests for empty notes.
+- Update title/description tests for trimming and empty values.
+- Verify created empty notes appear on homepage.
+
+## 7. Polish Note Editor UI
+
+- Match `docs/ui/noted-editor-screen.png`.
 - Use full-screen editor layout.
-- Add top bar with back icon and create/edit title.
-- Back discards unsaved changes.
+- Add top bar with back icon only.
 - Show title field above description field.
 - Make description field fill remaining space.
 - Keep bottom action row visible above navigation bar and keyboard.
-- Keep save action as text button at bottom-right.
 - Do not add future action icons yet.
 - Do not show visible icon labels.
 - Add content descriptions for icon buttons.
 - Verify portrait/landscape rotation keeps actions working.
 
-## 7. Delete Note
+## 8. Delete Note
 
 - Add repository delete support.
 - Add `DeleteNote` feature.
@@ -109,7 +125,7 @@
 - Add tests for deleting notes.
 - Verify deleted notes disappear from homepage.
 
-## 8. Archive Note
+## 9. Archive Note
 
 - Add pure function to archive an active note.
 - Ensure `ArchivedNote` has no reminder field.
@@ -124,7 +140,7 @@
 - Add tests proving archived notes have no reminder.
 - Verify archived notes disappear from default homepage view.
 
-## 9. Filter Archived Notes
+## 10. Filter Archived Notes
 
 - Add archived filter state to `HomeViewModel`.
 - Add archived filter UI.
@@ -133,7 +149,7 @@
 - Add tests for archived filtering.
 - Verify active and archived filters work.
 
-## 10. Add Reminder Storage
+## 11. Add Reminder Storage
 
 - Add reminder field to `ActiveNote` if not already present.
 - Add pure function to set reminder on active note.
@@ -147,7 +163,7 @@
 - Add tests for setting and clearing reminders.
 - Verify reminder value displays in editor and list if shown.
 
-## 11. Add Reminder Permission UX
+## 12. Add Reminder Permission UX
 
 - Add notification permission to manifest.
 - Add exact alarm permission to manifest.
@@ -161,7 +177,7 @@
 - If reminder permissions fail, save note without reminder.
 - Verify denied permissions do not save reminders.
 
-## 12. Schedule And Cancel Exact Alarms
+## 13. Schedule And Cancel Exact Alarms
 
 - Add `ReminderScheduler` port.
 - Add `AlarmReminderScheduler`.
@@ -180,7 +196,7 @@
 - Add tests for reminder update rescheduling alarms.
 - Verify alarms are scheduled/cancelled during note changes.
 
-## 13. Show Reminder Notifications
+## 14. Show Reminder Notifications
 
 - Add `ReminderReceiver`.
 - Add `ReminderNotification`.
@@ -190,7 +206,7 @@
 - Open app/note from notification if practical.
 - Verify notification appears at reminder time.
 
-## 14. Restore Reminders After Reboot
+## 15. Restore Reminders After Reboot
 
 - Add `ReminderBootReceiver`.
 - Add `RECEIVE_BOOT_COMPLETED` permission.
@@ -200,7 +216,7 @@
 - Add tests for reboot restore selecting only active future reminders.
 - Verify reboot restore manually if feasible.
 
-## 15. Final Verify
+## 16. Final Verify
 
 - Run unit tests.
 - Run Android build.
@@ -212,5 +228,6 @@
 ## Post-MVP
 
 - Add trash/restore deleted notes.
+- Auto-delete notes where title and description are both empty if desired.
 - Add tags to notes.
 - Filter by tags.

@@ -19,8 +19,8 @@ selected date/time.
 
 A note has:
 
-- Optional title.
-- Mandatory description.
+- Title that may be empty.
+- Description that may be empty.
 - Optional reminder.
 - Archive state.
 
@@ -151,9 +151,9 @@ Examples:
 
 Use smart constructors for validated values.
 
-`NoteDescription` must be non-empty after trimming.
+`NoteTitle` and `NoteDescription` trim values and allow empty strings.
 
-Use `Result` constructors for values that can fail validation without throwing.
+Use `Result` constructors only for values that can fail validation without throwing.
 
 Use UUIDs for note IDs.
 
@@ -202,7 +202,7 @@ Example persistence shape:
 ```text
 NoteEntity
   id: String
-  title: String?
+  title: String
   description: String
   reminderAtMillis: Long?
   status: ACTIVE | ARCHIVED
@@ -302,15 +302,17 @@ Homepage:
 Editor:
 
 - Full-screen note editor.
-- Top bar has back icon and create/edit title.
-- Back discards unsaved changes.
-- Optional title field.
-- Mandatory description field.
+- Top bar has back icon only.
+- No create/edit mode title.
+- No save button.
+- Creating a note immediately persists an empty note and opens the editor.
+- Title and description autosave after 300ms debounce.
+- Back flushes pending autosave before returning home.
+- Title field may be empty.
+- Description field may be empty.
 - Title field is above description field.
 - Description field fills remaining space.
 - Bottom action row stays visible above navigation bar and keyboard.
-- Save action is a text button at bottom-right.
-- Save action is disabled or rejected if description is empty.
 - Icon actions have content descriptions and no visible labels.
 - Create mode only shows actions for implemented create-mode features.
 - Edit mode only shows actions for implemented edit-mode features.
@@ -340,10 +342,13 @@ Tags are intentionally excluded from MVP.
 
 Trash/restore deleted notes is intentionally excluded from MVP.
 
+Auto-delete for notes where title and description are both empty is intentionally excluded from MVP.
+
 Future deleted-note rules:
 
 - Add trash for deleted notes.
 - Restore deleted notes from trash.
+- Auto-delete empty notes if desired.
 
 Future tag rules:
 
