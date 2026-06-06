@@ -3,10 +3,14 @@ package com.cosimomatteini.noted.domain
 @JvmInline
 value class NoteDescription private constructor(val value: String) {
     companion object {
-        fun create(value: String): NoteDescription {
+        fun ofUnsafe(value: String): NoteDescription = parse(value).getOrThrow()
+
+        fun parse(value: String): Result<NoteDescription> {
             val trimmed = value.trim()
-            require(trimmed.isNotEmpty()) { "Note description cannot be empty." }
-            return NoteDescription(trimmed)
+            if (trimmed.isEmpty()) {
+                return Result.failure(IllegalArgumentException("Note description cannot be empty."))
+            }
+            return Result.success(NoteDescription(trimmed))
         }
     }
 }

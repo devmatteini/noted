@@ -15,32 +15,45 @@ class RoomNoteRepository(
     private val noteDao: NoteDao,
 ) : NoteRepository {
     override fun observe(): Flow<List<Note>> =
-        noteDao.observe().map { entities -> entities.map { it.toDomain() } }
+        noteDao.observe().map { entities ->
+            entities.mapNotNull { entity -> entity.toDomain().getOrNull() }
+        }
 
-    private fun NoteEntity.toDomain(): Note {
+    private fun NoteEntity.toDomain(): Result<Note> {
         val noteId = NoteId(id)
         val noteTitle = title?.let(::NoteTitle)
-        val noteDescription = NoteDescription.create(description)
+        val noteDescription = NoteDescription.parse(description)
+            .getOrElse { return Result.failure(it) }
         val createdAt = Instant.ofEpochMilli(createdAtMillis)
         val updatedAt = Instant.ofEpochMilli(updatedAtMillis)
 
         return when (status) {
-            STATUS_ACTIVE -> ActiveNote(
-                id = noteId,
-                title = noteTitle,
-                description = noteDescription,
-                createdAt = createdAt,
-                updatedAt = updatedAt,
+            STATUS_ACTIVE -> Result.success(
+                ActiveNote(
+                    id = noteId,
+                    title = noteTitle,
+                    description = noteDescription,
+                    createdAt = createdAt,
+                    updatedAt = updatedAt,
+                ),
             )
-            STATUS_ARCHIVED -> ArchivedNote(
-                id = noteId,
-                title = noteTitle,
-                description = noteDescription,
-                createdAt = createdAt,
-                updatedAt = updatedAt,
-                archivedAt = Instant.ofEpochMilli(requireNotNull(archivedAtMillis)),
+
+            STATUS_ARCHIVED -> Result.success(
+                ArchivedNote(
+                    id = noteId,
+                    title = noteTitle,
+                    description = noteDescription,
+                    createdAt = createdAt,
+                    updatedAt = updatedAt,
+                    archivedAt = Instant.ofEpochMilli(
+                        archivedAtMillis ?: return Result.failure(
+                            IllegalArgumentException("Archived note must have archivedAtMillis."),
+                        ),
+                    ),
+                ),
             )
-            else -> error("Unknown note status: $status")
+
+            else -> Result.failure(IllegalArgumentException("Unknown note status: $status"))
         }
     }
 

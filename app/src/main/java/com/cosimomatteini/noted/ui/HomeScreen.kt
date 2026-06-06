@@ -117,14 +117,14 @@ fun HomeScreenNotesPreview() {
                     ActiveNote(
                         id = NoteId(UUID.randomUUID()),
                         title = NoteTitle("First note"),
-                        description = NoteDescription.create("Remember the milk"),
+                        description = NoteDescription.ofUnsafe("Remember the milk"),
                         createdAt = Instant.EPOCH,
                         updatedAt = Instant.EPOCH,
                     ),
                     ActiveNote(
                         id = NoteId(UUID.randomUUID()),
                         title = null,
-                        description = NoteDescription.create("Check new laptop battery"),
+                        description = NoteDescription.ofUnsafe("Check new laptop battery"),
                         createdAt = Instant.EPOCH,
                         updatedAt = Instant.EPOCH,
                     ),
