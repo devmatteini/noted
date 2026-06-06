@@ -1,6 +1,7 @@
 package com.cosimomatteini.noted.domain
 
 import java.time.Instant
+import java.util.UUID
 
 data class ActiveNote(
     override val id: NoteId,
@@ -8,4 +9,28 @@ data class ActiveNote(
     override val description: NoteDescription,
     override val createdAt: Instant,
     override val updatedAt: Instant,
-) : Note
+) : Note {
+    companion object {
+        fun create(
+            title: String?,
+            description: String,
+            clock: Clock,
+            id: NoteId = NoteId(UUID.randomUUID()),
+        ): Result<ActiveNote> {
+            val now = clock.now()
+            val noteTitle = NoteTitle.parse(title)
+            val noteDescription = NoteDescription.parse(description)
+                .getOrElse { return Result.failure(it) }
+
+            return Result.success(
+                ActiveNote(
+                    id = id,
+                    title = noteTitle,
+                    description = noteDescription,
+                    createdAt = now,
+                    updatedAt = now,
+                ),
+            )
+        }
+    }
+}

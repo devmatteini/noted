@@ -52,7 +52,7 @@
 - Add tests for skipping invalid database note rows.
 - Verify active notes render from database.
 
-## 4. Create Note
+## 4. Create Note (Done)
 
 - Add pure function or constructor path for creating active notes.
 - Add repository insert/save support.

@@ -1,6 +1,10 @@
 package com.cosimomatteini.noted.infrastructure
 
 import com.cosimomatteini.noted.domain.NoteId
+import com.cosimomatteini.noted.domain.ActiveNote
+import com.cosimomatteini.noted.domain.NoteDescription
+import com.cosimomatteini.noted.domain.NoteTitle
+import java.time.Instant
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
@@ -15,7 +19,7 @@ class RoomNoteRepositoryTest {
         val validNoteId = UUID.randomUUID()
         val repository = RoomNoteRepository(
             InMemoryNoteDao(
-                listOf(
+                mutableListOf(
                     noteEntity(description = ""),
                     noteEntity(status = "UNKNOWN"),
                     noteEntity(id = validNoteId),
@@ -29,25 +33,61 @@ class RoomNoteRepositoryTest {
         assertEquals(listOf(NoteId(validNoteId)), notes)
     }
 
+    @Test
+    fun save_persistsActiveNoteEntity() = runTest {
+        val noteDao = InMemoryNoteDao()
+        val repository = RoomNoteRepository(noteDao)
+        val noteId = UUID.randomUUID()
+
+        repository.save(
+            ActiveNote(
+                id = NoteId(noteId),
+                title = NoteTitle.of("Groceries"),
+                description = NoteDescription.ofUnsafe("Buy coffee"),
+                createdAt = Instant.ofEpochMilli(1_000),
+                updatedAt = Instant.ofEpochMilli(2_000),
+            ),
+        )
+
+        assertEquals(
+            noteEntity(
+                id = noteId,
+                title = "Groceries",
+                description = "Buy coffee",
+                createdAtMillis = 1_000,
+                updatedAtMillis = 2_000,
+            ),
+            noteDao.notes.single(),
+        )
+    }
+
     private class InMemoryNoteDao(
-        private val notes: List<NoteEntity>,
+        val notes: MutableList<NoteEntity> = mutableListOf(),
     ) : NoteDao {
         override fun observe(): Flow<List<NoteEntity>> = flowOf(notes)
+
+        override suspend fun upsert(note: NoteEntity) {
+            notes.removeAll { it.id == note.id }
+            notes += note
+        }
     }
 
     private fun noteEntity(
         id: UUID = UUID.randomUUID(),
+        title: String? = null,
         description: String = "Buy coffee",
         status: String = "ACTIVE",
         archivedAtMillis: Long? = null,
+        createdAtMillis: Long = 0,
+        updatedAtMillis: Long = 0,
     ): NoteEntity = NoteEntity(
         id = id,
-        title = null,
+        title = title,
         description = description,
         reminderAtMillis = null,
         status = status,
         archivedAtMillis = archivedAtMillis,
-        createdAtMillis = 0,
-        updatedAtMillis = 0,
+        createdAtMillis = createdAtMillis,
+        updatedAtMillis = updatedAtMillis,
     )
 }

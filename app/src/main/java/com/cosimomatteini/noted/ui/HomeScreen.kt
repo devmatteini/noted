@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Card
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -29,12 +30,27 @@ import java.util.UUID
 @Composable
 fun HomeRoute(viewModel: HomeViewModel) {
     val uiState by viewModel.uiState.collectAsState()
-    HomeScreen(uiState)
+    HomeScreen(
+        uiState = uiState,
+        onCreateNote = viewModel::onCreateNote,
+    )
 }
 
 @Composable
-fun HomeScreen(uiState: HomeUiState) {
-    Scaffold { innerPadding ->
+fun HomeScreen(
+    uiState: HomeUiState,
+    onCreateNote: () -> Unit = {},
+) {
+    Scaffold(
+        floatingActionButton = {
+            FloatingActionButton(onClick = onCreateNote) {
+                Text(
+                    text = "+",
+                    style = MaterialTheme.typography.headlineMedium,
+                )
+            }
+        },
+    ) { innerPadding ->
         if (uiState.activeNotes.isEmpty()) {
             EmptyNotes(Modifier.padding(innerPadding))
         } else {
@@ -116,7 +132,7 @@ fun HomeScreenNotesPreview() {
                 activeNotes = listOf(
                     ActiveNote(
                         id = NoteId(UUID.randomUUID()),
-                        title = NoteTitle("First note"),
+                        title = NoteTitle.of("First note"),
                         description = NoteDescription.ofUnsafe("Remember the milk"),
                         createdAt = Instant.EPOCH,
                         updatedAt = Instant.EPOCH,

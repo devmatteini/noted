@@ -19,9 +19,24 @@ class RoomNoteRepository(
             entities.mapNotNull { entity -> entity.toDomain().getOrNull() }
         }
 
+    override suspend fun save(note: ActiveNote) {
+        noteDao.upsert(note.toEntity())
+    }
+
+    private fun ActiveNote.toEntity(): NoteEntity = NoteEntity(
+        id = id.value,
+        title = title?.value,
+        description = description.value,
+        reminderAtMillis = null,
+        status = STATUS_ACTIVE,
+        archivedAtMillis = null,
+        createdAtMillis = createdAt.toEpochMilli(),
+        updatedAtMillis = updatedAt.toEpochMilli(),
+    )
+
     private fun NoteEntity.toDomain(): Result<Note> {
         val noteId = NoteId(id)
-        val noteTitle = title?.let(::NoteTitle)
+        val noteTitle = NoteTitle.parse(title)
         val noteDescription = NoteDescription.parse(description)
             .getOrElse { return Result.failure(it) }
         val createdAt = Instant.ofEpochMilli(createdAtMillis)
