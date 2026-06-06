@@ -1,4 +1,4 @@
-.PHONY: build test android-test lint format release clear-app-data
+.PHONY: build test android-test lint format release clear-app-data configure-hooks
 
 build:
 	./gradlew :app:assembleDebug
@@ -20,3 +20,6 @@ release:
 
 clear-app-data:
 	adb shell pm clear com.cosimomatteini.noted
+
+configure-hooks:
+	git config core.hooksPath .githooks

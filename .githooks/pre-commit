@@ -1,0 +1,15 @@
+#!/bin/sh
+set -e
+
+staged_kotlin_files=$(git diff --cached --name-only --diff-filter=ACMR | grep -E '\.(kt|kts)$' || true)
+
+if [ -n "$staged_kotlin_files" ]; then
+    make format
+    printf '%s\n' "$staged_kotlin_files" | xargs git add
+fi
+
+# Prevent commit if there are no changes after formatting
+if git diff --cached --quiet; then
+  echo "[!] No changes to commit after formatting"
+  exit 1
+fi
