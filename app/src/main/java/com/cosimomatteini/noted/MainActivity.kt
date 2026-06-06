@@ -52,7 +52,7 @@ fun NotedApp(appContainer: NotedAppContainer) {
             viewModel = homeViewModel,
             onCreateNote = {
                 coroutineScope.launch {
-                    val note = appContainer.createNote("", "")
+                    val note = appContainer.createEmptyNote()
                     screen = NotedScreen.EditNote(note)
                 }
             },

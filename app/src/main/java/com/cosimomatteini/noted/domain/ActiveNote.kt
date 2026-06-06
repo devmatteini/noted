@@ -11,20 +11,16 @@ data class ActiveNote(
     override val updatedAt: Instant,
 ) : Note {
     companion object {
-        fun create(
-            title: String,
-            description: String,
+        fun empty(
             clock: Clock,
             id: NoteId = NoteId(UUID.randomUUID()),
         ): ActiveNote {
             val now = clock.now()
-            val noteTitle = NoteTitle.parse(title)
-            val noteDescription = NoteDescription.parse(description)
 
             return ActiveNote(
                 id = id,
-                title = noteTitle,
-                description = noteDescription,
+                title = NoteTitle.of(""),
+                description = NoteDescription.of(""),
                 createdAt = now,
                 updatedAt = now,
             )

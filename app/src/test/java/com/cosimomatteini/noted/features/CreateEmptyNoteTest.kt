@@ -5,42 +5,21 @@ import com.cosimomatteini.noted.domain.Clock
 import com.cosimomatteini.noted.domain.Note
 import com.cosimomatteini.noted.domain.NoteId
 import com.cosimomatteini.noted.domain.NoteRepository
+import java.time.Instant
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Test
-import java.time.Instant
 
-class CreateNoteTest {
+class CreateEmptyNoteTest {
     @Test
-    fun createNote_savesValidNote() = runTest {
-        val repository = InMemoryNoteRepository()
-        val now = Instant.parse("2026-06-06T10:00:00Z")
-        val createNote = CreateNote(repository, FixedClock(now))
-
-        createNote(
-            title = "Groceries",
-            description = "Buy coffee",
-        )
-
-        val savedNote = repository.savedNotes.single()
-        assertEquals("Groceries", savedNote.title.value)
-        assertEquals("Buy coffee", savedNote.description.value)
-        assertEquals(now, savedNote.createdAt)
-        assertEquals(now, savedNote.updatedAt)
-    }
-
-    @Test
-    fun createNote_savesEmptyNote() = runTest {
+    fun createEmptyNote_savesEmptyNote() = runTest {
         val repository = InMemoryNoteRepository()
         val now = Instant.EPOCH
-        val createNote = CreateNote(repository, FixedClock(now))
+        val createEmptyNote = CreateEmptyNote(repository, FixedClock(now))
 
-        createNote(
-            title = "",
-            description = "",
-        )
+        createEmptyNote()
 
         val savedNote = repository.savedNotes.single()
         assertEquals("", savedNote.title.value)
