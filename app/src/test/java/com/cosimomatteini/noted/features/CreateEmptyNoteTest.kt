@@ -2,12 +2,8 @@ package com.cosimomatteini.noted.features
 
 import com.cosimomatteini.noted.domain.ActiveNote
 import com.cosimomatteini.noted.domain.Clock
-import com.cosimomatteini.noted.domain.Note
-import com.cosimomatteini.noted.domain.NoteId
-import com.cosimomatteini.noted.domain.NoteRepository
+import com.cosimomatteini.noted.support.InMemoryNoteRepository
 import java.time.Instant
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Test
@@ -21,27 +17,11 @@ class CreateEmptyNoteTest {
 
         createEmptyNote()
 
-        val savedNote = repository.savedNotes.single()
+        val savedNote = repository.notes.single()
         assertEquals("", savedNote.title.value)
         assertEquals("", savedNote.description.value)
         assertEquals(now, savedNote.createdAt)
         assertEquals(now, savedNote.updatedAt)
-    }
-
-    private class InMemoryNoteRepository : NoteRepository {
-        val savedNotes = mutableListOf<ActiveNote>()
-
-        override fun observe(): Flow<List<Note>> = flowOf(savedNotes)
-
-        override suspend fun load(id: NoteId): ActiveNote? = savedNotes.firstOrNull { it.id == id }
-
-        override suspend fun save(note: ActiveNote) {
-            savedNotes += note
-        }
-
-        override suspend fun delete(id: NoteId) {
-            savedNotes.removeAll { it.id == id }
-        }
     }
 
     private class FixedClock(
