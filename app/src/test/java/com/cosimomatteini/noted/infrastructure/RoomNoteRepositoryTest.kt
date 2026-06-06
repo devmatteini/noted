@@ -60,6 +60,21 @@ class RoomNoteRepositoryTest {
         )
     }
 
+    @Test
+    fun delete_removesNoteEntity() = runTest {
+        val noteId = UUID.randomUUID()
+        val noteDao = InMemoryNoteDao(
+            mutableListOf(
+                noteEntity(id = noteId),
+            ),
+        )
+        val repository = RoomNoteRepository(noteDao)
+
+        repository.delete(NoteId(noteId))
+
+        assertEquals(emptyList<NoteEntity>(), noteDao.notes)
+    }
+
     private class InMemoryNoteDao(
         val notes: MutableList<NoteEntity> = mutableListOf(),
     ) : NoteDao {
@@ -70,6 +85,10 @@ class RoomNoteRepositoryTest {
         override suspend fun upsert(note: NoteEntity) {
             notes.removeAll { it.id == note.id }
             notes += note
+        }
+
+        override suspend fun delete(id: UUID) {
+            notes.removeAll { it.id == id }
         }
     }
 

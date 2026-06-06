@@ -32,6 +32,10 @@ class RoomNoteRepository(
         noteDao.upsert(note.toEntity())
     }
 
+    override suspend fun delete(id: NoteId) {
+        noteDao.delete(id.value)
+    }
+
     private fun ActiveNote.toEntity(): NoteEntity = NoteEntity(
         id = id.value,
         title = title.value,

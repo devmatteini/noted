@@ -1,6 +1,8 @@
 package com.cosimomatteini.noted.ui
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -9,8 +11,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -25,6 +29,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
@@ -41,6 +46,7 @@ fun NoteEditorScreen(
     initialDescription: String = "",
     onAutosave: suspend (title: String, description: String) -> Unit,
     onBack: suspend (title: String, description: String) -> Unit,
+    onDelete: suspend () -> Unit,
 ) {
     val coroutineScope = rememberCoroutineScope()
     var title by remember(initialTitle) { mutableStateOf(TextFieldValue(initialTitle)) }
@@ -109,7 +115,23 @@ fun NoteEditorScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(48.dp),
-            ) {}
+            ) {
+                Box(
+                    modifier = Modifier
+                        .size(48.dp)
+                        .clickable {
+                            coroutineScope.launch {
+                                onDelete()
+                            }
+                        },
+                    contentAlignment = Alignment.CenterStart,
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.Delete,
+                        contentDescription = "Delete note",
+                    )
+                }
+            }
         }
     }
 }
@@ -121,6 +143,7 @@ fun NoteEditorScreenPreview() {
         NoteEditorScreen(
             onAutosave = { _, _ -> },
             onBack = { _, _ -> },
+            onDelete = {},
         )
     }
 }

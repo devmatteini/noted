@@ -114,7 +114,7 @@
 - Add content descriptions for icon buttons.
 - Verify portrait/landscape rotation keeps actions working.
 
-## 8. Delete Note
+## 8. Delete Note (Done)
 
 - Add repository delete support.
 - Add `DeleteNote` feature.

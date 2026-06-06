@@ -38,6 +38,10 @@ class CreateEmptyNoteTest {
         override suspend fun save(note: ActiveNote) {
             savedNotes += note
         }
+
+        override suspend fun delete(id: NoteId) {
+            savedNotes.removeAll { it.id == id }
+        }
     }
 
     private class FixedClock(

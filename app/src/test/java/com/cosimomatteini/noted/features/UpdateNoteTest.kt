@@ -99,6 +99,10 @@ class UpdateNoteTest {
             notes.removeAll { it.id == note.id }
             notes += note
         }
+
+        override suspend fun delete(id: NoteId) {
+            notes.removeAll { it.id == id }
+        }
     }
 
     private class FixedClock(
