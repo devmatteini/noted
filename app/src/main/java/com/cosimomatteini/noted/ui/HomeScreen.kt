@@ -1,5 +1,6 @@
 package com.cosimomatteini.noted.ui
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -8,15 +9,14 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.clickable
 import androidx.compose.material3.Card
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -120,16 +120,18 @@ private fun NoteCard(
             .clickable(onClick = onClick),
     ) {
         Column(Modifier.padding(16.dp)) {
-            note.title?.let { title ->
+            if (note.title.value.isNotEmpty()) {
                 Text(
-                    text = title.value,
+                    text = note.title.value,
                     style = MaterialTheme.typography.titleMedium,
                 )
             }
-            Text(
-                text = note.description.value,
-                style = MaterialTheme.typography.bodyMedium,
-            )
+            if (note.description.value.isNotEmpty()) {
+                Text(
+                    text = note.description.value,
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+            }
         }
     }
 }
@@ -152,14 +154,14 @@ fun HomeScreenNotesPreview() {
                     ActiveNote(
                         id = NoteId(UUID.randomUUID()),
                         title = NoteTitle.of("First note"),
-                        description = NoteDescription.ofUnsafe("Remember the milk"),
+                        description = NoteDescription.of("Remember the milk"),
                         createdAt = Instant.EPOCH,
                         updatedAt = Instant.EPOCH,
                     ),
                     ActiveNote(
                         id = NoteId(UUID.randomUUID()),
-                        title = null,
-                        description = NoteDescription.ofUnsafe("Check new laptop battery"),
+                        title = NoteTitle.of(""),
+                        description = NoteDescription.of("Check new laptop battery"),
                         createdAt = Instant.EPOCH,
                         updatedAt = Instant.EPOCH,
                     ),

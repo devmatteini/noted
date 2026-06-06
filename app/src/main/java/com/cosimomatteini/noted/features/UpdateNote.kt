@@ -11,7 +11,7 @@ class UpdateNote(
 ) {
     suspend operator fun invoke(
         id: NoteId,
-        title: String?,
+        title: String,
         description: String,
     ): Result<ActiveNote> {
         val note = noteRepository.load(id)
@@ -20,7 +20,7 @@ class UpdateNote(
             title = title,
             description = description,
             updatedAt = clock.now(),
-        ).getOrElse { return Result.failure(it) }
+        )
 
         noteRepository.save(updatedNote)
         return Result.success(updatedNote)

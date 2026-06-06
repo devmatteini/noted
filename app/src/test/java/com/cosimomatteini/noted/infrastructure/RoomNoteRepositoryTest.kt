@@ -1,16 +1,16 @@
 package com.cosimomatteini.noted.infrastructure
 
-import com.cosimomatteini.noted.domain.NoteId
 import com.cosimomatteini.noted.domain.ActiveNote
 import com.cosimomatteini.noted.domain.NoteDescription
+import com.cosimomatteini.noted.domain.NoteId
 import com.cosimomatteini.noted.domain.NoteTitle
-import java.time.Instant
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Test
+import java.time.Instant
 import java.util.UUID
 
 class RoomNoteRepositoryTest {
@@ -20,7 +20,6 @@ class RoomNoteRepositoryTest {
         val repository = RoomNoteRepository(
             InMemoryNoteDao(
                 mutableListOf(
-                    noteEntity(description = ""),
                     noteEntity(status = "UNKNOWN"),
                     noteEntity(id = validNoteId),
                     noteEntity(status = "ARCHIVED", archivedAtMillis = null),
@@ -43,7 +42,7 @@ class RoomNoteRepositoryTest {
             ActiveNote(
                 id = NoteId(noteId),
                 title = NoteTitle.of("Groceries"),
-                description = NoteDescription.ofUnsafe("Buy coffee"),
+                description = NoteDescription.of("Buy coffee"),
                 createdAt = Instant.ofEpochMilli(1_000),
                 updatedAt = Instant.ofEpochMilli(2_000),
             ),
@@ -76,7 +75,7 @@ class RoomNoteRepositoryTest {
 
     private fun noteEntity(
         id: UUID = UUID.randomUUID(),
-        title: String? = null,
+        title: String = "",
         description: String = "Buy coffee",
         status: String = "ACTIVE",
         archivedAtMillis: Long? = null,

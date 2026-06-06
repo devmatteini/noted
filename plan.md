@@ -82,7 +82,7 @@
 - Add tests for editing note content.
 - Verify edits appear on homepage.
 
-## 6. Refactor Editor To Autosave
+## 6. Refactor Editor To Autosave (Done)
 
 - Refactor `NoteTitle` to trim values and allow empty strings.
 - Refactor `NoteDescription` to trim values and allow empty strings.

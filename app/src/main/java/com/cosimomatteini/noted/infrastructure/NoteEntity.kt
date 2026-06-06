@@ -7,7 +7,7 @@ import java.util.UUID
 @Entity(tableName = "notes")
 data class NoteEntity(
     @PrimaryKey val id: UUID,
-    val title: String?,
+    val title: String,
     val description: String,
     val reminderAtMillis: Long?,
     val status: String,

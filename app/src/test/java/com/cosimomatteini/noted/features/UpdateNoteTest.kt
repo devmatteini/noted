@@ -7,15 +7,14 @@ import com.cosimomatteini.noted.domain.NoteDescription
 import com.cosimomatteini.noted.domain.NoteId
 import com.cosimomatteini.noted.domain.NoteRepository
 import com.cosimomatteini.noted.domain.NoteTitle
-import java.time.Instant
-import java.util.UUID
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
+import java.time.Instant
+import java.util.UUID
 
 class UpdateNoteTest {
     @Test
@@ -27,7 +26,7 @@ class UpdateNoteTest {
             ActiveNote(
                 id = noteId,
                 title = NoteTitle.of("Groceries"),
-                description = NoteDescription.ofUnsafe("Buy coffee"),
+                description = NoteDescription.of("Buy coffee"),
                 createdAt = createdAt,
                 updatedAt = createdAt,
             ),
@@ -45,7 +44,7 @@ class UpdateNoteTest {
             ActiveNote(
                 id = noteId,
                 title = NoteTitle.of("Errands"),
-                description = NoteDescription.ofUnsafe("Pick up package"),
+                description = NoteDescription.of("Pick up package"),
                 createdAt = createdAt,
                 updatedAt = updatedAt,
             ),
@@ -54,26 +53,37 @@ class UpdateNoteTest {
     }
 
     @Test
-    fun updateNote_rejectsInvalidContent() = runTest {
+    fun updateNote_savesEmptyContent() = runTest {
         val noteId = NoteId(UUID.randomUUID())
+        val createdAt = Instant.EPOCH
+        val updatedAt = Instant.ofEpochMilli(1)
         val note = ActiveNote(
             id = noteId,
-            title = null,
-            description = NoteDescription.ofUnsafe("Buy coffee"),
-            createdAt = Instant.EPOCH,
-            updatedAt = Instant.EPOCH,
+            title = NoteTitle.of("Errands"),
+            description = NoteDescription.of("Buy coffee"),
+            createdAt = createdAt,
+            updatedAt = createdAt,
         )
         val repository = InMemoryNoteRepository(note)
-        val updateNote = UpdateNote(repository, FixedClock(Instant.ofEpochMilli(1)))
+        val updateNote = UpdateNote(repository, FixedClock(updatedAt))
 
         val result = updateNote(
             id = noteId,
-            title = "Errands",
+            title = "",
             description = "",
         )
 
-        assertFalse(result.isSuccess)
-        assertEquals(listOf(note), repository.notes)
+        assertTrue(result.isSuccess)
+        assertEquals(
+            ActiveNote(
+                id = noteId,
+                title = NoteTitle.of(""),
+                description = NoteDescription.of(""),
+                createdAt = createdAt,
+                updatedAt = updatedAt,
+            ),
+            repository.notes.single(),
+        )
     }
 
     private class InMemoryNoteRepository(

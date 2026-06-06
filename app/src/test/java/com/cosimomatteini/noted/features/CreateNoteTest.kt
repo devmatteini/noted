@@ -5,14 +5,12 @@ import com.cosimomatteini.noted.domain.Clock
 import com.cosimomatteini.noted.domain.Note
 import com.cosimomatteini.noted.domain.NoteId
 import com.cosimomatteini.noted.domain.NoteRepository
-import java.time.Instant
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertFalse
-import org.junit.Assert.assertTrue
 import org.junit.Test
+import java.time.Instant
 
 class CreateNoteTest {
     @Test
@@ -21,31 +19,34 @@ class CreateNoteTest {
         val now = Instant.parse("2026-06-06T10:00:00Z")
         val createNote = CreateNote(repository, FixedClock(now))
 
-        val result = createNote(
+        createNote(
             title = "Groceries",
             description = "Buy coffee",
         )
 
-        assertTrue(result.isSuccess)
         val savedNote = repository.savedNotes.single()
-        assertEquals("Groceries", savedNote.title?.value)
+        assertEquals("Groceries", savedNote.title.value)
         assertEquals("Buy coffee", savedNote.description.value)
         assertEquals(now, savedNote.createdAt)
         assertEquals(now, savedNote.updatedAt)
     }
 
     @Test
-    fun createNote_rejectsInvalidNote() = runTest {
+    fun createNote_savesEmptyNote() = runTest {
         val repository = InMemoryNoteRepository()
-        val createNote = CreateNote(repository, FixedClock(Instant.EPOCH))
+        val now = Instant.EPOCH
+        val createNote = CreateNote(repository, FixedClock(now))
 
-        val result = createNote(
-            title = "Groceries",
+        createNote(
+            title = "",
             description = "",
         )
 
-        assertFalse(result.isSuccess)
-        assertTrue(repository.savedNotes.isEmpty())
+        val savedNote = repository.savedNotes.single()
+        assertEquals("", savedNote.title.value)
+        assertEquals("", savedNote.description.value)
+        assertEquals(now, savedNote.createdAt)
+        assertEquals(now, savedNote.updatedAt)
     }
 
     private class InMemoryNoteRepository : NoteRepository {

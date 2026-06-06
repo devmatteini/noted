@@ -1,7 +1,6 @@
 package com.cosimomatteini.noted.domain
 
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNull
 import org.junit.Test
 
 class NoteTitleTest {
@@ -9,27 +8,20 @@ class NoteTitleTest {
     fun parse_trimsTitle() {
         val title = NoteTitle.parse("  Groceries  ")
 
-        assertEquals("Groceries", title?.value)
+        assertEquals("Groceries", title.value)
     }
 
     @Test
-    fun parse_returnsNullForEmptyTitle() {
+    fun parse_allowsEmptyTitle() {
         val title = NoteTitle.parse("")
 
-        assertNull(title)
+        assertEquals("", title.value)
     }
 
     @Test
-    fun parse_returnsNullForBlankTitle() {
+    fun parse_trimsBlankTitleToEmpty() {
         val title = NoteTitle.parse("   ")
 
-        assertNull(title)
-    }
-
-    @Test
-    fun parse_returnsNullForNullTitle() {
-        val title = NoteTitle.parse(null)
-
-        assertNull(title)
+        assertEquals("", title.value)
     }
 }

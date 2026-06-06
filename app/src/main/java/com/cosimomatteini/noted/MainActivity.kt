@@ -50,38 +50,31 @@ fun NotedApp(appContainer: NotedAppContainer) {
     when (val currentScreen = screen) {
         NotedScreen.Home -> HomeRoute(
             viewModel = homeViewModel,
-            onCreateNote = { screen = NotedScreen.CreateNote },
+            onCreateNote = {
+                coroutineScope.launch {
+                    val note = appContainer.createNote("", "")
+                    screen = NotedScreen.EditNote(note)
+                }
+            },
             onEditNote = { note -> screen = NotedScreen.EditNote(note) },
         )
-        NotedScreen.CreateNote -> NoteEditorScreen(
-            screenTitle = "Create note",
-            onSave = { title, description ->
-                coroutineScope.launch {
-                    appContainer.createNote(title, description)
-                        .onSuccess { screen = NotedScreen.Home }
-                }
-            },
-            onCancel = { screen = NotedScreen.Home },
-        )
+
         is NotedScreen.EditNote -> NoteEditorScreen(
-            screenTitle = "Edit note",
-            initialTitle = currentScreen.note.title?.value.orEmpty(),
+            initialTitle = currentScreen.note.title.value,
             initialDescription = currentScreen.note.description.value,
-            onSave = { title, description ->
-                coroutineScope.launch {
-                    appContainer.updateNote(currentScreen.note.id, title, description)
-                        .onSuccess { screen = NotedScreen.Home }
-                }
+            onAutosave = { title, description ->
+                appContainer.updateNote(currentScreen.note.id, title, description)
             },
-            onCancel = { screen = NotedScreen.Home },
+            onBack = { title, description ->
+                appContainer.updateNote(currentScreen.note.id, title, description)
+                screen = NotedScreen.Home
+            },
         )
     }
 }
 
 private sealed interface NotedScreen {
     data object Home : NotedScreen
-
-    data object CreateNote : NotedScreen
 
     data class EditNote(val note: ActiveNote) : NotedScreen
 }

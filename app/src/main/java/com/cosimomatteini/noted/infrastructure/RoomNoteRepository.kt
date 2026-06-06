@@ -7,9 +7,9 @@ import com.cosimomatteini.noted.domain.NoteDescription
 import com.cosimomatteini.noted.domain.NoteId
 import com.cosimomatteini.noted.domain.NoteRepository
 import com.cosimomatteini.noted.domain.NoteTitle
-import java.time.Instant
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import java.time.Instant
 
 class RoomNoteRepository(
     private val noteDao: NoteDao,
@@ -34,7 +34,7 @@ class RoomNoteRepository(
 
     private fun ActiveNote.toEntity(): NoteEntity = NoteEntity(
         id = id.value,
-        title = title?.value,
+        title = title.value,
         description = description.value,
         reminderAtMillis = null,
         status = STATUS_ACTIVE,
@@ -47,7 +47,6 @@ class RoomNoteRepository(
         val noteId = NoteId(id)
         val noteTitle = NoteTitle.parse(title)
         val noteDescription = NoteDescription.parse(description)
-            .getOrElse { return Result.failure(it) }
         val createdAt = Instant.ofEpochMilli(createdAtMillis)
         val updatedAt = Instant.ofEpochMilli(updatedAtMillis)
 

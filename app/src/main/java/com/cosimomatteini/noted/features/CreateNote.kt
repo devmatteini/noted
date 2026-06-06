@@ -9,16 +9,16 @@ class CreateNote(
     private val clock: Clock,
 ) {
     suspend operator fun invoke(
-        title: String?,
+        title: String,
         description: String,
-    ): Result<ActiveNote> {
+    ): ActiveNote {
         val note = ActiveNote.create(
             title = title,
             description = description,
             clock = clock,
-        ).getOrElse { return Result.failure(it) }
+        )
 
         noteRepository.save(note)
-        return Result.success(note)
+        return note
     }
 }
