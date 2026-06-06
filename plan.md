@@ -68,7 +68,7 @@
 - Add tests rejecting empty descriptions.
 - Verify created notes appear on homepage.
 
-## 5. Edit Note
+## 5. Edit Note (Done)
 
 - Add repository get/update support.
 - Add pure function for updating title/description.

@@ -3,6 +3,7 @@ package com.cosimomatteini.noted.features
 import com.cosimomatteini.noted.domain.ActiveNote
 import com.cosimomatteini.noted.domain.Clock
 import com.cosimomatteini.noted.domain.Note
+import com.cosimomatteini.noted.domain.NoteId
 import com.cosimomatteini.noted.domain.NoteRepository
 import java.time.Instant
 import kotlinx.coroutines.flow.Flow
@@ -51,6 +52,8 @@ class CreateNoteTest {
         val savedNotes = mutableListOf<ActiveNote>()
 
         override fun observe(): Flow<List<Note>> = flowOf(savedNotes)
+
+        override suspend fun load(id: NoteId): ActiveNote? = savedNotes.firstOrNull { it.id == id }
 
         override suspend fun save(note: ActiveNote) {
             savedNotes += note

@@ -33,4 +33,21 @@ data class ActiveNote(
             )
         }
     }
+
+    fun update(
+        title: String?,
+        description: String,
+        updatedAt: Instant,
+    ): Result<ActiveNote> {
+        val noteDescription = NoteDescription.parse(description)
+            .getOrElse { return Result.failure(it) }
+
+        return Result.success(
+            copy(
+                title = NoteTitle.parse(title),
+                description = noteDescription,
+                updatedAt = updatedAt,
+            ),
+        )
+    }
 }

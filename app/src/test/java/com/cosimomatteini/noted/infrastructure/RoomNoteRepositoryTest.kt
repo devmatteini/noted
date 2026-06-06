@@ -66,6 +66,8 @@ class RoomNoteRepositoryTest {
     ) : NoteDao {
         override fun observe(): Flow<List<NoteEntity>> = flowOf(notes)
 
+        override suspend fun load(id: UUID): NoteEntity? = notes.firstOrNull { it.id == id }
+
         override suspend fun upsert(note: NoteEntity) {
             notes.removeAll { it.id == note.id }
             notes += note

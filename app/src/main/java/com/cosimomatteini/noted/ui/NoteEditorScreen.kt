@@ -26,16 +26,19 @@ import com.cosimomatteini.noted.ui.theme.NotedTheme
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NoteEditorScreen(
+    screenTitle: String,
+    initialTitle: String = "",
+    initialDescription: String = "",
     onSave: (title: String, description: String) -> Unit,
     onCancel: () -> Unit,
 ) {
-    var title by remember { mutableStateOf(TextFieldValue()) }
-    var description by remember { mutableStateOf(TextFieldValue()) }
+    var title by remember(initialTitle) { mutableStateOf(TextFieldValue(initialTitle)) }
+    var description by remember(initialDescription) { mutableStateOf(TextFieldValue(initialDescription)) }
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Create note") },
+                title = { Text(screenTitle) },
                 navigationIcon = {
                     TextButton(onClick = onCancel) {
                         Text("Cancel")
@@ -83,6 +86,7 @@ fun NoteEditorScreen(
 fun NoteEditorScreenPreview() {
     NotedTheme {
         NoteEditorScreen(
+            screenTitle = "Create note",
             onSave = { _, _ -> },
             onCancel = {},
         )

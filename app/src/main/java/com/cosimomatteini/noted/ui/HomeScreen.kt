@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.clickable
 import androidx.compose.material3.Card
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.MaterialTheme
@@ -33,6 +34,7 @@ fun HomeRoute(viewModel: HomeViewModel) {
     HomeScreen(
         uiState = uiState,
         onCreateNote = viewModel::onCreateNote,
+        onEditNote = viewModel::onEditNote,
     )
 }
 
@@ -40,6 +42,7 @@ fun HomeRoute(viewModel: HomeViewModel) {
 fun HomeScreen(
     uiState: HomeUiState,
     onCreateNote: () -> Unit = {},
+    onEditNote: (ActiveNote) -> Unit = {},
 ) {
     Scaffold(
         floatingActionButton = {
@@ -56,6 +59,7 @@ fun HomeScreen(
         } else {
             ActiveNotesList(
                 activeNotes = uiState.activeNotes,
+                onEditNote = onEditNote,
                 modifier = Modifier.padding(innerPadding),
             )
         }
@@ -84,6 +88,7 @@ private fun EmptyNotes(modifier: Modifier = Modifier) {
 @Composable
 private fun ActiveNotesList(
     activeNotes: List<ActiveNote>,
+    onEditNote: (ActiveNote) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     LazyColumn(
@@ -92,14 +97,24 @@ private fun ActiveNotesList(
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         items(activeNotes, key = { it.id.value }) { note ->
-            NoteCard(note)
+            NoteCard(
+                note = note,
+                onClick = { onEditNote(note) },
+            )
         }
     }
 }
 
 @Composable
-private fun NoteCard(note: ActiveNote) {
-    Card(Modifier.fillMaxWidth()) {
+private fun NoteCard(
+    note: ActiveNote,
+    onClick: () -> Unit,
+) {
+    Card(
+        Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick),
+    ) {
         Column(Modifier.padding(16.dp)) {
             note.title?.let { title ->
                 Text(
