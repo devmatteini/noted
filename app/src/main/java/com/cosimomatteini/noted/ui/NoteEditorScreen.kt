@@ -151,10 +151,7 @@ fun NoteEditorScreen(
 }
 
 @Composable
-private fun ActionIcon(
-    onClick: () -> Unit,
-    content: @Composable () -> Unit
-) {
+private fun ActionIcon(onClick: () -> Unit, content: @Composable () -> Unit) {
     Box(
         modifier = Modifier
             .size(48.dp)

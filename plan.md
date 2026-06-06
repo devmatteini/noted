@@ -140,7 +140,7 @@
 - Add tests proving archived notes have no reminder.
 - Verify archived notes disappear from default homepage view.
 
-## 10. Filter Archived Notes
+## 10. Filter Archived Notes (Done)
 
 - Add archived filter state to `HomeViewModel`.
 - Add archived filter UI.

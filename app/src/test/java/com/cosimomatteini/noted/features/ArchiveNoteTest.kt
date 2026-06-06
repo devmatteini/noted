@@ -9,10 +9,10 @@ import com.cosimomatteini.noted.support.FixedClock
 import com.cosimomatteini.noted.support.InMemoryNoteRepository
 import java.time.Instant
 import java.util.UUID
+import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
-import kotlinx.coroutines.test.runTest
 
 class ArchiveNoteTest {
     @Test

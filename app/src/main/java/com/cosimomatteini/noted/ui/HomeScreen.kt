@@ -9,7 +9,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.Card
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -21,6 +25,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.cosimomatteini.noted.domain.ActiveNote
+import com.cosimomatteini.noted.domain.ArchivedNote
+import com.cosimomatteini.noted.domain.Note
 import com.cosimomatteini.noted.domain.NoteDescription
 import com.cosimomatteini.noted.domain.NoteId
 import com.cosimomatteini.noted.domain.NoteTitle
@@ -38,7 +44,9 @@ fun HomeRoute(
     HomeScreen(
         uiState = uiState,
         onCreateNote = onCreateNote,
-        onEditNote = onEditNote
+        onEditNote = onEditNote,
+        onShowActiveNotes = viewModel::showActiveNotes,
+        onShowArchivedNotes = viewModel::showArchivedNotes
     )
 }
 
@@ -46,7 +54,9 @@ fun HomeRoute(
 fun HomeScreen(
     uiState: HomeUiState,
     onCreateNote: () -> Unit = {},
-    onEditNote: (ActiveNote) -> Unit = {}
+    onEditNote: (ActiveNote) -> Unit = {},
+    onShowActiveNotes: () -> Unit = {},
+    onShowArchivedNotes: () -> Unit = {}
 ) {
     Scaffold(
         floatingActionButton = {
@@ -58,20 +68,80 @@ fun HomeScreen(
             }
         }
     ) { innerPadding ->
-        if (uiState.activeNotes.isEmpty()) {
-            EmptyNotes(Modifier.padding(innerPadding))
-        } else {
-            ActiveNotesList(
-                activeNotes = uiState.activeNotes,
-                onEditNote = onEditNote,
-                modifier = Modifier.padding(innerPadding)
+        Column(
+            modifier = Modifier
+                .padding(innerPadding)
+                .fillMaxSize()
+        ) {
+            HomeFilterRow(
+                selectedFilter = uiState.filter,
+                onShowActiveNotes = onShowActiveNotes,
+                onShowArchivedNotes = onShowArchivedNotes
             )
+            if (uiState.notes.isEmpty()) {
+                EmptyNotes(
+                    filter = uiState.filter,
+                    modifier = Modifier.weight(1f)
+                )
+            } else {
+                NotesList(
+                    notes = uiState.notes,
+                    onEditNote = onEditNote,
+                    modifier = Modifier.weight(1f)
+                )
+            }
         }
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun EmptyNotes(modifier: Modifier = Modifier) {
+private fun HomeFilterRow(
+    selectedFilter: HomeFilter,
+    onShowActiveNotes: () -> Unit,
+    onShowArchivedNotes: () -> Unit
+) {
+    FilterChip(
+        selected = selectedFilter == HomeFilter.Archived,
+        onClick = {
+            when (selectedFilter) {
+                HomeFilter.Active -> onShowArchivedNotes()
+                HomeFilter.Archived -> onShowActiveNotes()
+            }
+        },
+        label = { Text(HomeFilter.Archived.label) },
+        leadingIcon = if (selectedFilter == HomeFilter.Archived) {
+            {
+                androidx.compose.material3.Icon(
+                    imageVector = Icons.Filled.Check,
+                    contentDescription = null
+                )
+            }
+        } else {
+            null
+        },
+        modifier = Modifier
+            .padding(horizontal = 16.dp, vertical = 8.dp)
+    )
+}
+
+private val HomeFilter.label: String
+    get() = when (this) {
+        HomeFilter.Active -> "Active"
+        HomeFilter.Archived -> "Archived"
+    }
+
+@Composable
+private fun EmptyNotes(filter: HomeFilter, modifier: Modifier = Modifier) {
+    val title = when (filter) {
+        HomeFilter.Active -> "No notes yet"
+        HomeFilter.Archived -> "No archived notes"
+    }
+    val description = when (filter) {
+        HomeFilter.Active -> "Create a note to see it here."
+        HomeFilter.Archived -> "Archive a note to see it here."
+    }
+
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -79,19 +149,19 @@ private fun EmptyNotes(modifier: Modifier = Modifier) {
         verticalArrangement = Arrangement.Center
     ) {
         Text(
-            text = "No notes yet",
+            text = title,
             style = MaterialTheme.typography.headlineSmall
         )
         Text(
-            text = "Create a note to see it here.",
+            text = description,
             style = MaterialTheme.typography.bodyMedium
         )
     }
 }
 
 @Composable
-private fun ActiveNotesList(
-    activeNotes: List<ActiveNote>,
+private fun NotesList(
+    notes: List<Note>,
     onEditNote: (ActiveNote) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -100,22 +170,27 @@ private fun ActiveNotesList(
         contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        items(activeNotes, key = { it.id.value }) { note ->
+        items(notes, key = { it.id.value }) { note ->
             NoteCard(
                 note = note,
-                onClick = { onEditNote(note) }
+                onEditNote = onEditNote
             )
         }
     }
 }
 
 @Composable
-private fun NoteCard(note: ActiveNote, onClick: () -> Unit) {
-    Card(
-        Modifier
-            .fillMaxWidth()
-            .clickable(onClick = onClick)
-    ) {
+private fun NoteCard(note: Note, onEditNote: (ActiveNote) -> Unit) {
+    val modifier = when (note) {
+        is ActiveNote ->
+            Modifier
+                .fillMaxWidth()
+                .clickable { onEditNote(note) }
+
+        is ArchivedNote -> Modifier.fillMaxWidth()
+    }
+
+    Card(modifier) {
         Column(Modifier.padding(16.dp)) {
             if (note.title.value.isNotEmpty()) {
                 Text(
@@ -147,7 +222,7 @@ fun HomeScreenNotesPreview() {
     NotedTheme {
         HomeScreen(
             HomeUiState(
-                activeNotes = listOf(
+                notes = listOf(
                     ActiveNote(
                         id = NoteId(UUID.randomUUID()),
                         title = NoteTitle.of("First note"),
@@ -162,7 +237,30 @@ fun HomeScreenNotesPreview() {
                         createdAt = Instant.EPOCH,
                         updatedAt = Instant.EPOCH
                     )
-                )
+                ),
+                filter = HomeFilter.Active
+            )
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun HomeScreenArchivedPreview() {
+    NotedTheme {
+        HomeScreen(
+            HomeUiState(
+                notes = listOf(
+                    ArchivedNote(
+                        id = NoteId(UUID.randomUUID()),
+                        title = NoteTitle.of("Old note"),
+                        description = NoteDescription.of("Archived content"),
+                        createdAt = Instant.EPOCH,
+                        updatedAt = Instant.EPOCH,
+                        archivedAt = Instant.EPOCH
+                    )
+                ),
+                filter = HomeFilter.Archived
             )
         )
     }
