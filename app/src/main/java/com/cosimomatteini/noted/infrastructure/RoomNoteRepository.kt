@@ -14,8 +14,8 @@ import kotlinx.coroutines.flow.map
 class RoomNoteRepository(
     private val noteDao: NoteDao,
 ) : NoteRepository {
-    override fun observeNotes(): Flow<List<Note>> =
-        noteDao.observeNotes().map { entities -> entities.map { it.toDomain() } }
+    override fun observe(): Flow<List<Note>> =
+        noteDao.observe().map { entities -> entities.map { it.toDomain() } }
 
     private fun NoteEntity.toDomain(): Note {
         val noteId = NoteId(id)

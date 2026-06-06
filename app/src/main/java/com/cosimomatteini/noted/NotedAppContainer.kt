@@ -4,7 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import com.cosimomatteini.noted.domain.Clock
 import com.cosimomatteini.noted.domain.NoteRepository
-import com.cosimomatteini.noted.features.ObserveNotes
+import com.cosimomatteini.noted.features.Notes
 import com.cosimomatteini.noted.infrastructure.AndroidClock
 import com.cosimomatteini.noted.infrastructure.NotedDatabase
 import com.cosimomatteini.noted.infrastructure.RoomNoteRepository
@@ -20,5 +20,5 @@ class NotedAppContainer(
     ).build()
 
     val noteRepository: NoteRepository = RoomNoteRepository(database.noteDao())
-    val observeNotes = ObserveNotes(noteRepository)
+    val notes = Notes(noteRepository)
 }

@@ -7,5 +7,5 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface NoteDao {
     @Query("SELECT * FROM notes ORDER BY updatedAtMillis DESC")
-    fun observeNotes(): Flow<List<NoteEntity>>
+    fun observe(): Flow<List<NoteEntity>>
 }

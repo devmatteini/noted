@@ -3,7 +3,7 @@ package com.cosimomatteini.noted.ui
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.cosimomatteini.noted.domain.ActiveNote
-import com.cosimomatteini.noted.features.ObserveNotes
+import com.cosimomatteini.noted.features.Notes
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
@@ -14,9 +14,9 @@ data class HomeUiState(
 )
 
 class HomeViewModel(
-    observeNotes: ObserveNotes,
+    notes: Notes,
 ) : ViewModel() {
-    val uiState: StateFlow<HomeUiState> = observeNotes()
+    val uiState: StateFlow<HomeUiState> = notes()
         .map { notes -> HomeUiState(notes.filterIsInstance<ActiveNote>()) }
         .stateIn(
             scope = viewModelScope,

@@ -33,7 +33,7 @@ fun NotedApp(appContainer: NotedAppContainer) {
         factory = object : ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
             override fun <T : ViewModel> create(modelClass: Class<T>): T =
-                HomeViewModel(appContainer.observeNotes) as T
+                HomeViewModel(appContainer.notes) as T
         },
     )
     HomeRoute(homeViewModel)
