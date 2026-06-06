@@ -9,7 +9,7 @@ class CreateEmptyNote(
     private val clock: Clock,
 ) {
     suspend operator fun invoke(): ActiveNote {
-        val note = ActiveNote.empty(clock)
+        val note = ActiveNote.empty(clock.now())
 
         noteRepository.save(note)
         return note

@@ -12,17 +12,15 @@ data class ActiveNote(
 ) : Note {
     companion object {
         fun empty(
-            clock: Clock,
+            createdAt: Instant,
             id: NoteId = NoteId(UUID.randomUUID()),
         ): ActiveNote {
-            val now = clock.now()
-
             return ActiveNote(
                 id = id,
                 title = NoteTitle.of(""),
                 description = NoteDescription.of(""),
-                createdAt = now,
-                updatedAt = now,
+                createdAt = createdAt,
+                updatedAt = createdAt,
             )
         }
     }
