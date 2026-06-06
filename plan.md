@@ -116,32 +116,7 @@
 - Add tests for archived filtering.
 - Verify active and archived filters work.
 
-## 9. Add Tags To Notes
-
-- Add `TagId` backed by UUID.
-- Add `TagName` with smart constructor if needed.
-- Add `Tag`.
-- Add tag IDs to note domain model.
-- Add pure function for updating note tags.
-- Add `TagEntity`.
-- Add `NoteTagEntity`.
-- Add `TagDao`.
-- Extend repository to save/load tags and note-tag relationships.
-- Add tag editing in `NoteEditorScreen`.
-- Add tests for saving note tags.
-- Verify tags appear on notes.
-
-## 10. Filter By Tags
-
-- Add tag list observation.
-- Add selected tag filter state to `HomeViewModel`.
-- Add tag filter row on homepage.
-- Update repository observation/filtering if needed.
-- Support clearing selected tag filter.
-- Add tests for tag filtering.
-- Verify filtering by tag works.
-
-## 11. Add Reminder Storage
+## 9. Add Reminder Storage
 
 - Add reminder field to `ActiveNote` if not already present.
 - Add pure function to set reminder on active note.
@@ -154,7 +129,7 @@
 - Add tests for setting and clearing reminders.
 - Verify reminder value displays in editor and list if shown.
 
-## 12. Add Reminder Permission UX
+## 10. Add Reminder Permission UX
 
 - Add notification permission to manifest.
 - Add exact alarm permission to manifest.
@@ -166,7 +141,7 @@
 - If either permission is denied, do not set reminder.
 - Verify denied permissions do not save reminders.
 
-## 13. Schedule And Cancel Exact Alarms
+## 11. Schedule And Cancel Exact Alarms
 
 - Add `ReminderScheduler` port.
 - Add `AlarmReminderScheduler`.
@@ -185,7 +160,7 @@
 - Add tests for reminder update rescheduling alarms.
 - Verify alarms are scheduled/cancelled during note changes.
 
-## 14. Show Reminder Notifications
+## 12. Show Reminder Notifications
 
 - Add `ReminderReceiver`.
 - Add `ReminderNotification`.
@@ -195,7 +170,7 @@
 - Open app/note from notification if practical.
 - Verify notification appears at reminder time.
 
-## 15. Restore Reminders After Reboot
+## 13. Restore Reminders After Reboot
 
 - Add `ReminderBootReceiver`.
 - Add `RECEIVE_BOOT_COMPLETED` permission.
@@ -205,12 +180,16 @@
 - Add tests for reboot restore selecting only active future reminders.
 - Verify reboot restore manually if feasible.
 
-## 16. Final Verify
+## 14. Final Verify
 
 - Run unit tests.
 - Run Android build.
 - Manually test create/edit/delete/archive.
-- Manually test tag filtering.
 - Manually test exact reminder permission flow.
 - Manually test reminder notification.
 - Manually test reboot restore if feasible.
+
+## Post-MVP
+
+- Add tags to notes.
+- Filter by tags.

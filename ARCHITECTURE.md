@@ -11,7 +11,6 @@ selected date/time.
 
 - Single homepage screen for notes.
 - Full-screen editor for creating/editing notes.
-- Notes can be filtered by tags.
 - Notes can be filtered to show archived notes.
 - No sync.
 - No backend.
@@ -23,7 +22,6 @@ A note has:
 - Optional title.
 - Mandatory description.
 - Optional reminder.
-- Optional tags.
 - Archive state.
 
 The domain model uses a sum type:
@@ -63,11 +61,8 @@ app/
     ActiveNote.kt
     ArchivedNote.kt
     NoteId.kt
-    Tag.kt
-    TagId.kt
     NoteTitle.kt
     NoteDescription.kt
-    TagName.kt
     Reminder.kt
     NoteRepository.kt
     ReminderScheduler.kt
@@ -83,10 +78,7 @@ app/
   infrastructure/
     NotedDatabase.kt
     NoteEntity.kt
-    TagEntity.kt
-    NoteTagEntity.kt
     NoteDao.kt
-    TagDao.kt
     RoomNoteRepository.kt
     UuidConverter.kt
     AlarmReminderScheduler.kt
@@ -154,9 +146,7 @@ Examples:
 
 ```kotlin
 @JvmInline value class NoteId(val value: UUID)
-@JvmInline value class TagId(val value: UUID)
 @JvmInline value class NoteTitle(val value: String)
-@JvmInline value class TagName(val value: String)
 ```
 
 Use smart constructors for validated values.
@@ -165,7 +155,7 @@ Use smart constructors for validated values.
 
 Use `Result` constructors for values that can fail validation without throwing.
 
-Use UUIDs for note and tag IDs.
+Use UUIDs for note IDs.
 
 Room stores UUIDs as strings with a converter.
 
@@ -301,7 +291,6 @@ Homepage:
 
 - App title.
 - Settings entry.
-- Tag filter row.
 - Archived filter.
 - Note list.
 - Add note action.
@@ -312,7 +301,6 @@ Editor:
 - Optional title field.
 - Mandatory description field.
 - Optional reminder picker.
-- Optional tags.
 - Save action disabled or rejected if description is empty.
 
 ## Testing Focus
@@ -323,7 +311,6 @@ Editor:
 - Archive cancels reminder.
 - Delete cancels reminder.
 - Reminder update reschedules alarm.
-- Tag filtering.
 - Archived filtering.
 - Reboot restore schedules only active future reminders.
 
@@ -333,17 +320,20 @@ Import/export is intentionally excluded from MVP.
 
 Keep UUID IDs from day one so import/export can be added later without changing the identity model.
 
+Tags are intentionally excluded from MVP.
+
+Future tag rules:
+
+- Add tags to notes.
+- Filter notes by tags.
+
 Future import/export rules:
 
 - Use versioned JSON.
-- Export notes, tags, and note-tag relationships.
+- Export notes.
 - Preserve UUIDs on export.
 - Preserve imported UUIDs when there is no conflict.
 - Generate a new UUID if imported note ID conflicts with an existing note.
-- Reuse existing tags by name.
-- Preserve imported tag UUID when name does not exist and UUID does not conflict.
-- Generate new tag UUID if needed.
-- Remap note-tag relationships after conflict resolution.
 - Expired imported reminders are removed.
 - Archived imported notes have no reminders.
 - Future imported reminders require permissions.
