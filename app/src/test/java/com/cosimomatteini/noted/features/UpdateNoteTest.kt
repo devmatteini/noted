@@ -1,10 +1,10 @@
 package com.cosimomatteini.noted.features
 
 import com.cosimomatteini.noted.domain.ActiveNote
-import com.cosimomatteini.noted.domain.Clock
 import com.cosimomatteini.noted.domain.NoteDescription
 import com.cosimomatteini.noted.domain.NoteId
 import com.cosimomatteini.noted.domain.NoteTitle
+import com.cosimomatteini.noted.support.FixedClock
 import com.cosimomatteini.noted.support.InMemoryNoteRepository
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
@@ -81,11 +81,5 @@ class UpdateNoteTest {
             ),
             repository.notes.single(),
         )
-    }
-
-    private class FixedClock(
-        private val now: Instant,
-    ) : Clock {
-        override fun now(): Instant = now
     }
 }

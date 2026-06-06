@@ -1,12 +1,11 @@
 package com.cosimomatteini.noted.features
 
-import com.cosimomatteini.noted.domain.ActiveNote
-import com.cosimomatteini.noted.domain.Clock
+import com.cosimomatteini.noted.support.FixedClock
 import com.cosimomatteini.noted.support.InMemoryNoteRepository
-import java.time.Instant
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Test
+import java.time.Instant
 
 class CreateEmptyNoteTest {
     @Test
@@ -22,11 +21,5 @@ class CreateEmptyNoteTest {
         assertEquals("", savedNote.description.value)
         assertEquals(now, savedNote.createdAt)
         assertEquals(now, savedNote.updatedAt)
-    }
-
-    private class FixedClock(
-        private val now: Instant,
-    ) : Clock {
-        override fun now(): Instant = now
     }
 }

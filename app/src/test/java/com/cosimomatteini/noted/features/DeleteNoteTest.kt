@@ -5,11 +5,11 @@ import com.cosimomatteini.noted.domain.NoteDescription
 import com.cosimomatteini.noted.domain.NoteId
 import com.cosimomatteini.noted.domain.NoteTitle
 import com.cosimomatteini.noted.support.InMemoryNoteRepository
-import java.time.Instant
-import java.util.UUID
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertTrue
 import org.junit.Test
+import java.time.Instant
+import java.util.UUID
 
 class DeleteNoteTest {
     @Test
