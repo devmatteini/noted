@@ -15,8 +15,6 @@ data class HomeUiState(
 
 class HomeViewModel(
     notes: Notes,
-    private val onCreateNoteRequested: () -> Unit = {},
-    private val onEditNoteRequested: (ActiveNote) -> Unit = {},
 ) : ViewModel() {
     val uiState: StateFlow<HomeUiState> = notes()
         .map { notes -> HomeUiState(notes.filterIsInstance<ActiveNote>()) }
@@ -25,12 +23,4 @@ class HomeViewModel(
             started = SharingStarted.WhileSubscribed(5_000),
             initialValue = HomeUiState(),
         )
-
-    fun onCreateNote() {
-        onCreateNoteRequested()
-    }
-
-    fun onEditNote(note: ActiveNote) {
-        onEditNoteRequested(note)
-    }
 }

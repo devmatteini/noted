@@ -43,16 +43,16 @@ fun NotedApp(appContainer: NotedAppContainer) {
         factory = object : ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
             override fun <T : ViewModel> create(modelClass: Class<T>): T =
-                HomeViewModel(
-                    notes = appContainer.notes,
-                    onCreateNoteRequested = { screen = NotedScreen.CreateNote },
-                    onEditNoteRequested = { note -> screen = NotedScreen.EditNote(note) },
-                ) as T
+                HomeViewModel(appContainer.notes) as T
         },
     )
 
     when (val currentScreen = screen) {
-        NotedScreen.Home -> HomeRoute(homeViewModel)
+        NotedScreen.Home -> HomeRoute(
+            viewModel = homeViewModel,
+            onCreateNote = { screen = NotedScreen.CreateNote },
+            onEditNote = { note -> screen = NotedScreen.EditNote(note) },
+        )
         NotedScreen.CreateNote -> NoteEditorScreen(
             screenTitle = "Create note",
             onSave = { title, description ->

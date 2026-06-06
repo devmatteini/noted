@@ -29,12 +29,16 @@ import java.time.Instant
 import java.util.UUID
 
 @Composable
-fun HomeRoute(viewModel: HomeViewModel) {
+fun HomeRoute(
+    viewModel: HomeViewModel,
+    onCreateNote: () -> Unit,
+    onEditNote: (ActiveNote) -> Unit,
+) {
     val uiState by viewModel.uiState.collectAsState()
     HomeScreen(
         uiState = uiState,
-        onCreateNote = viewModel::onCreateNote,
-        onEditNote = viewModel::onEditNote,
+        onCreateNote = onCreateNote,
+        onEditNote = onEditNote,
     )
 }
 
