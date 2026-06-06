@@ -31,23 +31,25 @@
 
 - Add `NoteId` backed by UUID.
 - Add `NoteTitle`.
-- Add `NoteDescription` with smart constructor.
+- Add `NoteDescription` with smart constructor and `Result` constructor.
 - Add `Reminder` / `ReminderAt` only if needed for display shape.
 - Add `Note` sealed interface.
 - Add `ActiveNote`.
 - Add `ArchivedNote`.
-- Add `NoteRepository` with note observation.
+- Add `NoteRepository.observe` with note observation.
 - Add `UuidConverter`.
 - Add `NoteEntity`.
 - Add `NoteDao`.
 - Add `NotedDatabase`.
 - Add `RoomNoteRepository` mapping entities to domain notes.
-- Add `ObserveNotes`.
+- Skip invalid database note rows when mapping to domain notes.
+- Add `Notes` feature.
 - Wire repository and feature in `NotedAppContainer`.
 - Add `HomeViewModel`.
 - Add `HomeScreen` with active notes list.
 - Add empty state.
-- Add tests for `NoteDescription` validation.
+- Add tests for `NoteDescription.createResult` validation.
+- Add tests for skipping invalid database note rows.
 - Verify active notes render from database.
 
 ## 4. Create Note

@@ -78,7 +78,7 @@ app/
     UpdateNote.kt
     ArchiveNote.kt
     DeleteNote.kt
-    ObserveNotes.kt
+    Notes.kt
 
   infrastructure/
     NotedDatabase.kt
@@ -163,6 +163,8 @@ Use smart constructors for validated values.
 
 `NoteDescription` must be non-empty after trimming.
 
+Use `Result` constructors for values that can fail validation without throwing.
+
 Use UUIDs for note and tag IDs.
 
 Room stores UUIDs as strings with a converter.
@@ -179,7 +181,7 @@ Examples:
 - `UpdateNote`.
 - `ArchiveNote`.
 - `DeleteNote`.
-- `ObserveNotes`.
+- `Notes`.
 
 ## Dependency Injection
 
@@ -225,6 +227,10 @@ The repository maps Room entities to domain types:
 ACTIVE -> ActiveNote
 ARCHIVED -> ArchivedNote
 ```
+
+Entity-to-domain mapping returns `Result`.
+
+When reading from Room, invalid note rows are skipped instead of crashing the notes stream.
 
 Archived domain notes do not expose a reminder.
 
