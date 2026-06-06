@@ -74,7 +74,7 @@ fun NoteEditorScreen(
     onBack: suspend (title: String, description: String) -> Unit,
     onArchive: suspend (title: String, description: String) -> Unit,
     onDelete: suspend () -> Unit,
-    onSetReminder: suspend (ReminderAt) -> Unit = {},
+    onSetReminder: suspend (ReminderAt) -> Boolean = { false },
     onClearReminder: suspend () -> Unit = {}
 ) {
     val coroutineScope = rememberCoroutineScope()
@@ -206,9 +206,10 @@ fun NoteEditorScreen(
             onDismiss = { showReminderPicker = false },
             onSetReminder = { selectedReminderAt ->
                 coroutineScope.launch {
-                    onSetReminder(selectedReminderAt)
-                    reminderAt = selectedReminderAt
-                    showReminderPicker = false
+                    if (onSetReminder(selectedReminderAt)) {
+                        reminderAt = selectedReminderAt
+                        showReminderPicker = false
+                    }
                 }
             },
             onClearReminder = {
@@ -461,7 +462,7 @@ fun NoteEditorScreenPreview() {
             onBack = { _, _ -> },
             onArchive = { _, _ -> },
             onDelete = {},
-            onSetReminder = {},
+            onSetReminder = { true },
             onClearReminder = {}
         )
     }

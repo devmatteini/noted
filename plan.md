@@ -163,7 +163,7 @@
 - Add tests for setting and clearing reminders.
 - Verify reminder value displays in editor and list if shown.
 
-## 12. Add Reminder Permission UX
+## 12. Add Reminder Permission UX (Done)
 
 - Add notification permission to manifest.
 - Add exact alarm permission to manifest.
