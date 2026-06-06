@@ -1,8 +1,13 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.ktlint)
     alias(libs.plugins.ksp)
     alias(libs.plugins.room)
+}
+
+ktlint {
+    android.set(true)
 }
 
 android {

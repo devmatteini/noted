@@ -44,7 +44,7 @@ fun NotedApp(appContainer: NotedAppContainer) {
             @Suppress("UNCHECKED_CAST")
             override fun <T : ViewModel> create(modelClass: Class<T>): T =
                 HomeViewModel(appContainer.notes) as T
-        },
+        }
     )
 
     when (val currentScreen = screen) {
@@ -56,7 +56,7 @@ fun NotedApp(appContainer: NotedAppContainer) {
                     screen = NotedScreen.EditNote(note)
                 }
             },
-            onEditNote = { note -> screen = NotedScreen.EditNote(note) },
+            onEditNote = { note -> screen = NotedScreen.EditNote(note) }
         )
 
         is NotedScreen.EditNote -> NoteEditorScreen(
@@ -72,7 +72,7 @@ fun NotedApp(appContainer: NotedAppContainer) {
             onDelete = {
                 appContainer.deleteNote(currentScreen.note.id)
                 screen = NotedScreen.Home
-            },
+            }
         )
     }
 }

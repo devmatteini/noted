@@ -8,5 +8,5 @@ data class ArchivedNote(
     override val description: NoteDescription,
     override val createdAt: Instant,
     override val updatedAt: Instant,
-    val archivedAt: Instant,
+    val archivedAt: Instant
 ) : Note

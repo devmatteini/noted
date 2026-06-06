@@ -1,4 +1,4 @@
-.PHONY: build test android-test release clear-app-data
+.PHONY: build test android-test lint format release clear-app-data
 
 build:
 	./gradlew :app:assembleDebug
@@ -8,6 +8,12 @@ test:
 
 android-test:
 	./gradlew :app:connectedDebugAndroidTest
+
+lint:
+	./gradlew ktlintCheck
+
+format:
+	./gradlew ktlintFormat
 
 release:
 	./gradlew :app:assembleRelease

@@ -7,9 +7,7 @@ import com.cosimomatteini.noted.domain.NoteRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 
-class InMemoryNoteRepository(
-    vararg notes: ActiveNote,
-) : NoteRepository {
+class InMemoryNoteRepository(vararg notes: ActiveNote) : NoteRepository {
     val notes = notes.toMutableList()
 
     override fun observe(): Flow<List<Note>> = flowOf(notes)

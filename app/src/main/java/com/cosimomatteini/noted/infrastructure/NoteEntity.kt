@@ -13,5 +13,5 @@ data class NoteEntity(
     val status: String,
     val archivedAtMillis: Long?,
     val createdAtMillis: Long,
-    val updatedAtMillis: Long,
+    val updatedAtMillis: Long
 )

@@ -4,14 +4,14 @@ import com.cosimomatteini.noted.domain.ActiveNote
 import com.cosimomatteini.noted.domain.NoteDescription
 import com.cosimomatteini.noted.domain.NoteId
 import com.cosimomatteini.noted.domain.NoteTitle
+import java.time.Instant
+import java.util.UUID
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Test
-import java.time.Instant
-import java.util.UUID
 
 class RoomNoteRepositoryTest {
     @Test
@@ -22,9 +22,9 @@ class RoomNoteRepositoryTest {
                 mutableListOf(
                     noteEntity(status = "UNKNOWN"),
                     noteEntity(id = validNoteId),
-                    noteEntity(status = "ARCHIVED", archivedAtMillis = null),
-                ),
-            ),
+                    noteEntity(status = "ARCHIVED", archivedAtMillis = null)
+                )
+            )
         )
 
         val notes = repository.observe().first().map { it.id }
@@ -44,8 +44,8 @@ class RoomNoteRepositoryTest {
                 title = NoteTitle.of("Groceries"),
                 description = NoteDescription.of("Buy coffee"),
                 createdAt = Instant.ofEpochMilli(1_000),
-                updatedAt = Instant.ofEpochMilli(2_000),
-            ),
+                updatedAt = Instant.ofEpochMilli(2_000)
+            )
         )
 
         assertEquals(
@@ -54,9 +54,9 @@ class RoomNoteRepositoryTest {
                 title = "Groceries",
                 description = "Buy coffee",
                 createdAtMillis = 1_000,
-                updatedAtMillis = 2_000,
+                updatedAtMillis = 2_000
             ),
-            noteDao.notes.single(),
+            noteDao.notes.single()
         )
     }
 
@@ -65,8 +65,8 @@ class RoomNoteRepositoryTest {
         val noteId = UUID.randomUUID()
         val noteDao = InMemoryNoteDao(
             mutableListOf(
-                noteEntity(id = noteId),
-            ),
+                noteEntity(id = noteId)
+            )
         )
         val repository = RoomNoteRepository(noteDao)
 
@@ -75,9 +75,7 @@ class RoomNoteRepositoryTest {
         assertEquals(emptyList<NoteEntity>(), noteDao.notes)
     }
 
-    private class InMemoryNoteDao(
-        val notes: MutableList<NoteEntity> = mutableListOf(),
-    ) : NoteDao {
+    private class InMemoryNoteDao(val notes: MutableList<NoteEntity> = mutableListOf()) : NoteDao {
         override fun observe(): Flow<List<NoteEntity>> = flowOf(notes)
 
         override suspend fun load(id: UUID): NoteEntity? = notes.firstOrNull { it.id == id }
@@ -99,7 +97,7 @@ class RoomNoteRepositoryTest {
         status: String = "ACTIVE",
         archivedAtMillis: Long? = null,
         createdAtMillis: Long = 0,
-        updatedAtMillis: Long = 0,
+        updatedAtMillis: Long = 0
     ): NoteEntity = NoteEntity(
         id = id,
         title = title,
@@ -108,6 +106,6 @@ class RoomNoteRepositoryTest {
         status = status,
         archivedAtMillis = archivedAtMillis,
         createdAtMillis = createdAtMillis,
-        updatedAtMillis = updatedAtMillis,
+        updatedAtMillis = updatedAtMillis
     )
 }

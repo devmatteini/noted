@@ -35,9 +35,9 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.cosimomatteini.noted.ui.theme.NotedTheme
+import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlin.time.Duration.Companion.milliseconds
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -46,7 +46,7 @@ fun NoteEditorScreen(
     initialDescription: String = "",
     onAutosave: suspend (title: String, description: String) -> Unit,
     onBack: suspend (title: String, description: String) -> Unit,
-    onDelete: suspend () -> Unit,
+    onDelete: suspend () -> Unit
 ) {
     val coroutineScope = rememberCoroutineScope()
     var title by remember(initialTitle) { mutableStateOf(TextFieldValue(initialTitle)) }
@@ -76,16 +76,16 @@ fun NoteEditorScreen(
                             coroutineScope.launch {
                                 onBack(title.text, description.text)
                             }
-                        },
+                        }
                     ) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back",
+                            contentDescription = "Back"
                         )
                     }
-                },
+                }
             )
-        },
+        }
     ) { innerPadding ->
         Column(
             modifier = Modifier
@@ -94,14 +94,14 @@ fun NoteEditorScreen(
                 .navigationBarsPadding()
                 .imePadding()
                 .padding(horizontal = 20.dp, vertical = 12.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             OutlinedTextField(
                 value = title,
                 onValueChange = { title = it },
                 modifier = Modifier.fillMaxWidth(),
                 label = { Text("Title") },
-                singleLine = true,
+                singleLine = true
             )
             OutlinedTextField(
                 value = description,
@@ -109,12 +109,12 @@ fun NoteEditorScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f),
-                label = { Text("Description") },
+                label = { Text("Description") }
             )
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(48.dp),
+                    .height(48.dp)
             ) {
                 Box(
                     modifier = Modifier
@@ -124,11 +124,11 @@ fun NoteEditorScreen(
                                 onDelete()
                             }
                         },
-                    contentAlignment = Alignment.CenterStart,
+                    contentAlignment = Alignment.CenterStart
                 ) {
                     Icon(
                         imageVector = Icons.Filled.Delete,
-                        contentDescription = "Delete note",
+                        contentDescription = "Delete note"
                     )
                 }
             }
@@ -143,7 +143,7 @@ fun NoteEditorScreenPreview() {
         NoteEditorScreen(
             onAutosave = { _, _ -> },
             onBack = { _, _ -> },
-            onDelete = {},
+            onDelete = {}
         )
     }
 }

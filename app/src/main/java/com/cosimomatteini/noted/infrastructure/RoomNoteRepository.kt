@@ -7,17 +7,14 @@ import com.cosimomatteini.noted.domain.NoteDescription
 import com.cosimomatteini.noted.domain.NoteId
 import com.cosimomatteini.noted.domain.NoteRepository
 import com.cosimomatteini.noted.domain.NoteTitle
+import java.time.Instant
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import java.time.Instant
 
-class RoomNoteRepository(
-    private val noteDao: NoteDao,
-) : NoteRepository {
-    override fun observe(): Flow<List<Note>> =
-        noteDao.observe().map { entities ->
-            entities.mapNotNull { entity -> entity.toDomain().getOrNull() }
-        }
+class RoomNoteRepository(private val noteDao: NoteDao) : NoteRepository {
+    override fun observe(): Flow<List<Note>> = noteDao.observe().map { entities ->
+        entities.mapNotNull { entity -> entity.toDomain().getOrNull() }
+    }
 
     override suspend fun load(id: NoteId): ActiveNote? {
         val note = noteDao.load(id.value)?.toDomain()?.getOrNull()
@@ -44,7 +41,7 @@ class RoomNoteRepository(
         status = STATUS_ACTIVE,
         archivedAtMillis = null,
         createdAtMillis = createdAt.toEpochMilli(),
-        updatedAtMillis = updatedAt.toEpochMilli(),
+        updatedAtMillis = updatedAt.toEpochMilli()
     )
 
     private fun NoteEntity.toDomain(): Result<Note> {
@@ -61,8 +58,8 @@ class RoomNoteRepository(
                     title = noteTitle,
                     description = noteDescription,
                     createdAt = createdAt,
-                    updatedAt = updatedAt,
-                ),
+                    updatedAt = updatedAt
+                )
             )
 
             STATUS_ARCHIVED -> Result.success(
@@ -74,10 +71,10 @@ class RoomNoteRepository(
                     updatedAt = updatedAt,
                     archivedAt = Instant.ofEpochMilli(
                         archivedAtMillis ?: return Result.failure(
-                            IllegalArgumentException("Archived note must have archivedAtMillis."),
-                        ),
-                    ),
-                ),
+                            IllegalArgumentException("Archived note must have archivedAtMillis.")
+                        )
+                    )
+                )
             )
 
             else -> Result.failure(IllegalArgumentException("Unknown note status: $status"))

@@ -6,12 +6,12 @@ import com.cosimomatteini.noted.domain.NoteId
 import com.cosimomatteini.noted.domain.NoteTitle
 import com.cosimomatteini.noted.support.FixedClock
 import com.cosimomatteini.noted.support.InMemoryNoteRepository
+import java.time.Instant
+import java.util.UUID
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
-import java.time.Instant
-import java.util.UUID
 
 class UpdateNoteTest {
     @Test
@@ -25,15 +25,15 @@ class UpdateNoteTest {
                 title = NoteTitle.of("Groceries"),
                 description = NoteDescription.of("Buy coffee"),
                 createdAt = createdAt,
-                updatedAt = createdAt,
-            ),
+                updatedAt = createdAt
+            )
         )
         val updateNote = UpdateNote(repository, FixedClock(updatedAt))
 
         val result = updateNote(
             id = noteId,
             title = "Errands",
-            description = "Pick up package",
+            description = "Pick up package"
         )
 
         assertTrue(result.isSuccess)
@@ -43,9 +43,9 @@ class UpdateNoteTest {
                 title = NoteTitle.of("Errands"),
                 description = NoteDescription.of("Pick up package"),
                 createdAt = createdAt,
-                updatedAt = updatedAt,
+                updatedAt = updatedAt
             ),
-            repository.notes.single(),
+            repository.notes.single()
         )
     }
 
@@ -59,7 +59,7 @@ class UpdateNoteTest {
             title = NoteTitle.of("Errands"),
             description = NoteDescription.of("Buy coffee"),
             createdAt = createdAt,
-            updatedAt = createdAt,
+            updatedAt = createdAt
         )
         val repository = InMemoryNoteRepository(note)
         val updateNote = UpdateNote(repository, FixedClock(updatedAt))
@@ -67,7 +67,7 @@ class UpdateNoteTest {
         val result = updateNote(
             id = noteId,
             title = "",
-            description = "",
+            description = ""
         )
 
         assertTrue(result.isSuccess)
@@ -77,9 +77,9 @@ class UpdateNoteTest {
                 title = NoteTitle.of(""),
                 description = NoteDescription.of(""),
                 createdAt = createdAt,
-                updatedAt = updatedAt,
+                updatedAt = updatedAt
             ),
-            repository.notes.single(),
+            repository.notes.single()
         )
     }
 }

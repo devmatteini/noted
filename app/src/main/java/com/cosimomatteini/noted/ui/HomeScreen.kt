@@ -32,13 +32,13 @@ import java.util.UUID
 fun HomeRoute(
     viewModel: HomeViewModel,
     onCreateNote: () -> Unit,
-    onEditNote: (ActiveNote) -> Unit,
+    onEditNote: (ActiveNote) -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
     HomeScreen(
         uiState = uiState,
         onCreateNote = onCreateNote,
-        onEditNote = onEditNote,
+        onEditNote = onEditNote
     )
 }
 
@@ -46,17 +46,17 @@ fun HomeRoute(
 fun HomeScreen(
     uiState: HomeUiState,
     onCreateNote: () -> Unit = {},
-    onEditNote: (ActiveNote) -> Unit = {},
+    onEditNote: (ActiveNote) -> Unit = {}
 ) {
     Scaffold(
         floatingActionButton = {
             FloatingActionButton(onClick = onCreateNote) {
                 Text(
                     text = "+",
-                    style = MaterialTheme.typography.headlineMedium,
+                    style = MaterialTheme.typography.headlineMedium
                 )
             }
-        },
+        }
     ) { innerPadding ->
         if (uiState.activeNotes.isEmpty()) {
             EmptyNotes(Modifier.padding(innerPadding))
@@ -64,7 +64,7 @@ fun HomeScreen(
             ActiveNotesList(
                 activeNotes = uiState.activeNotes,
                 onEditNote = onEditNote,
-                modifier = Modifier.padding(innerPadding),
+                modifier = Modifier.padding(innerPadding)
             )
         }
     }
@@ -76,15 +76,15 @@ private fun EmptyNotes(modifier: Modifier = Modifier) {
         modifier = modifier
             .fillMaxSize()
             .padding(24.dp),
-        verticalArrangement = Arrangement.Center,
+        verticalArrangement = Arrangement.Center
     ) {
         Text(
             text = "No notes yet",
-            style = MaterialTheme.typography.headlineSmall,
+            style = MaterialTheme.typography.headlineSmall
         )
         Text(
             text = "Create a note to see it here.",
-            style = MaterialTheme.typography.bodyMedium,
+            style = MaterialTheme.typography.bodyMedium
         )
     }
 }
@@ -93,43 +93,40 @@ private fun EmptyNotes(modifier: Modifier = Modifier) {
 private fun ActiveNotesList(
     activeNotes: List<ActiveNote>,
     onEditNote: (ActiveNote) -> Unit,
-    modifier: Modifier = Modifier,
+    modifier: Modifier = Modifier
 ) {
     LazyColumn(
         modifier = modifier.fillMaxSize(),
         contentPadding = PaddingValues(16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         items(activeNotes, key = { it.id.value }) { note ->
             NoteCard(
                 note = note,
-                onClick = { onEditNote(note) },
+                onClick = { onEditNote(note) }
             )
         }
     }
 }
 
 @Composable
-private fun NoteCard(
-    note: ActiveNote,
-    onClick: () -> Unit,
-) {
+private fun NoteCard(note: ActiveNote, onClick: () -> Unit) {
     Card(
         Modifier
             .fillMaxWidth()
-            .clickable(onClick = onClick),
+            .clickable(onClick = onClick)
     ) {
         Column(Modifier.padding(16.dp)) {
             if (note.title.value.isNotEmpty()) {
                 Text(
                     text = note.title.value,
-                    style = MaterialTheme.typography.titleMedium,
+                    style = MaterialTheme.typography.titleMedium
                 )
             }
             if (note.description.value.isNotEmpty()) {
                 Text(
                     text = note.description.value,
-                    style = MaterialTheme.typography.bodyMedium,
+                    style = MaterialTheme.typography.bodyMedium
                 )
             }
         }
@@ -156,17 +153,17 @@ fun HomeScreenNotesPreview() {
                         title = NoteTitle.of("First note"),
                         description = NoteDescription.of("Remember the milk"),
                         createdAt = Instant.EPOCH,
-                        updatedAt = Instant.EPOCH,
+                        updatedAt = Instant.EPOCH
                     ),
                     ActiveNote(
                         id = NoteId(UUID.randomUUID()),
                         title = NoteTitle.of(""),
                         description = NoteDescription.of("Check new laptop battery"),
                         createdAt = Instant.EPOCH,
-                        updatedAt = Instant.EPOCH,
-                    ),
-                ),
-            ),
+                        updatedAt = Instant.EPOCH
+                    )
+                )
+            )
         )
     }
 }
