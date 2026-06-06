@@ -204,6 +204,12 @@ private fun NoteCard(note: Note, onEditNote: (ActiveNote) -> Unit) {
                     style = MaterialTheme.typography.bodyMedium
                 )
             }
+            if (note is ActiveNote && note.reminderAt != null) {
+                Text(
+                    text = "Reminder: ${note.reminderAt.formatReminderDateTime()}",
+                    style = MaterialTheme.typography.bodySmall
+                )
+            }
         }
     }
 }

@@ -7,6 +7,7 @@ data class ActiveNote(
     override val id: NoteId,
     override val title: NoteTitle,
     override val description: NoteDescription,
+    val reminderAt: ReminderAt? = null,
     override val createdAt: Instant,
     override val updatedAt: Instant
 ) : Note {
@@ -16,6 +17,7 @@ data class ActiveNote(
                 id = id,
                 title = NoteTitle.of(""),
                 description = NoteDescription.of(""),
+                reminderAt = null,
                 createdAt = createdAt,
                 updatedAt = createdAt
             )
@@ -24,6 +26,16 @@ data class ActiveNote(
     fun update(title: String, description: String, updatedAt: Instant): ActiveNote = copy(
         title = NoteTitle.parse(title),
         description = NoteDescription.parse(description),
+        updatedAt = updatedAt
+    )
+
+    fun setReminder(reminderAt: ReminderAt, updatedAt: Instant): ActiveNote = copy(
+        reminderAt = reminderAt,
+        updatedAt = updatedAt
+    )
+
+    fun clearReminder(updatedAt: Instant): ActiveNote = copy(
+        reminderAt = null,
         updatedAt = updatedAt
     )
 

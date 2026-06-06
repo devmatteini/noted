@@ -149,7 +149,7 @@
 - Add tests for archived filtering.
 - Verify active and archived filters work.
 
-## 11. Add Reminder Storage
+## 11. Add Reminder Storage (Done)
 
 - Add reminder field to `ActiveNote` if not already present.
 - Add pure function to set reminder on active note.

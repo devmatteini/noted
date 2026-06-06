@@ -5,9 +5,11 @@ import androidx.room.Room
 import com.cosimomatteini.noted.domain.Clock
 import com.cosimomatteini.noted.domain.NoteRepository
 import com.cosimomatteini.noted.features.ArchiveNote
+import com.cosimomatteini.noted.features.ClearNoteReminder
 import com.cosimomatteini.noted.features.CreateEmptyNote
 import com.cosimomatteini.noted.features.DeleteNote
 import com.cosimomatteini.noted.features.Notes
+import com.cosimomatteini.noted.features.SetNoteReminder
 import com.cosimomatteini.noted.features.UpdateNote
 import com.cosimomatteini.noted.infrastructure.AndroidClock
 import com.cosimomatteini.noted.infrastructure.NotedDatabase
@@ -26,4 +28,6 @@ class NotedAppContainer(context: Context, val clock: Clock = AndroidClock()) {
     val updateNote = UpdateNote(noteRepository, clock)
     val deleteNote = DeleteNote(noteRepository)
     val archiveNote = ArchiveNote(noteRepository, clock)
+    val setNoteReminder = SetNoteReminder(noteRepository, clock)
+    val clearNoteReminder = ClearNoteReminder(noteRepository, clock)
 }

@@ -62,6 +62,7 @@ fun NotedApp(appContainer: NotedAppContainer) {
         is NotedScreen.EditNote -> NoteEditorScreen(
             initialTitle = currentScreen.note.title.value,
             initialDescription = currentScreen.note.description.value,
+            initialReminderAt = currentScreen.note.reminderAt?.value,
             onAutosave = { title, description ->
                 appContainer.updateNote(currentScreen.note.id, title, description)
             },
@@ -77,6 +78,12 @@ fun NotedApp(appContainer: NotedAppContainer) {
             onDelete = {
                 appContainer.deleteNote(currentScreen.note.id)
                 screen = NotedScreen.Home
+            },
+            onSetReminder = { reminderAt ->
+                appContainer.setNoteReminder(currentScreen.note.id, reminderAt)
+            },
+            onClearReminder = {
+                appContainer.clearNoteReminder(currentScreen.note.id)
             }
         )
     }

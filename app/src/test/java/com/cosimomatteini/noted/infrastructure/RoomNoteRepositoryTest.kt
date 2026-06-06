@@ -5,6 +5,7 @@ import com.cosimomatteini.noted.domain.ArchivedNote
 import com.cosimomatteini.noted.domain.NoteDescription
 import com.cosimomatteini.noted.domain.NoteId
 import com.cosimomatteini.noted.domain.NoteTitle
+import com.cosimomatteini.noted.domain.ReminderAt
 import java.time.Instant
 import java.util.UUID
 import kotlinx.coroutines.flow.Flow
@@ -59,6 +60,53 @@ class RoomNoteRepositoryTest {
             ),
             noteDao.notes.single()
         )
+    }
+
+    @Test
+    fun save_persistsActiveNoteReminder() = runTest {
+        val noteDao = InMemoryNoteDao()
+        val repository = RoomNoteRepository(noteDao)
+        val reminderAt = Instant.ofEpochMilli(3_000)
+
+        repository.save(
+            ActiveNote(
+                id = NoteId(UUID.randomUUID()),
+                title = NoteTitle.of("Groceries"),
+                description = NoteDescription.of("Buy coffee"),
+                reminderAt = ReminderAt(reminderAt),
+                createdAt = Instant.ofEpochMilli(1_000),
+                updatedAt = Instant.ofEpochMilli(2_000)
+            )
+        )
+
+        assertEquals(3_000L, noteDao.notes.single().reminderAtMillis)
+    }
+
+    @Test
+    fun observe_mapsReminderToActiveNoteOnly() = runTest {
+        val activeNoteId = UUID.randomUUID()
+        val archivedNoteId = UUID.randomUUID()
+        val repository = RoomNoteRepository(
+            InMemoryNoteDao(
+                mutableListOf(
+                    noteEntity(id = activeNoteId, reminderAtMillis = 3_000),
+                    noteEntity(
+                        id = archivedNoteId,
+                        reminderAtMillis = 4_000,
+                        status = "ARCHIVED",
+                        archivedAtMillis = 5_000
+                    )
+                )
+            )
+        )
+
+        val notes = repository.observe().first()
+
+        assertEquals(
+            ReminderAt(Instant.ofEpochMilli(3_000)),
+            (notes.first { it.id == NoteId(activeNoteId) } as ActiveNote).reminderAt
+        )
+        assertEquals(ArchivedNote::class, notes.first { it.id == NoteId(archivedNoteId) }::class)
     }
 
     @Test
@@ -126,6 +174,7 @@ class RoomNoteRepositoryTest {
         id: UUID = UUID.randomUUID(),
         title: String = "",
         description: String = "Buy coffee",
+        reminderAtMillis: Long? = null,
         status: String = "ACTIVE",
         archivedAtMillis: Long? = null,
         createdAtMillis: Long = 0,
@@ -134,7 +183,7 @@ class RoomNoteRepositoryTest {
         id = id,
         title = title,
         description = description,
-        reminderAtMillis = null,
+        reminderAtMillis = reminderAtMillis,
         status = status,
         archivedAtMillis = archivedAtMillis,
         createdAtMillis = createdAtMillis,

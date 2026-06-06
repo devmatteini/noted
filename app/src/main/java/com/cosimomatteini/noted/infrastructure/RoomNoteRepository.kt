@@ -7,6 +7,7 @@ import com.cosimomatteini.noted.domain.NoteDescription
 import com.cosimomatteini.noted.domain.NoteId
 import com.cosimomatteini.noted.domain.NoteRepository
 import com.cosimomatteini.noted.domain.NoteTitle
+import com.cosimomatteini.noted.domain.ReminderAt
 import java.time.Instant
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -38,7 +39,7 @@ class RoomNoteRepository(private val noteDao: NoteDao) : NoteRepository {
             id = id.value,
             title = title.value,
             description = description.value,
-            reminderAtMillis = null,
+            reminderAtMillis = reminderAt?.value?.toEpochMilli(),
             status = STATUS_ACTIVE,
             archivedAtMillis = null,
             createdAtMillis = createdAt.toEpochMilli(),
@@ -70,6 +71,7 @@ class RoomNoteRepository(private val noteDao: NoteDao) : NoteRepository {
                     id = noteId,
                     title = noteTitle,
                     description = noteDescription,
+                    reminderAt = reminderAtMillis?.let { ReminderAt(Instant.ofEpochMilli(it)) },
                     createdAt = createdAt,
                     updatedAt = updatedAt
                 )
