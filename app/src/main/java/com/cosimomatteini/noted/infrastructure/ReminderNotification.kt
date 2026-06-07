@@ -63,8 +63,11 @@ internal fun reminderNotificationText(title: String, description: String): Strin
     return when {
         title.isNotEmpty() && ellipsizedDescription.isNotEmpty() ->
             "$title - $ellipsizedDescription"
+
         title.isNotEmpty() -> title
+
         ellipsizedDescription.isNotEmpty() -> ellipsizedDescription
+
         else -> "Reminder"
     }
 }
@@ -75,5 +78,5 @@ private fun String.ellipsize(maxLength: Int): String = if (length <= maxLength) 
     take(maxLength - ELLIPSIS.length) + ELLIPSIS
 }
 
-private const val MAX_DESCRIPTION_LENGTH = 100
+private const val MAX_DESCRIPTION_LENGTH = 500
 private const val ELLIPSIS = "..."
