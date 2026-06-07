@@ -5,7 +5,7 @@
 - Create native Android project.
 - Use Kotlin.
 - Use Jetpack Compose.
-- Set min Android version to 15.
+- Set minimum Android support to Android 15+ / API 35+.
 - Configure package name.
 - Add Compose dependencies.
 - Add AndroidX lifecycle/ViewModel dependencies.

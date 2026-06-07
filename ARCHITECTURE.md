@@ -44,7 +44,7 @@ Archived notes do not have reminders in the domain model.
 
 ## Android Version
 
-Minimum Android version: 15.
+Minimum Android support: Android 15+ / API 35+.
 
 ## Architecture Style
 
