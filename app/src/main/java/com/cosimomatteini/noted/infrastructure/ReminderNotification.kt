@@ -35,16 +35,13 @@ class ReminderNotification(private val context: Context) {
             note.id.value.hashCode(),
             NotificationCompat.Builder(context, CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_launcher_foreground)
-                .setContentTitle(note.notificationTitle())
-                .setContentText(note.description.value)
+                .setContentTitle(reminderNotificationText(note.title.value, note.description.value))
                 .setContentIntent(contentIntent())
                 .setAutoCancel(true)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .build()
         )
     }
-
-    private fun ActiveNote.notificationTitle(): String = title.value.ifBlank { "Reminder" }
 
     private fun contentIntent(): PendingIntent = PendingIntent.getActivity(
         context,
@@ -58,3 +55,24 @@ class ReminderNotification(private val context: Context) {
         const val OPEN_APP_REQUEST_CODE = 0
     }
 }
+
+internal fun reminderNotificationText(title: String, description: String): String {
+    val ellipsizedDescription = description.ellipsize(MAX_DESCRIPTION_LENGTH)
+
+    return when {
+        title.isNotEmpty() && ellipsizedDescription.isNotEmpty() ->
+            "$title - $ellipsizedDescription"
+        title.isNotEmpty() -> title
+        ellipsizedDescription.isNotEmpty() -> ellipsizedDescription
+        else -> "Reminder"
+    }
+}
+
+private fun String.ellipsize(maxLength: Int): String = if (length <= maxLength) {
+    this
+} else {
+    take(maxLength - ELLIPSIS.length) + ELLIPSIS
+}
+
+private const val MAX_DESCRIPTION_LENGTH = 100
+private const val ELLIPSIS = "..."
