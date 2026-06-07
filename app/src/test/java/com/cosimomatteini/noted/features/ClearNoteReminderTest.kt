@@ -7,6 +7,7 @@ import com.cosimomatteini.noted.domain.NoteTitle
 import com.cosimomatteini.noted.domain.ReminderAt
 import com.cosimomatteini.noted.support.FixedClock
 import com.cosimomatteini.noted.support.InMemoryNoteRepository
+import com.cosimomatteini.noted.support.InMemoryReminderScheduler
 import java.time.Instant
 import java.util.UUID
 import kotlinx.coroutines.test.runTest
@@ -30,7 +31,12 @@ class ClearNoteReminderTest {
                 updatedAt = createdAt
             )
         )
-        val clearNoteReminder = ClearNoteReminder(repository, FixedClock(updatedAt))
+        val reminderScheduler = InMemoryReminderScheduler()
+        val clearNoteReminder = ClearNoteReminder(
+            repository,
+            reminderScheduler,
+            FixedClock(updatedAt)
+        )
 
         val result = clearNoteReminder(noteId)
 
@@ -45,5 +51,6 @@ class ClearNoteReminderTest {
             ),
             repository.notes.single()
         )
+        assertEquals(listOf(noteId), reminderScheduler.cancelled)
     }
 }

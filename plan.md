@@ -177,7 +177,7 @@
 - If reminder permissions fail, save note without reminder.
 - Verify denied permissions do not save reminders.
 
-## 13. Schedule And Cancel Exact Alarms
+## 13. Schedule And Cancel Exact Alarms (Done)
 
 - Add `ReminderScheduler` port.
 - Add `AlarmReminderScheduler`.
