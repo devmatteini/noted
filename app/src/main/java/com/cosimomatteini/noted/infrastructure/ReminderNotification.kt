@@ -36,23 +36,24 @@ class ReminderNotification(private val context: Context) {
             NotificationCompat.Builder(context, CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_launcher_foreground)
                 .setContentTitle(reminderNotificationText(note.title.value, note.description.value))
-                .setContentIntent(contentIntent())
+                .setContentIntent(contentIntent(note))
                 .setAutoCancel(true)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .build()
         )
     }
 
-    private fun contentIntent(): PendingIntent = PendingIntent.getActivity(
+    private fun contentIntent(note: ActiveNote): PendingIntent = PendingIntent.getActivity(
         context,
-        OPEN_APP_REQUEST_CODE,
-        Intent(context, MainActivity::class.java),
+        note.id.value.hashCode(),
+        Intent(context, MainActivity::class.java)
+            .putExtra(ReminderAlarm.EXTRA_NOTE_ID, note.id.value.toString())
+            .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP),
         PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
     )
 
     private companion object {
         const val CHANNEL_ID = "reminders"
-        const val OPEN_APP_REQUEST_CODE = 0
     }
 }
 

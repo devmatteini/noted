@@ -206,7 +206,7 @@
 - Open app/note from notification if practical.
 - Verify notification appears at reminder time.
 
-## 15. Open Reminder Notification To Note Editor
+## 15. Open Reminder Notification To Note Editor (Done)
 
 - Add note ID extra to reminder notification content intent.
 - Keep using `MainActivity` as notification entrypoint.
