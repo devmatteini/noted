@@ -67,15 +67,15 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NoteEditorScreen(
-    initialTitle: String = "",
-    initialDescription: String = "",
-    initialReminderAt: Instant? = null,
+    initialTitle: String,
+    initialDescription: String,
+    initialReminderAt: Instant?,
     onAutosave: suspend (title: String, description: String) -> Unit,
     onBack: suspend (title: String, description: String) -> Unit,
     onArchive: suspend (title: String, description: String) -> Unit,
     onDelete: suspend () -> Unit,
-    onSetReminder: suspend (ReminderAt) -> Boolean = { false },
-    onClearReminder: suspend () -> Unit = {}
+    onSetReminder: suspend (ReminderAt) -> Boolean,
+    onClearReminder: suspend () -> Unit
 ) {
     val coroutineScope = rememberCoroutineScope()
     var title by remember(initialTitle) { mutableStateOf(TextFieldValue(initialTitle)) }
@@ -463,7 +463,10 @@ fun NoteEditorScreenPreview() {
             onArchive = { _, _ -> },
             onDelete = {},
             onSetReminder = { true },
-            onClearReminder = {}
+            onClearReminder = {},
+            initialTitle = "",
+            initialDescription = "",
+            initialReminderAt = null
         )
     }
 }
