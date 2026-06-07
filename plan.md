@@ -218,7 +218,7 @@
 - Preserve normal launcher behavior.
 - Verify tapping reminder notification opens editor for that note.
 
-## 16. Restore Reminders After Reboot
+## 16. Restore Reminders After Reboot (Done)
 
 - Add `ReminderBootReceiver`.
 - Add `RECEIVE_BOOT_COMPLETED` permission.
