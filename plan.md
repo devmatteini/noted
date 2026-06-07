@@ -196,7 +196,7 @@
 - Add tests for reminder update rescheduling alarms.
 - Verify alarms are scheduled/cancelled during note changes.
 
-## 14. Show Reminder Notifications
+## 14. Show Reminder Notifications (Done)
 
 - Add `ReminderReceiver`.
 - Add `ReminderNotification`.

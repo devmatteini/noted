@@ -37,16 +37,12 @@ class AlarmReminderScheduler(context: Context) : ReminderScheduler {
         PendingIntent.getBroadcast(
             applicationContext,
             noteId.value.hashCode(),
-            Intent(ACTION_SHOW_REMINDER)
-                .setClassName(applicationContext.packageName, REMINDER_RECEIVER_CLASS_NAME)
-                .putExtra(EXTRA_NOTE_ID, noteId.value.toString()),
+            Intent(ReminderAlarm.ACTION_SHOW_REMINDER)
+                .setClassName(
+                    applicationContext.packageName,
+                    ReminderNotificationReceiver::class.java.name
+                )
+                .putExtra(ReminderAlarm.EXTRA_NOTE_ID, noteId.value.toString()),
             flag or PendingIntent.FLAG_IMMUTABLE
         )
-
-    private companion object {
-        const val ACTION_SHOW_REMINDER = "com.cosimomatteini.noted.SHOW_REMINDER"
-        const val EXTRA_NOTE_ID = "note_id"
-        const val REMINDER_RECEIVER_CLASS_NAME =
-            "com.cosimomatteini.noted.infrastructure.ReminderReceiver"
-    }
 }
