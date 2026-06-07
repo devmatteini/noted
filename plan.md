@@ -206,7 +206,19 @@
 - Open app/note from notification if practical.
 - Verify notification appears at reminder time.
 
-## 15. Restore Reminders After Reboot
+## 15. Open Reminder Notification To Note Editor
+
+- Add note ID extra to reminder notification content intent.
+- Keep using `MainActivity` as notification entrypoint.
+- Teach `MainActivity` to read note ID launch intents.
+- Load active note by ID on app start from notification.
+- Handle `onNewIntent` when app is already running.
+- Open `NoteEditorScreen` for that note.
+- If note is missing, invalid, or archived, fall back to homepage.
+- Preserve normal launcher behavior.
+- Verify tapping reminder notification opens editor for that note.
+
+## 16. Restore Reminders After Reboot
 
 - Add `ReminderBootReceiver`.
 - Add `RECEIVE_BOOT_COMPLETED` permission.
@@ -216,7 +228,7 @@
 - Add tests for reboot restore selecting only active future reminders.
 - Verify reboot restore manually if feasible.
 
-## 16. Final Verify
+## 17. Final Verify
 
 - Run unit tests.
 - Run Android build.
