@@ -40,6 +40,7 @@ class MainActivity : ComponentActivity() {
             NotedTheme {
                 NotedApp(
                     appContainer = appContainer,
+                    activity = this,
                     noteToOpenFromNotification = noteToOpenFromNotification,
                     onNotificationNoteShown = { noteToOpenFromNotification = null }
                 )
@@ -57,12 +58,13 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun NotedApp(
     appContainer: NotedAppContainer,
+    activity: ComponentActivity,
     noteToOpenFromNotification: NoteId? = null,
     onNotificationNoteShown: () -> Unit = {}
 ) {
     var screen by remember { mutableStateOf<NotedScreen>(NotedScreen.Home) }
     val coroutineScope = rememberCoroutineScope()
-    val saveReminder = rememberSaveReminder(appContainer.setNoteReminder::invoke)
+    val saveReminder = rememberSaveReminder(activity, appContainer.setNoteReminder::invoke)
     val homeViewModel: HomeViewModel = viewModel(
         factory = object : ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")

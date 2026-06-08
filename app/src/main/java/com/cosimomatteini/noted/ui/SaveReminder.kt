@@ -15,7 +15,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.platform.LocalContext
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.edit
@@ -27,9 +26,9 @@ import kotlinx.coroutines.launch
 
 @Composable
 internal fun rememberSaveReminder(
+    activity: Activity,
     setReminder: suspend (NoteId, ReminderAt) -> Unit
 ): (SaveReminderRequest) -> Boolean {
-    val context = LocalContext.current
     var pendingReminderSaveRequest by remember { mutableStateOf<SaveReminderRequest?>(null) }
     val coroutineScope = rememberCoroutineScope()
     val reminderPermissionLauncher = rememberLauncherForActivityResult(
@@ -39,7 +38,7 @@ internal fun rememberSaveReminder(
         if (granted && request != null) {
             pendingReminderSaveRequest = null
             saveReminder(
-                context = context,
+                activity = activity,
                 request = request,
                 coroutineScope = coroutineScope,
                 setReminder = setReminder,
@@ -50,13 +49,13 @@ internal fun rememberSaveReminder(
 
     return { request ->
         saveReminder(
-            context = context,
+            activity = activity,
             request = request,
             coroutineScope = coroutineScope,
             setReminder = setReminder,
             requestNotificationPermission = {
                 pendingReminderSaveRequest = it
-                context.markNotificationPermissionRequested()
+                activity.markNotificationPermissionRequested()
                 reminderPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
             }
         )
@@ -64,12 +63,12 @@ internal fun rememberSaveReminder(
 }
 
 private fun saveReminder(
-    context: Context,
+    activity: Activity,
     request: SaveReminderRequest,
     coroutineScope: CoroutineScope,
     setReminder: suspend (NoteId, ReminderAt) -> Unit,
     requestNotificationPermission: (SaveReminderRequest) -> Unit
-) = when (nextReminderPermissionAction(context.reminderPermissionState())) {
+) = when (nextReminderPermissionAction(activity.reminderPermissionState())) {
     ReminderPermissionAction.SaveReminder -> coroutineScope.launch {
         setReminder(request.noteId, request.reminderAt)
     }.let { true }
@@ -80,17 +79,17 @@ private fun saveReminder(
     }
 
     ReminderPermissionAction.OpenNotificationSettings -> {
-        context.openNotificationSettings()
+        activity.openNotificationSettings()
         false
     }
 
     ReminderPermissionAction.OpenExactAlarmSettings -> {
-        context.openExactAlarmSettings()
+        activity.openExactAlarmSettings()
         false
     }
 }
 
-private fun Context.reminderPermissionState(): ReminderPermissionState {
+private fun Activity.reminderPermissionState(): ReminderPermissionState {
     val alarmManager = getSystemService(AlarmManager::class.java)
     val notificationPermissionRequested = getSharedPreferences(
         PERMISSIONS_PREFS,
@@ -104,7 +103,7 @@ private fun Context.reminderPermissionState(): ReminderPermissionState {
         ) == PackageManager.PERMISSION_GRANTED,
         notificationCanRequest = !notificationPermissionRequested ||
             ActivityCompat.shouldShowRequestPermissionRationale(
-                this as Activity,
+                this,
                 Manifest.permission.POST_NOTIFICATIONS
             ),
         exactAlarmGranted = alarmManager.canScheduleExactAlarms()
