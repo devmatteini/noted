@@ -30,10 +30,10 @@ class ReminderNotificationTest {
 
     @Test
     fun reminderNotificationText_ellipsizesDescriptionToOneHundredChars() {
-        val description = "a".repeat(101)
+        val description = "a".repeat(501)
 
         assertEquals(
-            "Title - ${"a".repeat(97)}...",
+            "Title - ${"a".repeat(497)}...",
             reminderNotificationText("Title", description)
         )
     }
