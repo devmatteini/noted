@@ -2,6 +2,7 @@ package com.cosimomatteini.noted.infrastructure
 
 import com.cosimomatteini.noted.domain.ActiveNote
 import com.cosimomatteini.noted.domain.ArchivedNote
+import com.cosimomatteini.noted.domain.Logger
 import com.cosimomatteini.noted.domain.Note
 import com.cosimomatteini.noted.domain.NoteDescription
 import com.cosimomatteini.noted.domain.NoteId
@@ -12,9 +13,15 @@ import java.time.Instant
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
-class RoomNoteRepository(private val noteDao: NoteDao) : NoteRepository {
+class RoomNoteRepository(private val noteDao: NoteDao, private val logger: Logger) :
+    NoteRepository {
     override fun observe(): Flow<List<Note>> = noteDao.observe().map { entities ->
-        entities.mapNotNull { entity -> entity.toDomain().getOrNull() }
+        entities.mapNotNull { entity ->
+            entity.toDomain().getOrElse { failure ->
+                logger.warn(TAG, "Skipping invalid note ${entity.id}", failure)
+                null
+            }
+        }
     }
 
     override suspend fun load(id: NoteId): ActiveNote? {
@@ -97,6 +104,7 @@ class RoomNoteRepository(private val noteDao: NoteDao) : NoteRepository {
     }
 
     private companion object {
+        const val TAG = "RoomNoteRepository"
         const val STATUS_ACTIVE = "ACTIVE"
         const val STATUS_ARCHIVED = "ARCHIVED"
     }

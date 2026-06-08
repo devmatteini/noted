@@ -6,6 +6,7 @@ import com.cosimomatteini.noted.domain.NoteDescription
 import com.cosimomatteini.noted.domain.NoteId
 import com.cosimomatteini.noted.domain.NoteTitle
 import com.cosimomatteini.noted.domain.ReminderAt
+import com.cosimomatteini.noted.support.EmptyLogger
 import java.time.Instant
 import java.util.UUID
 import kotlinx.coroutines.flow.Flow
@@ -26,7 +27,8 @@ class RoomNoteRepositoryTest {
                     noteEntity(id = validNoteId),
                     noteEntity(status = "ARCHIVED", archivedAtMillis = null)
                 )
-            )
+            ),
+            EmptyLogger
         )
 
         val notes = repository.observe().first().map { it.id }
@@ -37,7 +39,7 @@ class RoomNoteRepositoryTest {
     @Test
     fun save_persistsActiveNoteEntity() = runTest {
         val noteDao = InMemoryNoteDao()
-        val repository = RoomNoteRepository(noteDao)
+        val repository = RoomNoteRepository(noteDao, EmptyLogger)
         val noteId = UUID.randomUUID()
 
         repository.save(
@@ -65,7 +67,7 @@ class RoomNoteRepositoryTest {
     @Test
     fun save_persistsActiveNoteReminder() = runTest {
         val noteDao = InMemoryNoteDao()
-        val repository = RoomNoteRepository(noteDao)
+        val repository = RoomNoteRepository(noteDao, EmptyLogger)
         val reminderAt = Instant.ofEpochMilli(3_000)
 
         repository.save(
@@ -97,7 +99,8 @@ class RoomNoteRepositoryTest {
                         archivedAtMillis = 5_000
                     )
                 )
-            )
+            ),
+            EmptyLogger
         )
 
         val notes = repository.observe().first()
@@ -112,7 +115,7 @@ class RoomNoteRepositoryTest {
     @Test
     fun save_persistsArchivedNoteEntity() = runTest {
         val noteDao = InMemoryNoteDao()
-        val repository = RoomNoteRepository(noteDao)
+        val repository = RoomNoteRepository(noteDao, EmptyLogger)
         val noteId = UUID.randomUUID()
 
         repository.save(
@@ -148,7 +151,7 @@ class RoomNoteRepositoryTest {
                 noteEntity(id = noteId)
             )
         )
-        val repository = RoomNoteRepository(noteDao)
+        val repository = RoomNoteRepository(noteDao, EmptyLogger)
 
         repository.delete(NoteId(noteId))
 

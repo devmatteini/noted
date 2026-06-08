@@ -21,7 +21,7 @@ class ReminderNotificationReceiver : BroadcastReceiver() {
         CoroutineScope(Dispatchers.IO).launch {
             val database = NotedDatabaseFactory.create(context)
             try {
-                val note = RoomNoteRepository(database.noteDao()).load(noteId)
+                val note = RoomNoteRepository(database.noteDao(), AndroidLogger).load(noteId)
                 if (note != null) {
                     ReminderNotification(context.applicationContext).show(note)
                 }

@@ -12,6 +12,7 @@ import com.cosimomatteini.noted.features.SetNoteReminder
 import com.cosimomatteini.noted.features.UpdateNote
 import com.cosimomatteini.noted.infrastructure.AlarmReminderScheduler
 import com.cosimomatteini.noted.infrastructure.AndroidClock
+import com.cosimomatteini.noted.infrastructure.AndroidLogger
 import com.cosimomatteini.noted.infrastructure.NotedDatabase
 import com.cosimomatteini.noted.infrastructure.NotedDatabaseFactory
 import com.cosimomatteini.noted.infrastructure.RoomNoteRepository
@@ -19,7 +20,7 @@ import com.cosimomatteini.noted.infrastructure.RoomNoteRepository
 class NotedAppContainer(context: Context, val clock: Clock = AndroidClock()) {
     private val database: NotedDatabase = NotedDatabaseFactory.create(context)
 
-    val noteRepository: NoteRepository = RoomNoteRepository(database.noteDao())
+    val noteRepository: NoteRepository = RoomNoteRepository(database.noteDao(), AndroidLogger)
     private val reminderScheduler = AlarmReminderScheduler(context)
     val notes = Notes(noteRepository)
     val createEmptyNote = CreateEmptyNote(noteRepository, clock)

@@ -17,7 +17,7 @@ class ReminderBootReceiver : BroadcastReceiver() {
             val database = NotedDatabaseFactory.create(context)
             try {
                 RestoreReminders(
-                    noteRepository = RoomNoteRepository(database.noteDao()),
+                    noteRepository = RoomNoteRepository(database.noteDao(), AndroidLogger),
                     reminderScheduler = AlarmReminderScheduler(context.applicationContext),
                     clock = AndroidClock()
                 )()
