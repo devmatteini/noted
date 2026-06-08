@@ -63,35 +63,49 @@ app/
     NoteId.kt
     NoteTitle.kt
     NoteDescription.kt
-    Reminder.kt
+    ReminderAt.kt
     NoteRepository.kt
     ReminderScheduler.kt
     Clock.kt
+    Logger.kt
 
   features/
-    CreateNote.kt
+    CreateEmptyNote.kt
     UpdateNote.kt
     ArchiveNote.kt
     DeleteNote.kt
     Notes.kt
+    SetNoteReminder.kt
+    ClearNoteReminder.kt
+    RestoreReminders.kt
 
   infrastructure/
     NotedDatabase.kt
+    NotedDatabaseFactory.kt
     NoteEntity.kt
     NoteDao.kt
     RoomNoteRepository.kt
     UuidConverter.kt
     AlarmReminderScheduler.kt
-    ReminderReceiver.kt
+    ReminderAlarm.kt
+    ReminderNotificationReceiver.kt
     ReminderNotification.kt
     ReminderBootReceiver.kt
     AndroidClock.kt
+    AndroidLogger.kt
 
   ui/
     HomeScreen.kt
+    EditorRoute.kt
     HomeViewModel.kt
     NoteEditorScreen.kt
+    ReminderPickerDialog.kt
+    ReminderDateTimeFormatter.kt
+    SaveReminder.kt
+    SaveReminderRequest.kt
+    ReminderPermission.kt
 
+  MainActivity.kt
   NotedAppContainer.kt
 ```
 
@@ -167,11 +181,14 @@ Features are app actions.
 
 Examples:
 
-- `CreateNote`.
+- `CreateEmptyNote`.
 - `UpdateNote`.
 - `ArchiveNote`.
 - `DeleteNote`.
 - `Notes`.
+- `SetNoteReminder`.
+- `ClearNoteReminder`.
+- `RestoreReminders`.
 
 ## Dependency Injection
 
@@ -191,6 +208,7 @@ The container wires:
 - Repository.
 - Reminder scheduler.
 - Clock.
+- Logger.
 - Feature classes.
 
 ## Persistence
@@ -201,7 +219,7 @@ Example persistence shape:
 
 ```text
 NoteEntity
-  id: String
+  id: UUID
   title: String
   description: String
   reminderAtMillis: Long?
@@ -220,7 +238,7 @@ ARCHIVED -> ArchivedNote
 
 Entity-to-domain mapping returns `Result`.
 
-When reading from Room, invalid note rows are skipped instead of crashing the notes stream.
+When reading from Room, invalid note rows are logged and skipped instead of crashing the notes stream.
 
 Archived domain notes do not expose a reminder.
 
@@ -293,8 +311,6 @@ Device rebooted
 
 Homepage:
 
-- App title.
-- Settings entry.
 - Archived filter.
 - Note list.
 - Add note action.
@@ -314,11 +330,9 @@ Editor:
 - Description field fills remaining space.
 - Bottom action row stays visible above navigation bar and keyboard.
 - Icon actions have content descriptions and no visible labels.
-- Create mode only shows actions for implemented create-mode features.
-- Edit mode only shows actions for implemented edit-mode features.
-- Reminder action appears when reminders are implemented.
-- Archive action appears when archive is implemented.
-- Delete action appears when delete is implemented.
+- Reminder action is available.
+- Archive action is available.
+- Delete action is available.
 - Delete immediately for MVP.
 
 ## Testing Focus
