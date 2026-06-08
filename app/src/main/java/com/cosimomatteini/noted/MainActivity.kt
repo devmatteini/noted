@@ -18,11 +18,9 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.cosimomatteini.noted.domain.ActiveNote
 import com.cosimomatteini.noted.domain.NoteId
 import com.cosimomatteini.noted.infrastructure.ReminderAlarm
+import com.cosimomatteini.noted.ui.EditorRoute
 import com.cosimomatteini.noted.ui.HomeRoute
 import com.cosimomatteini.noted.ui.HomeViewModel
-import com.cosimomatteini.noted.ui.NoteEditorScreen
-import com.cosimomatteini.noted.ui.SaveReminderRequest
-import com.cosimomatteini.noted.ui.rememberSaveReminder
 import com.cosimomatteini.noted.ui.theme.NotedTheme
 import java.util.UUID
 import kotlinx.coroutines.launch
@@ -64,7 +62,6 @@ fun NotedApp(
 ) {
     var screen by remember { mutableStateOf<NotedScreen>(NotedScreen.Home) }
     val coroutineScope = rememberCoroutineScope()
-    val saveReminder = rememberSaveReminder(activity, appContainer.setNoteReminder::invoke)
     val homeViewModel: HomeViewModel = viewModel(
         factory = object : ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
@@ -73,52 +70,56 @@ fun NotedApp(
         }
     )
 
-    LaunchedEffect(noteToOpenFromNotification) {
-        val noteId = noteToOpenFromNotification ?: return@LaunchedEffect
-        screen = appContainer.noteRepository.load(noteId)?.let(NotedScreen::EditNote)
-            ?: NotedScreen.Home
-        onNotificationNoteShown()
+    fun showHome() {
+        screen = NotedScreen.Home
     }
+
+    fun editNote(note: ActiveNote) {
+        screen = NotedScreen.EditNote(note)
+    }
+
+    fun createAndEditNote() {
+        coroutineScope.launch {
+            editNote(appContainer.createEmptyNote())
+        }
+    }
+
+    NotificationOpenHandler(
+        noteToOpen = noteToOpenFromNotification,
+        loadNote = appContainer.noteRepository::load,
+        onEditNote = ::editNote,
+        onShowHome = ::showHome,
+        onHandled = onNotificationNoteShown
+    )
 
     when (val currentScreen = screen) {
         NotedScreen.Home -> HomeRoute(
             viewModel = homeViewModel,
-            onCreateNote = {
-                coroutineScope.launch {
-                    val note = appContainer.createEmptyNote()
-                    screen = NotedScreen.EditNote(note)
-                }
-            },
-            onEditNote = { note -> screen = NotedScreen.EditNote(note) }
+            onCreateNote = ::createAndEditNote,
+            onEditNote = ::editNote
         )
 
-        is NotedScreen.EditNote -> NoteEditorScreen(
-            initialTitle = currentScreen.note.title.value,
-            initialDescription = currentScreen.note.description.value,
-            initialReminderAt = currentScreen.note.reminderAt?.value,
-            onAutosave = { title, description ->
-                appContainer.updateNote(currentScreen.note.id, title, description)
-            },
-            onBack = { title, description ->
-                appContainer.updateNote(currentScreen.note.id, title, description)
-                screen = NotedScreen.Home
-            },
-            onArchive = { title, description ->
-                appContainer.updateNote(currentScreen.note.id, title, description)
-                appContainer.archiveNote(currentScreen.note.id)
-                screen = NotedScreen.Home
-            },
-            onDelete = {
-                appContainer.deleteNote(currentScreen.note.id)
-                screen = NotedScreen.Home
-            },
-            onSetReminder = { reminderAt ->
-                saveReminder(SaveReminderRequest(currentScreen.note.id, reminderAt))
-            },
-            onClearReminder = {
-                appContainer.clearNoteReminder(currentScreen.note.id)
-            }
+        is NotedScreen.EditNote -> EditorRoute(
+            appContainer = appContainer,
+            activity = activity,
+            note = currentScreen.note,
+            onDone = ::showHome
         )
+    }
+}
+
+@Composable
+private fun NotificationOpenHandler(
+    noteToOpen: NoteId?,
+    loadNote: suspend (NoteId) -> ActiveNote?,
+    onEditNote: (ActiveNote) -> Unit,
+    onShowHome: () -> Unit,
+    onHandled: () -> Unit
+) {
+    LaunchedEffect(noteToOpen) {
+        val noteId = noteToOpen ?: return@LaunchedEffect
+        loadNote(noteId)?.let(onEditNote) ?: onShowHome()
+        onHandled()
     }
 }
 
