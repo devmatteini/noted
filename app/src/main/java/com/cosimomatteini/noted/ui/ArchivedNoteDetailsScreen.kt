@@ -40,14 +40,14 @@ import kotlinx.coroutines.launch
 internal fun ArchivedNoteDetailsRoute(
     note: ArchivedNote,
     onBack: () -> Unit,
-    onUnarchive: suspend () -> Unit,
+    onRestore: suspend () -> Unit,
     onDelete: suspend () -> Unit
 ) {
     ArchivedNoteDetailsScreen(
         title = note.title.value,
         description = note.description.value,
         onBack = onBack,
-        onUnarchive = onUnarchive,
+        onRestore = onRestore,
         onDelete = onDelete
     )
 }
@@ -58,7 +58,7 @@ fun ArchivedNoteDetailsScreen(
     title: String,
     description: String,
     onBack: () -> Unit,
-    onUnarchive: suspend () -> Unit,
+    onRestore: suspend () -> Unit,
     onDelete: suspend () -> Unit
 ) {
     val coroutineScope = rememberCoroutineScope()
@@ -114,14 +114,14 @@ fun ArchivedNoteDetailsScreen(
                 IconButton(
                     onClick = {
                         coroutineScope.launch {
-                            onUnarchive()
+                            onRestore()
                         }
                     },
                     modifier = Modifier.size(48.dp)
                 ) {
                     Icon(
                         imageVector = Icons.Filled.Unarchive,
-                        contentDescription = "Unarchive note"
+                        contentDescription = "Restore note"
                     )
                 }
                 IconButton(
@@ -156,7 +156,7 @@ fun ArchivedNoteDetailsScreenPreview() {
                 archivedAt = Instant.EPOCH
             ),
             onBack = {},
-            onUnarchive = {},
+            onRestore = {},
             onDelete = {}
         )
     }

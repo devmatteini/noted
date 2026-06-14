@@ -15,9 +15,9 @@ import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
-class UnarchiveNoteTest {
+class RestoreNoteTest {
     @Test
-    fun unarchiveNote_savesRestoredActiveNote() = runTest {
+    fun restoreNote_savesRestoredActiveNote() = runTest {
         val noteId = NoteId(UUID.randomUUID())
         val createdAt = Instant.parse("2026-06-06T10:00:00Z")
         val archivedAt = Instant.parse("2026-06-06T11:00:00Z")
@@ -32,9 +32,9 @@ class UnarchiveNoteTest {
                 archivedAt = archivedAt
             )
         )
-        val unarchiveNote = UnarchiveNote(repository, FixedClock(restoredAt))
+        val restoreNote = RestoreNote(repository, FixedClock(restoredAt))
 
-        val result = unarchiveNote(noteId)
+        val result = restoreNote(noteId)
 
         assertTrue(result.isSuccess)
         assertEquals(
@@ -52,7 +52,7 @@ class UnarchiveNoteTest {
     }
 
     @Test
-    fun unarchiveNote_rejectsActiveNote() = runTest {
+    fun restoreNote_rejectsActiveNote() = runTest {
         val noteId = NoteId(UUID.randomUUID())
         val activeNote = ActiveNote(
             id = noteId,
@@ -62,9 +62,9 @@ class UnarchiveNoteTest {
             updatedAt = Instant.EPOCH
         )
         val repository = InMemoryNoteRepository(activeNote)
-        val unarchiveNote = UnarchiveNote(repository, FixedClock(Instant.ofEpochMilli(1)))
+        val restoreNote = RestoreNote(repository, FixedClock(Instant.ofEpochMilli(1)))
 
-        val result = unarchiveNote(noteId)
+        val result = restoreNote(noteId)
 
         assertTrue(result.isFailure)
         assertEquals(activeNote, repository.notes.single())
