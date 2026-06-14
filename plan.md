@@ -337,3 +337,18 @@
 - Preserve discarded details behavior.
 - Add preview coverage if useful.
 - Verify both read-only details screens still work.
+
+## 24. Add Saved URL Links In Notes (Done)
+
+- Detect `http://` and `https://` URLs in saved note descriptions.
+- Do not detect bare domains.
+- Style detected URLs with underline and current theme `onSurface` color.
+- Keep newly typed or pasted URLs plain until note is reopened.
+- Initialize reopened editor descriptions with saved URL annotations.
+- Single tap saved URL in editor opens default external browser.
+- Single tap non-URL text keeps normal cursor movement behavior.
+- Show clickable URLs in read-only archived and discarded note details.
+- Keep note persistence as plain text.
+- Add URL detection tests if practical.
+- Verify autosave still persists plain description text.
+- Verify external browser opens for saved URLs.

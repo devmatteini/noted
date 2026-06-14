@@ -2,6 +2,9 @@ package com.cosimomatteini.noted.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.awaitEachGesture
+import androidx.compose.foundation.gestures.awaitFirstDown
+import androidx.compose.foundation.gestures.waitForUpOrCancellation
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -29,10 +32,19 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.input.pointer.PointerEventPass
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.LinkAnnotation
+import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
@@ -115,17 +127,29 @@ internal fun NoteTextField(
     modifier: Modifier = Modifier,
     placeholder: String,
     textStyle: TextStyle,
-    singleLine: Boolean = false
+    singleLine: Boolean = false,
+    onUrlClick: ((String) -> Unit)? = null
 ) {
     val placeholderColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.72f)
+    var textLayoutResult: TextLayoutResult? by remember { mutableStateOf(null) }
+    val linkClickModifier = if (onUrlClick == null) {
+        Modifier
+    } else {
+        Modifier.openNoteUrlOnTap(
+            textLayoutResult = { textLayoutResult },
+            text = value.annotatedString,
+            onUrlClick = onUrlClick
+        )
+    }
 
     BasicTextField(
         value = value,
         onValueChange = onValueChange,
-        modifier = modifier,
+        modifier = modifier.then(linkClickModifier),
         textStyle = textStyle,
         singleLine = singleLine,
         cursorBrush = SolidColor(MaterialTheme.colorScheme.onSurface),
+        onTextLayout = { textLayoutResult = it },
         decorationBox = { innerTextField ->
             Box {
                 if (value.text.isEmpty()) {
@@ -139,6 +163,35 @@ internal fun NoteTextField(
             }
         }
     )
+}
+
+private fun Modifier.openNoteUrlOnTap(
+    textLayoutResult: () -> TextLayoutResult?,
+    text: AnnotatedString,
+    onUrlClick: (String) -> Unit
+): Modifier = pointerInput(text, onUrlClick) {
+    awaitEachGesture {
+        val down = awaitFirstDown(pass = PointerEventPass.Initial)
+        val layoutResult = textLayoutResult()
+        val offset = layoutResult?.getOffsetForPosition(down.position)
+        val url = offset?.let {
+            val link = text.getLinkAnnotations(
+                start = it,
+                end = it
+            ).firstOrNull()?.item as? LinkAnnotation.Url
+            link?.url
+        }
+        if (url == null) {
+            return@awaitEachGesture
+        }
+
+        down.consume()
+        val up = waitForUpOrCancellation(pass = PointerEventPass.Initial)
+        if (up != null) {
+            up.consume()
+            onUrlClick(url)
+        }
+    }
 }
 
 @Composable

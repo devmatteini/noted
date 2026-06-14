@@ -28,7 +28,7 @@ internal fun ReadOnlyNoteDetailsScreen(
             }
             if (description.isNotEmpty()) {
                 Text(
-                    text = description,
+                    text = savedNoteDescriptionAnnotatedString(description),
                     style = noteDescriptionTextStyle(),
                     modifier = Modifier
                         .fillMaxWidth()
