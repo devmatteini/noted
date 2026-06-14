@@ -12,6 +12,7 @@ selected date/time.
 - Single homepage screen for notes.
 - Full-screen editor for creating/editing notes.
 - Notes can be filtered to show archived notes.
+- Archived notes can be opened read-only, deleted, or unarchived.
 - No sync.
 - No backend.
 
@@ -31,6 +32,9 @@ Note = ActiveNote | ArchivedNote
 ```
 
 Archived notes do not have reminders in the domain model.
+
+Archived notes can be restored to active notes. Restored notes have no reminder because archiving
+cancels and clears reminder state.
 
 ## Technology Stack
 
@@ -73,6 +77,7 @@ app/
     CreateEmptyNote.kt
     UpdateNote.kt
     ArchiveNote.kt
+    UnarchiveNote.kt
     DeleteNote.kt
     Notes.kt
     SetNoteReminder.kt
@@ -99,6 +104,7 @@ app/
     EditorRoute.kt
     HomeViewModel.kt
     NoteEditorScreen.kt
+    ArchivedNoteDetailsScreen.kt
     ReminderPickerDialog.kt
     ReminderDateTimeFormatter.kt
     SaveReminder.kt
@@ -184,6 +190,7 @@ Examples:
 - `CreateEmptyNote`.
 - `UpdateNote`.
 - `ArchiveNote`.
+- `UnarchiveNote`.
 - `DeleteNote`.
 - `Notes`.
 - `SetNoteReminder`.
@@ -264,6 +271,7 @@ When manually setting a reminder:
 Reminder lifecycle:
 
 - Archive note: cancel reminder.
+- Unarchive note: restore as active note with no reminder.
 - Delete note: cancel reminder.
 - Remove reminder: cancel alarm.
 - Change reminder: cancel old alarm and schedule new alarm.
@@ -314,6 +322,7 @@ Homepage:
 - Archived filter.
 - Note list.
 - Add note action.
+- Add note action is hidden while archived filter is selected.
 
 Editor:
 
@@ -335,6 +344,21 @@ Editor:
 - Delete action is available.
 - Delete immediately for MVP.
 
+Archived note details:
+
+- Full-screen read-only details.
+- Opened from archived note cards.
+- Show title and description only.
+- Do not show archived date.
+- Do not allow title or description edits.
+- Reminder action is not available.
+- Archive action is not available.
+- Delete action is available.
+- Delete immediately.
+- Unarchive action is available.
+- Unarchive restores the note as active with no reminder.
+- After unarchive, open the restored note in the editable note editor.
+
 ## Testing Focus
 
 - Note description validation.
@@ -344,6 +368,8 @@ Editor:
 - Delete cancels reminder.
 - Reminder update reschedules alarm.
 - Archived filtering.
+- Archived note details are read-only.
+- Unarchive restores an archived note as active with no reminder.
 - Reboot restore schedules only active future reminders.
 
 ## Post-MVP

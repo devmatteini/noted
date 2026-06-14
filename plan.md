@@ -227,3 +227,43 @@
 - Reschedule exact alarms.
 - Add tests for reboot restore selecting only active future reminders.
 - Verify reboot restore manually if feasible.
+
+## 17. Open Archived Note Details
+
+- Add repository support for loading any note by ID.
+- Keep active-only features from mutating archived notes.
+- Make archived note cards clickable.
+- Add archived note route/navigation state.
+- Add `ArchivedNoteDetailsScreen`.
+- Show archived note title and description read-only.
+- Do not show archived date.
+- Do not show reminder action.
+- Do not show archive action.
+- Add back action.
+- Add delete action.
+- Delete immediately.
+- Return to homepage after deleting archived note.
+- Add tests for loading active and archived notes by ID.
+- Add tests proving active-only features reject archived notes.
+- Verify archived notes open read-only from archived filter.
+
+## 18. Unarchive Note
+
+- Add pure function to restore an archived note to active.
+- Ensure restored active note has no reminder.
+- Add `UnarchiveNote` feature.
+- Wire `UnarchiveNote` in `NotedAppContainer`.
+- Add unarchive action to archived note details.
+- Save restored note as active.
+- After unarchive, open restored note in editable note editor.
+- Add tests for archived note restore transition.
+- Add tests for unarchiving archived notes.
+- Verify unarchived notes move to active notes.
+- Verify restored note opens in editor after unarchive.
+
+## 19. Polish Archived Filter UX
+
+- Hide homepage add note action when archived filter is selected.
+- Keep add note action visible when active filter is selected.
+- Add preview or UI test coverage if practical.
+- Verify switching filters updates add note action visibility.
