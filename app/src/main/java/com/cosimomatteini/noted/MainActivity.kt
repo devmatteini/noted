@@ -126,7 +126,7 @@ fun NotedApp(
                     ?: showHome()
             },
             onDelete = {
-                appContainer.deleteNote(currentScreen.note.id)
+                appContainer.discardNote(currentScreen.note.id)
                 showHome()
             }
         )

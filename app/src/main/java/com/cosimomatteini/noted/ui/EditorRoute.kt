@@ -30,7 +30,7 @@ internal fun EditorRoute(
     }
 
     suspend fun deleteAndClose() {
-        appContainer.deleteNote(note.id)
+        appContainer.discardNote(note.id)
         onDone()
     }
 

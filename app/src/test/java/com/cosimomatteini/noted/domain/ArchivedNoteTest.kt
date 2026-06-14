@@ -37,4 +37,34 @@ class ArchivedNoteTest {
         )
         assertNull(restoredNote.reminderAt)
     }
+
+    @Test
+    fun discard_returnsDiscardedNote() {
+        val noteId = NoteId(UUID.randomUUID())
+        val createdAt = Instant.parse("2026-06-06T10:00:00Z")
+        val updatedAt = Instant.parse("2026-06-06T11:00:00Z")
+        val discardedAt = Instant.parse("2026-06-06T12:00:00Z")
+        val note = ArchivedNote(
+            id = noteId,
+            title = NoteTitle.of("Groceries"),
+            description = NoteDescription.of("Buy coffee"),
+            createdAt = createdAt,
+            updatedAt = updatedAt,
+            archivedAt = updatedAt
+        )
+
+        val discardedNote = note.discard(discardedAt)
+
+        assertEquals(
+            DiscardedNote(
+                id = noteId,
+                title = NoteTitle.of("Groceries"),
+                description = NoteDescription.of("Buy coffee"),
+                createdAt = createdAt,
+                updatedAt = discardedAt,
+                discardedAt = discardedAt
+            ),
+            discardedNote
+        )
+    }
 }

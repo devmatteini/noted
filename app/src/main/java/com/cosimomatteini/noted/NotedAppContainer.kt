@@ -7,6 +7,7 @@ import com.cosimomatteini.noted.features.ArchiveNote
 import com.cosimomatteini.noted.features.ClearNoteReminder
 import com.cosimomatteini.noted.features.CreateEmptyNote
 import com.cosimomatteini.noted.features.DeleteNote
+import com.cosimomatteini.noted.features.DiscardNote
 import com.cosimomatteini.noted.features.Notes
 import com.cosimomatteini.noted.features.RestoreNote
 import com.cosimomatteini.noted.features.SetNoteReminder
@@ -27,6 +28,7 @@ class NotedAppContainer(context: Context, val clock: Clock = AndroidClock()) {
     val createEmptyNote = CreateEmptyNote(noteRepository, clock)
     val updateNote = UpdateNote(noteRepository, clock)
     val deleteNote = DeleteNote(noteRepository, reminderScheduler)
+    val discardNote = DiscardNote(noteRepository, reminderScheduler, clock)
     val archiveNote = ArchiveNote(noteRepository, reminderScheduler, clock)
     val restoreNote = RestoreNote(noteRepository, clock)
     val setNoteReminder = SetNoteReminder(noteRepository, reminderScheduler, clock)

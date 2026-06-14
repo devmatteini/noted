@@ -47,4 +47,13 @@ data class ActiveNote(
         updatedAt = archivedAt,
         archivedAt = archivedAt
     )
+
+    fun discard(discardedAt: Instant): DiscardedNote = DiscardedNote(
+        id = id,
+        title = title,
+        description = description,
+        createdAt = createdAt,
+        updatedAt = discardedAt,
+        discardedAt = discardedAt
+    )
 }

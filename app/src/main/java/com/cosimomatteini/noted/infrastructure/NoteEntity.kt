@@ -12,6 +12,7 @@ data class NoteEntity(
     val reminderAtMillis: Long?,
     val status: String,
     val archivedAtMillis: Long?,
+    val discardedAtMillis: Long?,
     val createdAtMillis: Long,
     val updatedAtMillis: Long
 )

@@ -2,6 +2,7 @@ package com.cosimomatteini.noted.infrastructure
 
 import com.cosimomatteini.noted.domain.ActiveNote
 import com.cosimomatteini.noted.domain.ArchivedNote
+import com.cosimomatteini.noted.domain.DiscardedNote
 import com.cosimomatteini.noted.domain.NoteDescription
 import com.cosimomatteini.noted.domain.NoteId
 import com.cosimomatteini.noted.domain.NoteTitle
@@ -25,7 +26,8 @@ class RoomNoteRepositoryTest {
                 mutableListOf(
                     noteEntity(status = "UNKNOWN"),
                     noteEntity(id = validNoteId),
-                    noteEntity(status = "ARCHIVED", archivedAtMillis = null)
+                    noteEntity(status = "ARCHIVED", archivedAtMillis = null),
+                    noteEntity(status = "DISCARDED", discardedAtMillis = null)
                 )
             ),
             EmptyLogger
@@ -167,6 +169,38 @@ class RoomNoteRepositoryTest {
     }
 
     @Test
+    fun load_returnsDiscardedNoteById() = runTest {
+        val noteId = UUID.randomUUID()
+        val repository = RoomNoteRepository(
+            InMemoryNoteDao(
+                mutableListOf(
+                    noteEntity(
+                        id = noteId,
+                        title = "Groceries",
+                        status = "DISCARDED",
+                        discardedAtMillis = 4_000
+                    )
+                )
+            ),
+            EmptyLogger
+        )
+
+        val note = repository.load(NoteId(noteId))
+
+        assertEquals(
+            DiscardedNote(
+                id = NoteId(noteId),
+                title = NoteTitle.of("Groceries"),
+                description = NoteDescription.of("Buy coffee"),
+                createdAt = Instant.EPOCH,
+                updatedAt = Instant.EPOCH,
+                discardedAt = Instant.ofEpochMilli(4_000)
+            ),
+            note
+        )
+    }
+
+    @Test
     fun loadActive_returnsOnlyActiveNotes() = runTest {
         val activeNoteId = UUID.randomUUID()
         val archivedNoteId = UUID.randomUUID()
@@ -211,6 +245,31 @@ class RoomNoteRepositoryTest {
     }
 
     @Test
+    fun loadDiscarded_returnsOnlyDiscardedNotes() = runTest {
+        val activeNoteId = UUID.randomUUID()
+        val discardedNoteId = UUID.randomUUID()
+        val repository = RoomNoteRepository(
+            InMemoryNoteDao(
+                mutableListOf(
+                    noteEntity(id = activeNoteId),
+                    noteEntity(
+                        id = discardedNoteId,
+                        status = "DISCARDED",
+                        discardedAtMillis = 4_000
+                    )
+                )
+            ),
+            EmptyLogger
+        )
+
+        assertEquals(null, repository.loadDiscarded(NoteId(activeNoteId)))
+        assertEquals(
+            DiscardedNote::class,
+            repository.loadDiscarded(NoteId(discardedNoteId))!!::class
+        )
+    }
+
+    @Test
     fun save_persistsArchivedNoteEntity() = runTest {
         val noteDao = InMemoryNoteDao()
         val repository = RoomNoteRepository(noteDao, EmptyLogger)
@@ -239,6 +298,57 @@ class RoomNoteRepositoryTest {
             ),
             noteDao.notes.single()
         )
+    }
+
+    @Test
+    fun save_persistsDiscardedNoteEntity() = runTest {
+        val noteDao = InMemoryNoteDao()
+        val repository = RoomNoteRepository(noteDao, EmptyLogger)
+        val noteId = UUID.randomUUID()
+
+        repository.save(
+            DiscardedNote(
+                id = NoteId(noteId),
+                title = NoteTitle.of("Groceries"),
+                description = NoteDescription.of("Buy coffee"),
+                createdAt = Instant.ofEpochMilli(1_000),
+                updatedAt = Instant.ofEpochMilli(2_000),
+                discardedAt = Instant.ofEpochMilli(4_000)
+            )
+        )
+
+        assertEquals(
+            noteEntity(
+                id = noteId,
+                title = "Groceries",
+                description = "Buy coffee",
+                reminderAtMillis = null,
+                status = "DISCARDED",
+                archivedAtMillis = null,
+                discardedAtMillis = 4_000,
+                createdAtMillis = 1_000,
+                updatedAtMillis = 2_000
+            ),
+            noteDao.notes.single()
+        )
+    }
+
+    @Test
+    fun observe_mapsDiscardedNotes() = runTest {
+        val noteId = UUID.randomUUID()
+        val repository = RoomNoteRepository(
+            InMemoryNoteDao(
+                mutableListOf(
+                    noteEntity(id = noteId, status = "DISCARDED", discardedAtMillis = 4_000)
+                )
+            ),
+            EmptyLogger
+        )
+
+        val notes = repository.observe().first()
+
+        assertEquals(DiscardedNote::class, notes.single()::class)
+        assertEquals(Instant.ofEpochMilli(4_000), (notes.single() as DiscardedNote).discardedAt)
     }
 
     @Test
@@ -278,6 +388,7 @@ class RoomNoteRepositoryTest {
         reminderAtMillis: Long? = null,
         status: String = "ACTIVE",
         archivedAtMillis: Long? = null,
+        discardedAtMillis: Long? = null,
         createdAtMillis: Long = 0,
         updatedAtMillis: Long = 0
     ): NoteEntity = NoteEntity(
@@ -287,6 +398,7 @@ class RoomNoteRepositoryTest {
         reminderAtMillis = reminderAtMillis,
         status = status,
         archivedAtMillis = archivedAtMillis,
+        discardedAtMillis = discardedAtMillis,
         createdAtMillis = createdAtMillis,
         updatedAtMillis = updatedAtMillis
     )

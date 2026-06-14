@@ -2,6 +2,7 @@ package com.cosimomatteini.noted.infrastructure
 
 import com.cosimomatteini.noted.domain.ActiveNote
 import com.cosimomatteini.noted.domain.ArchivedNote
+import com.cosimomatteini.noted.domain.DiscardedNote
 import com.cosimomatteini.noted.domain.Logger
 import com.cosimomatteini.noted.domain.Note
 import com.cosimomatteini.noted.domain.NoteDescription
@@ -30,6 +31,8 @@ class RoomNoteRepository(private val noteDao: NoteDao, private val logger: Logge
 
     override suspend fun loadArchived(id: NoteId): ArchivedNote? = load(id) as? ArchivedNote
 
+    override suspend fun loadDiscarded(id: NoteId): DiscardedNote? = load(id) as? DiscardedNote
+
     override suspend fun save(note: Note) {
         noteDao.upsert(note.toEntity())
     }
@@ -46,6 +49,7 @@ class RoomNoteRepository(private val noteDao: NoteDao, private val logger: Logge
             reminderAtMillis = reminderAt?.value?.toEpochMilli(),
             status = STATUS_ACTIVE,
             archivedAtMillis = null,
+            discardedAtMillis = null,
             createdAtMillis = createdAt.toEpochMilli(),
             updatedAtMillis = updatedAt.toEpochMilli()
         )
@@ -57,6 +61,19 @@ class RoomNoteRepository(private val noteDao: NoteDao, private val logger: Logge
             reminderAtMillis = null,
             status = STATUS_ARCHIVED,
             archivedAtMillis = archivedAt.toEpochMilli(),
+            discardedAtMillis = null,
+            createdAtMillis = createdAt.toEpochMilli(),
+            updatedAtMillis = updatedAt.toEpochMilli()
+        )
+
+        is DiscardedNote -> NoteEntity(
+            id = id.value,
+            title = title.value,
+            description = description.value,
+            reminderAtMillis = null,
+            status = STATUS_DISCARDED,
+            archivedAtMillis = null,
+            discardedAtMillis = discardedAt.toEpochMilli(),
             createdAtMillis = createdAt.toEpochMilli(),
             updatedAtMillis = updatedAt.toEpochMilli()
         )
@@ -96,6 +113,21 @@ class RoomNoteRepository(private val noteDao: NoteDao, private val logger: Logge
                 )
             )
 
+            STATUS_DISCARDED -> Result.success(
+                DiscardedNote(
+                    id = noteId,
+                    title = noteTitle,
+                    description = noteDescription,
+                    createdAt = createdAt,
+                    updatedAt = updatedAt,
+                    discardedAt = Instant.ofEpochMilli(
+                        discardedAtMillis ?: return Result.failure(
+                            IllegalArgumentException("Discarded note must have discardedAtMillis.")
+                        )
+                    )
+                )
+            )
+
             else -> Result.failure(IllegalArgumentException("Unknown note status: $status"))
         }
     }
@@ -104,5 +136,6 @@ class RoomNoteRepository(private val noteDao: NoteDao, private val logger: Logge
         const val TAG = "RoomNoteRepository"
         const val STATUS_ACTIVE = "ACTIVE"
         const val STATUS_ARCHIVED = "ARCHIVED"
+        const val STATUS_DISCARDED = "DISCARDED"
     }
 }

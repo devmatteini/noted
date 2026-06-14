@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import com.cosimomatteini.noted.R
 import com.cosimomatteini.noted.domain.ActiveNote
 import com.cosimomatteini.noted.domain.ArchivedNote
+import com.cosimomatteini.noted.domain.DiscardedNote
 import com.cosimomatteini.noted.domain.Note
 import com.cosimomatteini.noted.domain.NoteDescription
 import com.cosimomatteini.noted.domain.NoteId
@@ -214,6 +215,8 @@ private fun NoteCard(
             Modifier
                 .fillMaxWidth()
                 .clickable { onOpenArchivedNote(note) }
+
+        is DiscardedNote -> Modifier.fillMaxWidth()
     }
 
     Card(modifier) {

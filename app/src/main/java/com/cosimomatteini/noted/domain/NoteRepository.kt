@@ -11,6 +11,8 @@ interface NoteRepository {
 
     suspend fun loadArchived(id: NoteId): ArchivedNote?
 
+    suspend fun loadDiscarded(id: NoteId): DiscardedNote?
+
     suspend fun save(note: Note)
 
     suspend fun delete(id: NoteId)

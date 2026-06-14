@@ -2,6 +2,7 @@ package com.cosimomatteini.noted.support
 
 import com.cosimomatteini.noted.domain.ActiveNote
 import com.cosimomatteini.noted.domain.ArchivedNote
+import com.cosimomatteini.noted.domain.DiscardedNote
 import com.cosimomatteini.noted.domain.Note
 import com.cosimomatteini.noted.domain.NoteId
 import com.cosimomatteini.noted.domain.NoteRepository
@@ -20,6 +21,8 @@ class InMemoryNoteRepository(vararg notes: Note) : NoteRepository {
     override suspend fun loadActive(id: NoteId): ActiveNote? = load(id) as? ActiveNote
 
     override suspend fun loadArchived(id: NoteId): ArchivedNote? = load(id) as? ArchivedNote
+
+    override suspend fun loadDiscarded(id: NoteId): DiscardedNote? = load(id) as? DiscardedNote
 
     override suspend fun save(note: Note) {
         notes.removeAll { it.id == note.id }

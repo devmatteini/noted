@@ -268,7 +268,7 @@
 - Add preview or UI test coverage if practical.
 - Verify switching filters updates add note action visibility.
 
-## 20. Discard Domain And Soft Delete
+## 20. Discard Domain And Soft Delete (Done)
 
 - Add `DiscardedNote` domain model with `discardedAt`.
 - Add `ActiveNote.discard(discardedAt)` transition.
@@ -276,7 +276,7 @@
 - Add `NoteRepository.loadDiscarded`.
 - Add `DiscardNote` feature.
 - Ensure `DiscardNote` supports active and archived notes.
-- Ensure `DiscardNote` rejects discarded notes.
+- Ensure `DiscardNote` is idempotent for discarded notes.
 - Ensure discarding active notes cancels reminders.
 - Ensure discarding archived notes has no reminder to cancel.
 - Add `discardedAtMillis` to `NoteEntity`.
