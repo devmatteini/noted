@@ -1,12 +1,12 @@
 package com.cosimomatteini.noted.ui
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddAlert
 import androidx.compose.material.icons.filled.Archive
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -86,12 +86,17 @@ fun NoteEditorScreen(
             NoteTextField(
                 value = description,
                 onValueChange = { description = it },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f),
+                modifier = Modifier.fillMaxWidth(),
                 placeholder = "Note",
                 textStyle = noteDescriptionTextStyle()
             )
+            reminderAt?.let { reminderAt ->
+                NoteReminderChip(
+                    text = reminderAt.formatReminderDateTime(),
+                    onClick = { showReminderPicker = true }
+                )
+            }
+            Spacer(Modifier.weight(1f))
             NoteActionsRow {
                 NoteActionIcon(
                     imageVector = Icons.Filled.Archive,
@@ -117,12 +122,6 @@ fun NoteEditorScreen(
                     }
                 )
             }
-            Text(
-                text = reminderAt?.let { reminderAt ->
-                    "Reminder: ${reminderAt.formatReminderDateTime()}"
-                } ?: "No reminder",
-                modifier = Modifier.fillMaxWidth()
-            )
         }
     }
 
@@ -217,6 +216,24 @@ fun NoteEditorScreenTitleAndDescriptionPreview() {
             initialTitle = "My title",
             initialDescription = "My long description.\nThis is very long.",
             initialReminderAt = null
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun NoteEditorScreenReminderPreview() {
+    NotedTheme {
+        NoteEditorScreen(
+            onAutosave = { _, _ -> },
+            onBack = { _, _ -> },
+            onArchive = { _, _ -> },
+            onDelete = {},
+            onSetReminder = { true },
+            onClearReminder = {},
+            initialTitle = "My title",
+            initialDescription = "My very long description!!!",
+            initialReminderAt = Instant.EPOCH
         )
     }
 }
