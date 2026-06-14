@@ -247,7 +247,7 @@
 - Add tests proving active-only features reject archived notes.
 - Verify archived notes open read-only from archived filter.
 
-## 18. Unarchive Note
+## 18. Unarchive Note (Done)
 
 - Add pure function to restore an archived note to active.
 - Ensure restored active note has no reminder.

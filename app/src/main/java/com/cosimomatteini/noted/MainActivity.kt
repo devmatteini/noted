@@ -116,6 +116,10 @@ fun NotedApp(
         is NotedScreen.ArchivedNoteDetails -> ArchivedNoteDetailsRoute(
             note = currentScreen.note,
             onBack = ::showHome,
+            onUnarchive = {
+                appContainer.unarchiveNote(currentScreen.note.id).getOrNull()?.let(::editNote)
+                    ?: showHome()
+            },
             onDelete = {
                 appContainer.deleteNote(currentScreen.note.id)
                 showHome()

@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Unarchive
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -39,12 +40,14 @@ import kotlinx.coroutines.launch
 internal fun ArchivedNoteDetailsRoute(
     note: ArchivedNote,
     onBack: () -> Unit,
+    onUnarchive: suspend () -> Unit,
     onDelete: suspend () -> Unit
 ) {
     ArchivedNoteDetailsScreen(
         title = note.title.value,
         description = note.description.value,
         onBack = onBack,
+        onUnarchive = onUnarchive,
         onDelete = onDelete
     )
 }
@@ -55,6 +58,7 @@ fun ArchivedNoteDetailsScreen(
     title: String,
     description: String,
     onBack: () -> Unit,
+    onUnarchive: suspend () -> Unit,
     onDelete: suspend () -> Unit
 ) {
     val coroutineScope = rememberCoroutineScope()
@@ -110,6 +114,19 @@ fun ArchivedNoteDetailsScreen(
                 IconButton(
                     onClick = {
                         coroutineScope.launch {
+                            onUnarchive()
+                        }
+                    },
+                    modifier = Modifier.size(48.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.Unarchive,
+                        contentDescription = "Unarchive note"
+                    )
+                }
+                IconButton(
+                    onClick = {
+                        coroutineScope.launch {
                             onDelete()
                         }
                     },
@@ -139,6 +156,7 @@ fun ArchivedNoteDetailsScreenPreview() {
                 archivedAt = Instant.EPOCH
             ),
             onBack = {},
+            onUnarchive = {},
             onDelete = {}
         )
     }
