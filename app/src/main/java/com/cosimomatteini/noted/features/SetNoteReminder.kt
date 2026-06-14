@@ -13,7 +13,7 @@ class SetNoteReminder(
     private val clock: Clock
 ) {
     suspend operator fun invoke(id: NoteId, reminderAt: ReminderAt): Result<ActiveNote> {
-        val note = noteRepository.load(id) as? ActiveNote
+        val note = noteRepository.loadActive(id)
             ?: return Result.failure(IllegalArgumentException("Active note not found."))
         val now = clock.now()
         val updatedNote = note.setReminder(reminderAt, now)

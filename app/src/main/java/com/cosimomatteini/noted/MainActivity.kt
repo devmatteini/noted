@@ -17,7 +17,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.cosimomatteini.noted.domain.ActiveNote
 import com.cosimomatteini.noted.domain.ArchivedNote
-import com.cosimomatteini.noted.domain.Note
 import com.cosimomatteini.noted.domain.NoteId
 import com.cosimomatteini.noted.infrastructure.ReminderAlarm
 import com.cosimomatteini.noted.ui.ArchivedNoteDetailsRoute
@@ -93,7 +92,7 @@ fun NotedApp(
 
     NotificationOpenHandler(
         noteToOpen = noteToOpenFromNotification,
-        loadNote = appContainer.noteRepository::load,
+        loadNote = appContainer.noteRepository::loadActive,
         onEditNote = ::editNote,
         onShowHome = ::showHome,
         onHandled = onNotificationNoteShown
@@ -128,14 +127,14 @@ fun NotedApp(
 @Composable
 private fun NotificationOpenHandler(
     noteToOpen: NoteId?,
-    loadNote: suspend (NoteId) -> Note?,
+    loadNote: suspend (NoteId) -> ActiveNote?,
     onEditNote: (ActiveNote) -> Unit,
     onShowHome: () -> Unit,
     onHandled: () -> Unit
 ) {
     LaunchedEffect(noteToOpen) {
         val noteId = noteToOpen ?: return@LaunchedEffect
-        (loadNote(noteId) as? ActiveNote)?.let(onEditNote) ?: onShowHome()
+        loadNote(noteId)?.let(onEditNote) ?: onShowHome()
         onHandled()
     }
 }

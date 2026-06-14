@@ -167,6 +167,50 @@ class RoomNoteRepositoryTest {
     }
 
     @Test
+    fun loadActive_returnsOnlyActiveNotes() = runTest {
+        val activeNoteId = UUID.randomUUID()
+        val archivedNoteId = UUID.randomUUID()
+        val repository = RoomNoteRepository(
+            InMemoryNoteDao(
+                mutableListOf(
+                    noteEntity(id = activeNoteId),
+                    noteEntity(
+                        id = archivedNoteId,
+                        status = "ARCHIVED",
+                        archivedAtMillis = 3_000
+                    )
+                )
+            ),
+            EmptyLogger
+        )
+
+        assertEquals(ActiveNote::class, repository.loadActive(NoteId(activeNoteId))!!::class)
+        assertEquals(null, repository.loadActive(NoteId(archivedNoteId)))
+    }
+
+    @Test
+    fun loadArchived_returnsOnlyArchivedNotes() = runTest {
+        val activeNoteId = UUID.randomUUID()
+        val archivedNoteId = UUID.randomUUID()
+        val repository = RoomNoteRepository(
+            InMemoryNoteDao(
+                mutableListOf(
+                    noteEntity(id = activeNoteId),
+                    noteEntity(
+                        id = archivedNoteId,
+                        status = "ARCHIVED",
+                        archivedAtMillis = 3_000
+                    )
+                )
+            ),
+            EmptyLogger
+        )
+
+        assertEquals(null, repository.loadArchived(NoteId(activeNoteId)))
+        assertEquals(ArchivedNote::class, repository.loadArchived(NoteId(archivedNoteId))!!::class)
+    }
+
+    @Test
     fun save_persistsArchivedNoteEntity() = runTest {
         val noteDao = InMemoryNoteDao()
         val repository = RoomNoteRepository(noteDao, EmptyLogger)

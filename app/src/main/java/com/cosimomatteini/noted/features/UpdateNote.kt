@@ -11,7 +11,7 @@ class UpdateNote(private val noteRepository: NoteRepository, private val clock: 
         title: String,
         description: String
     ): Result<ActiveNote> {
-        val note = noteRepository.load(id) as? ActiveNote
+        val note = noteRepository.loadActive(id)
             ?: return Result.failure(IllegalArgumentException("Active note not found."))
         val updatedNote = note.update(
             title = title,
