@@ -3,6 +3,7 @@ package com.cosimomatteini.noted.ui
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddAlert
 import androidx.compose.material.icons.filled.Archive
@@ -17,6 +18,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.cosimomatteini.noted.domain.ReminderAt
 import com.cosimomatteini.noted.ui.theme.NotedTheme
 import java.time.Instant
@@ -92,7 +94,8 @@ fun NoteEditorScreen(
             )
             reminderAt?.let { reminderAt ->
                 NoteReminderChip(
-                    text = reminderAt.formatReminderDateTime(),
+                    text = reminderAt.formatReminderChipDateTime(),
+                    modifier = Modifier.padding(top = 12.dp),
                     onClick = { showReminderPicker = true }
                 )
             }
