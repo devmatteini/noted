@@ -1,16 +1,11 @@
 package com.cosimomatteini.noted.ui
 
-import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DeleteForever
 import androidx.compose.material.icons.filled.History
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import com.cosimomatteini.noted.domain.DiscardedNote
 import com.cosimomatteini.noted.domain.NoteDescription
 import com.cosimomatteini.noted.domain.NoteId
@@ -51,32 +46,24 @@ fun DiscardedNoteDetailsScreen(
         description = description,
         onBack = onBack
     ) {
-        IconButton(
+        NoteActionIcon(
+            imageVector = Icons.Filled.History,
+            contentDescription = "Restore note",
             onClick = {
                 coroutineScope.launch {
                     onRestore()
                 }
-            },
-            modifier = Modifier.size(48.dp)
-        ) {
-            Icon(
-                imageVector = Icons.Filled.History,
-                contentDescription = "Restore note"
-            )
-        }
-        IconButton(
+            }
+        )
+        NoteActionIcon(
+            imageVector = Icons.Filled.DeleteForever,
+            contentDescription = "Permanently delete note",
             onClick = {
                 coroutineScope.launch {
                     onPermanentlyDelete()
                 }
-            },
-            modifier = Modifier.size(48.dp)
-        ) {
-            Icon(
-                imageVector = Icons.Filled.DeleteForever,
-                contentDescription = "Permanently delete note"
-            )
-        }
+            }
+        )
     }
 }
 
