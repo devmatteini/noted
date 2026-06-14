@@ -1,6 +1,7 @@
 package com.cosimomatteini.noted.features
 
 import com.cosimomatteini.noted.domain.ActiveNote
+import com.cosimomatteini.noted.domain.ArchivedNote
 import com.cosimomatteini.noted.domain.NoteDescription
 import com.cosimomatteini.noted.domain.NoteId
 import com.cosimomatteini.noted.domain.NoteTitle
@@ -81,5 +82,25 @@ class UpdateNoteTest {
             ),
             repository.notes.single()
         )
+    }
+
+    @Test
+    fun updateNote_rejectsArchivedNote() = runTest {
+        val noteId = NoteId(UUID.randomUUID())
+        val archivedNote = ArchivedNote(
+            id = noteId,
+            title = NoteTitle.of("Archived"),
+            description = NoteDescription.of("Read-only"),
+            createdAt = Instant.EPOCH,
+            updatedAt = Instant.EPOCH,
+            archivedAt = Instant.EPOCH
+        )
+        val repository = InMemoryNoteRepository(archivedNote)
+        val updateNote = UpdateNote(repository, FixedClock(Instant.ofEpochMilli(1)))
+
+        val result = updateNote(noteId, "Updated", "Changed")
+
+        assertTrue(result.isFailure)
+        assertEquals(archivedNote, repository.notes.single())
     }
 }

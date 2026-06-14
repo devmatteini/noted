@@ -1,6 +1,7 @@
 package com.cosimomatteini.noted.features
 
 import com.cosimomatteini.noted.domain.ActiveNote
+import com.cosimomatteini.noted.domain.ArchivedNote
 import com.cosimomatteini.noted.domain.NoteDescription
 import com.cosimomatteini.noted.domain.NoteId
 import com.cosimomatteini.noted.domain.NoteTitle
@@ -52,5 +53,31 @@ class ClearNoteReminderTest {
             repository.notes.single()
         )
         assertEquals(listOf(noteId), reminderScheduler.cancelled)
+    }
+
+    @Test
+    fun clearNoteReminder_rejectsArchivedNote() = runTest {
+        val noteId = NoteId(UUID.randomUUID())
+        val archivedNote = ArchivedNote(
+            id = noteId,
+            title = NoteTitle.of("Archived"),
+            description = NoteDescription.of("Read-only"),
+            createdAt = Instant.EPOCH,
+            updatedAt = Instant.EPOCH,
+            archivedAt = Instant.EPOCH
+        )
+        val repository = InMemoryNoteRepository(archivedNote)
+        val reminderScheduler = InMemoryReminderScheduler()
+        val clearNoteReminder = ClearNoteReminder(
+            repository,
+            reminderScheduler,
+            FixedClock(Instant.EPOCH)
+        )
+
+        val result = clearNoteReminder(noteId)
+
+        assertTrue(result.isFailure)
+        assertEquals(archivedNote, repository.notes.single())
+        assertTrue(reminderScheduler.cancelled.isEmpty())
     }
 }

@@ -71,4 +71,26 @@ class ArchiveNoteTest {
 
         assertEquals(listOf(noteId), reminderScheduler.cancelled)
     }
+
+    @Test
+    fun archiveNote_rejectsArchivedNote() = runTest {
+        val noteId = NoteId(UUID.randomUUID())
+        val archivedNote = ArchivedNote(
+            id = noteId,
+            title = NoteTitle.of("Archived"),
+            description = NoteDescription.of("Read-only"),
+            createdAt = Instant.EPOCH,
+            updatedAt = Instant.EPOCH,
+            archivedAt = Instant.EPOCH
+        )
+        val repository = InMemoryNoteRepository(archivedNote)
+        val reminderScheduler = InMemoryReminderScheduler()
+        val archiveNote = ArchiveNote(repository, reminderScheduler, FixedClock(Instant.EPOCH))
+
+        val result = archiveNote(noteId)
+
+        assertTrue(result.isFailure)
+        assertEquals(archivedNote, repository.notes.single())
+        assertTrue(reminderScheduler.cancelled.isEmpty())
+    }
 }

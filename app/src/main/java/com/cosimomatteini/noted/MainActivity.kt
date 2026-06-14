@@ -16,8 +16,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.cosimomatteini.noted.domain.ActiveNote
+import com.cosimomatteini.noted.domain.ArchivedNote
+import com.cosimomatteini.noted.domain.Note
 import com.cosimomatteini.noted.domain.NoteId
 import com.cosimomatteini.noted.infrastructure.ReminderAlarm
+import com.cosimomatteini.noted.ui.ArchivedNoteDetailsRoute
 import com.cosimomatteini.noted.ui.EditorRoute
 import com.cosimomatteini.noted.ui.HomeRoute
 import com.cosimomatteini.noted.ui.HomeViewModel
@@ -78,6 +81,10 @@ fun NotedApp(
         screen = NotedScreen.EditNote(note)
     }
 
+    fun openArchivedNote(note: ArchivedNote) {
+        screen = NotedScreen.ArchivedNoteDetails(note)
+    }
+
     fun createAndEditNote() {
         coroutineScope.launch {
             editNote(appContainer.createEmptyNote())
@@ -96,7 +103,8 @@ fun NotedApp(
         NotedScreen.Home -> HomeRoute(
             viewModel = homeViewModel,
             onCreateNote = ::createAndEditNote,
-            onEditNote = ::editNote
+            onEditNote = ::editNote,
+            onOpenArchivedNote = ::openArchivedNote
         )
 
         is NotedScreen.EditNote -> EditorRoute(
@@ -105,20 +113,29 @@ fun NotedApp(
             note = currentScreen.note,
             onDone = ::showHome
         )
+
+        is NotedScreen.ArchivedNoteDetails -> ArchivedNoteDetailsRoute(
+            note = currentScreen.note,
+            onBack = ::showHome,
+            onDelete = {
+                appContainer.deleteNote(currentScreen.note.id)
+                showHome()
+            }
+        )
     }
 }
 
 @Composable
 private fun NotificationOpenHandler(
     noteToOpen: NoteId?,
-    loadNote: suspend (NoteId) -> ActiveNote?,
+    loadNote: suspend (NoteId) -> Note?,
     onEditNote: (ActiveNote) -> Unit,
     onShowHome: () -> Unit,
     onHandled: () -> Unit
 ) {
     LaunchedEffect(noteToOpen) {
         val noteId = noteToOpen ?: return@LaunchedEffect
-        loadNote(noteId)?.let(onEditNote) ?: onShowHome()
+        (loadNote(noteId) as? ActiveNote)?.let(onEditNote) ?: onShowHome()
         onHandled()
     }
 }
@@ -127,6 +144,8 @@ private sealed interface NotedScreen {
     data object Home : NotedScreen
 
     data class EditNote(val note: ActiveNote) : NotedScreen
+
+    data class ArchivedNoteDetails(val note: ArchivedNote) : NotedScreen
 }
 
 private fun Intent.notificationNote(): NoteId? = getStringExtra(ReminderAlarm.EXTRA_NOTE_ID)

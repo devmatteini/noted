@@ -3,6 +3,7 @@ package com.cosimomatteini.noted.infrastructure
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import com.cosimomatteini.noted.domain.ActiveNote
 import com.cosimomatteini.noted.domain.NoteId
 import java.util.UUID
 import kotlinx.coroutines.CoroutineScope
@@ -21,7 +22,10 @@ class ReminderNotificationReceiver : BroadcastReceiver() {
         CoroutineScope(Dispatchers.IO).launch {
             val database = NotedDatabaseFactory.create(context)
             try {
-                val note = RoomNoteRepository(database.noteDao(), AndroidLogger).load(noteId)
+                val note = RoomNoteRepository(
+                    database.noteDao(),
+                    AndroidLogger
+                ).load(noteId) as? ActiveNote
                 if (note != null) {
                     ReminderNotification(context.applicationContext).show(note)
                 }

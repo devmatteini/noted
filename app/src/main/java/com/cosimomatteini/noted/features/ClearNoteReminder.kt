@@ -12,8 +12,8 @@ class ClearNoteReminder(
     private val clock: Clock
 ) {
     suspend operator fun invoke(id: NoteId): Result<ActiveNote> {
-        val note = noteRepository.load(id)
-            ?: return Result.failure(IllegalArgumentException("Note not found."))
+        val note = noteRepository.load(id) as? ActiveNote
+            ?: return Result.failure(IllegalArgumentException("Active note not found."))
         val updatedNote = note.clearReminder(clock.now())
 
         noteRepository.save(updatedNote)

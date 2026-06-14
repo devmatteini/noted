@@ -1,5 +1,6 @@
 package com.cosimomatteini.noted.features
 
+import com.cosimomatteini.noted.domain.ActiveNote
 import com.cosimomatteini.noted.domain.ArchivedNote
 import com.cosimomatteini.noted.domain.Clock
 import com.cosimomatteini.noted.domain.NoteId
@@ -12,8 +13,8 @@ class ArchiveNote(
     private val clock: Clock
 ) {
     suspend operator fun invoke(id: NoteId): Result<ArchivedNote> {
-        val note = noteRepository.load(id)
-            ?: return Result.failure(IllegalArgumentException("Note not found."))
+        val note = noteRepository.load(id) as? ActiveNote
+            ?: return Result.failure(IllegalArgumentException("Active note not found."))
         val archivedNote = note.archive(clock.now())
 
         noteRepository.save(archivedNote)

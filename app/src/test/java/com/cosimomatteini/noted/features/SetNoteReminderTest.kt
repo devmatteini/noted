@@ -1,6 +1,7 @@
 package com.cosimomatteini.noted.features
 
 import com.cosimomatteini.noted.domain.ActiveNote
+import com.cosimomatteini.noted.domain.ArchivedNote
 import com.cosimomatteini.noted.domain.NoteDescription
 import com.cosimomatteini.noted.domain.NoteId
 import com.cosimomatteini.noted.domain.NoteTitle
@@ -94,6 +95,30 @@ class SetNoteReminderTest {
         setNoteReminder(noteId, reminderAt)
 
         assertEquals(listOf(noteId), reminderScheduler.cancelled)
+        assertTrue(reminderScheduler.scheduled.isEmpty())
+    }
+
+    @Test
+    fun setNoteReminder_rejectsArchivedNote() = runTest {
+        val noteId = NoteId(UUID.randomUUID())
+        val archivedNote = ArchivedNote(
+            id = noteId,
+            title = NoteTitle.of("Archived"),
+            description = NoteDescription.of("Read-only"),
+            createdAt = Instant.EPOCH,
+            updatedAt = Instant.EPOCH,
+            archivedAt = Instant.EPOCH
+        )
+        val repository = InMemoryNoteRepository(archivedNote)
+        val reminderScheduler = InMemoryReminderScheduler()
+        val setNoteReminder =
+            SetNoteReminder(repository, reminderScheduler, FixedClock(Instant.EPOCH))
+
+        val result = setNoteReminder(noteId, ReminderAt(Instant.ofEpochMilli(1)))
+
+        assertTrue(result.isFailure)
+        assertEquals(archivedNote, repository.notes.single())
+        assertTrue(reminderScheduler.cancelled.isEmpty())
         assertTrue(reminderScheduler.scheduled.isEmpty())
     }
 }

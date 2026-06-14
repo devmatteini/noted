@@ -228,7 +228,7 @@
 - Add tests for reboot restore selecting only active future reminders.
 - Verify reboot restore manually if feasible.
 
-## 17. Open Archived Note Details
+## 17. Open Archived Note Details (Done)
 
 - Add repository support for loading any note by ID.
 - Keep active-only features from mutating archived notes.

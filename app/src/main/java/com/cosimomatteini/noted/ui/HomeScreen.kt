@@ -38,13 +38,15 @@ import java.util.UUID
 fun HomeRoute(
     viewModel: HomeViewModel,
     onCreateNote: () -> Unit,
-    onEditNote: (ActiveNote) -> Unit
+    onEditNote: (ActiveNote) -> Unit,
+    onOpenArchivedNote: (ArchivedNote) -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
     HomeScreen(
         uiState = uiState,
         onCreateNote = onCreateNote,
         onEditNote = onEditNote,
+        onOpenArchivedNote = onOpenArchivedNote,
         onShowActiveNotes = viewModel::showActiveNotes,
         onShowArchivedNotes = viewModel::showArchivedNotes
     )
@@ -55,6 +57,7 @@ fun HomeScreen(
     uiState: HomeUiState,
     onCreateNote: () -> Unit = {},
     onEditNote: (ActiveNote) -> Unit = {},
+    onOpenArchivedNote: (ArchivedNote) -> Unit = {},
     onShowActiveNotes: () -> Unit = {},
     onShowArchivedNotes: () -> Unit = {}
 ) {
@@ -87,6 +90,7 @@ fun HomeScreen(
                 NotesList(
                     notes = uiState.notes,
                     onEditNote = onEditNote,
+                    onOpenArchivedNote = onOpenArchivedNote,
                     modifier = Modifier.weight(1f)
                 )
             }
@@ -163,6 +167,7 @@ private fun EmptyNotes(filter: HomeFilter, modifier: Modifier = Modifier) {
 private fun NotesList(
     notes: List<Note>,
     onEditNote: (ActiveNote) -> Unit,
+    onOpenArchivedNote: (ArchivedNote) -> Unit,
     modifier: Modifier = Modifier
 ) {
     LazyColumn(
@@ -173,21 +178,29 @@ private fun NotesList(
         items(notes, key = { it.id.value }) { note ->
             NoteCard(
                 note = note,
-                onEditNote = onEditNote
+                onEditNote = onEditNote,
+                onOpenArchivedNote = onOpenArchivedNote
             )
         }
     }
 }
 
 @Composable
-private fun NoteCard(note: Note, onEditNote: (ActiveNote) -> Unit) {
+private fun NoteCard(
+    note: Note,
+    onEditNote: (ActiveNote) -> Unit,
+    onOpenArchivedNote: (ArchivedNote) -> Unit
+) {
     val modifier = when (note) {
         is ActiveNote ->
             Modifier
                 .fillMaxWidth()
                 .clickable { onEditNote(note) }
 
-        is ArchivedNote -> Modifier.fillMaxWidth()
+        is ArchivedNote ->
+            Modifier
+                .fillMaxWidth()
+                .clickable { onOpenArchivedNote(note) }
     }
 
     Card(modifier) {

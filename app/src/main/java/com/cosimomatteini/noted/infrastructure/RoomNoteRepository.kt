@@ -24,14 +24,7 @@ class RoomNoteRepository(private val noteDao: NoteDao, private val logger: Logge
         }
     }
 
-    override suspend fun load(id: NoteId): ActiveNote? {
-        val note = noteDao.load(id.value)?.toDomain()?.getOrNull()
-        return when (note) {
-            is ActiveNote -> note
-            is ArchivedNote -> null
-            null -> null
-        }
-    }
+    override suspend fun load(id: NoteId): Note? = noteDao.load(id.value)?.toDomain()?.getOrNull()
 
     override suspend fun save(note: Note) {
         noteDao.upsert(note.toEntity())

@@ -1,6 +1,5 @@
 package com.cosimomatteini.noted.support
 
-import com.cosimomatteini.noted.domain.ActiveNote
 import com.cosimomatteini.noted.domain.Note
 import com.cosimomatteini.noted.domain.NoteId
 import com.cosimomatteini.noted.domain.NoteRepository
@@ -12,9 +11,9 @@ class InMemoryNoteRepository(vararg notes: Note) : NoteRepository {
 
     override fun observe(): Flow<List<Note>> = flowOf(notes)
 
-    override suspend fun load(id: NoteId): ActiveNote? = notes.firstOrNull {
+    override suspend fun load(id: NoteId): Note? = notes.firstOrNull {
         it.id == id
-    } as? ActiveNote
+    }
 
     override suspend fun save(note: Note) {
         notes.removeAll { it.id == note.id }
