@@ -63,11 +63,13 @@ fun HomeScreen(
 ) {
     Scaffold(
         floatingActionButton = {
-            FloatingActionButton(onClick = onCreateNote) {
-                Text(
-                    text = "+",
-                    style = MaterialTheme.typography.headlineMedium
-                )
+            if (showCreateNoteAction(uiState.filter)) {
+                FloatingActionButton(onClick = onCreateNote) {
+                    Text(
+                        text = "+",
+                        style = MaterialTheme.typography.headlineMedium
+                    )
+                }
             }
         }
     ) { innerPadding ->
@@ -98,6 +100,16 @@ fun HomeScreen(
     }
 }
 
+internal fun showCreateNoteAction(filter: HomeFilter): Boolean = when (filter) {
+    HomeFilter.Active -> true
+    HomeFilter.Archived -> false
+}
+
+private fun isArchivedFilterSelected(filter: HomeFilter): Boolean = when (filter) {
+    HomeFilter.Active -> false
+    HomeFilter.Archived -> true
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun HomeFilterRow(
@@ -106,7 +118,7 @@ private fun HomeFilterRow(
     onShowArchivedNotes: () -> Unit
 ) {
     FilterChip(
-        selected = selectedFilter == HomeFilter.Archived,
+        selected = isArchivedFilterSelected(selectedFilter),
         onClick = {
             when (selectedFilter) {
                 HomeFilter.Active -> onShowArchivedNotes()
@@ -114,7 +126,7 @@ private fun HomeFilterRow(
             }
         },
         label = { Text(HomeFilter.Archived.label) },
-        leadingIcon = if (selectedFilter == HomeFilter.Archived) {
+        leadingIcon = if (isArchivedFilterSelected(selectedFilter)) {
             {
                 androidx.compose.material3.Icon(
                     imageVector = Icons.Filled.Check,

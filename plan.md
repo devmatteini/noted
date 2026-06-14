@@ -261,7 +261,7 @@
 - Verify unarchived notes move to active notes.
 - Verify restored note opens in editor after unarchive.
 
-## 19. Polish Archived Filter UX
+## 19. Polish Archived Filter UX (Done)
 
 - Hide homepage add note action when archived filter is selected.
 - Keep add note action visible when active filter is selected.

@@ -8,6 +8,8 @@ import com.cosimomatteini.noted.domain.NoteTitle
 import java.time.Instant
 import java.util.UUID
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class HomeViewModelTest {
@@ -29,6 +31,16 @@ class HomeViewModelTest {
         val notes = visibleNotes(listOf(activeNote, archivedNote), HomeFilter.Archived)
 
         assertEquals(listOf(archivedNote), notes)
+    }
+
+    @Test
+    fun showCreateNoteAction_returnsTrueForActiveFilter() {
+        assertTrue(showCreateNoteAction(HomeFilter.Active))
+    }
+
+    @Test
+    fun showCreateNoteAction_returnsFalseForArchivedFilter() {
+        assertFalse(showCreateNoteAction(HomeFilter.Archived))
     }
 
     private fun activeNote(): ActiveNote = ActiveNote(
