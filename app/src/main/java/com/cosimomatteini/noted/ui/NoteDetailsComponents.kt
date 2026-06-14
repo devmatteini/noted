@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
@@ -91,8 +90,7 @@ internal fun NoteDetailsContentColumn(
 internal fun NoteActionsRow(content: @Composable RowScope.() -> Unit) {
     Row(
         modifier = Modifier
-            .fillMaxWidth()
-            .height(56.dp),
+            .fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(12.dp),
         content = content
     )
