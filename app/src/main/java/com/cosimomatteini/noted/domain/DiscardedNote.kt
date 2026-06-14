@@ -9,4 +9,13 @@ data class DiscardedNote(
     override val createdAt: Instant,
     override val updatedAt: Instant,
     val discardedAt: Instant
-) : Note
+) : Note {
+    fun restore(restoredAt: Instant): ActiveNote = ActiveNote(
+        id = id,
+        title = title,
+        description = description,
+        reminderAt = null,
+        createdAt = createdAt,
+        updatedAt = restoredAt
+    )
+}

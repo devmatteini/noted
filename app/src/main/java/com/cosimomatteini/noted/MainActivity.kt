@@ -21,6 +21,7 @@ import com.cosimomatteini.noted.domain.DiscardedNote
 import com.cosimomatteini.noted.domain.NoteId
 import com.cosimomatteini.noted.infrastructure.ReminderAlarm
 import com.cosimomatteini.noted.ui.ArchivedNoteDetailsRoute
+import com.cosimomatteini.noted.ui.DiscardedNoteDetailsRoute
 import com.cosimomatteini.noted.ui.EditorRoute
 import com.cosimomatteini.noted.ui.HomeRoute
 import com.cosimomatteini.noted.ui.HomeViewModel
@@ -91,7 +92,7 @@ fun NotedApp(
     }
 
     fun openDiscardedNote(note: DiscardedNote) {
-        showHome()
+        screen = NotedScreen.DiscardedNoteDetails(note)
     }
 
     fun createAndEditNote() {
@@ -136,6 +137,21 @@ fun NotedApp(
                 showHome()
             }
         )
+
+        is NotedScreen.DiscardedNoteDetails -> DiscardedNoteDetailsRoute(
+            note = currentScreen.note,
+            onBack = ::showHome,
+            onRestore = {
+                appContainer.restoreDiscardedNote(
+                    currentScreen.note.id
+                ).getOrNull()?.let(::editNote)
+                    ?: showHome()
+            },
+            onPermanentlyDelete = {
+                appContainer.permanentlyDeleteNote(currentScreen.note.id)
+                showHome()
+            }
+        )
     }
 }
 
@@ -160,6 +176,8 @@ private sealed interface NotedScreen {
     data class EditNote(val note: ActiveNote) : NotedScreen
 
     data class ArchivedNoteDetails(val note: ArchivedNote) : NotedScreen
+
+    data class DiscardedNoteDetails(val note: DiscardedNote) : NotedScreen
 }
 
 private fun Intent.notificationNote(): NoteId? = getStringExtra(ReminderAlarm.EXTRA_NOTE_ID)

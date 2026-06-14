@@ -310,7 +310,7 @@
 - Add add-note action visibility tests for Trash.
 - Verify Trash navigation manually.
 
-## 22. Add Trash Detail And Actions
+## 22. Add Trash Detail And Actions (Done)
 
 - Add `DiscardedNote.restore(restoredAt)` transition to active note with no reminder.
 - Add `RestoreDiscardedNote` feature.
