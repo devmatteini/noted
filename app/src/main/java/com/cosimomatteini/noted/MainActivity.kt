@@ -77,7 +77,7 @@ fun NotedApp(
     }
 
     fun showActiveHome() {
-        homeViewModel.showActiveNotes()
+        homeViewModel.showNotes()
         showHome()
     }
 

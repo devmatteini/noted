@@ -10,20 +10,23 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Archive
 import androidx.compose.material3.Card
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.cosimomatteini.noted.R
 import com.cosimomatteini.noted.domain.ActiveNote
 import com.cosimomatteini.noted.domain.ArchivedNote
 import com.cosimomatteini.noted.domain.Note
@@ -47,8 +50,8 @@ fun HomeRoute(
         onCreateNote = onCreateNote,
         onEditNote = onEditNote,
         onOpenArchivedNote = onOpenArchivedNote,
-        onShowActiveNotes = viewModel::showActiveNotes,
-        onShowArchivedNotes = viewModel::showArchivedNotes
+        onShowNotes = viewModel::showNotes,
+        onShowArchive = viewModel::showArchive
     )
 }
 
@@ -58,12 +61,12 @@ fun HomeScreen(
     onCreateNote: () -> Unit = {},
     onEditNote: (ActiveNote) -> Unit = {},
     onOpenArchivedNote: (ArchivedNote) -> Unit = {},
-    onShowActiveNotes: () -> Unit = {},
-    onShowArchivedNotes: () -> Unit = {}
+    onShowNotes: () -> Unit = {},
+    onShowArchive: () -> Unit = {}
 ) {
     Scaffold(
         floatingActionButton = {
-            if (showCreateNoteAction(uiState.filter)) {
+            if (showCreateNoteAction(uiState.destination)) {
                 FloatingActionButton(onClick = onCreateNote) {
                     Text(
                         text = "+",
@@ -71,6 +74,13 @@ fun HomeScreen(
                     )
                 }
             }
+        },
+        bottomBar = {
+            HomeNavigationBar(
+                selectedDestination = uiState.destination,
+                onShowNotes = onShowNotes,
+                onShowArchive = onShowArchive
+            )
         }
     ) { innerPadding ->
         Column(
@@ -78,14 +88,9 @@ fun HomeScreen(
                 .padding(innerPadding)
                 .fillMaxSize()
         ) {
-            HomeFilterRow(
-                selectedFilter = uiState.filter,
-                onShowActiveNotes = onShowActiveNotes,
-                onShowArchivedNotes = onShowArchivedNotes
-            )
             if (uiState.notes.isEmpty()) {
                 EmptyNotes(
-                    filter = uiState.filter,
+                    destination = uiState.destination,
                     modifier = Modifier.weight(1f)
                 )
             } else {
@@ -100,62 +105,58 @@ fun HomeScreen(
     }
 }
 
-internal fun showCreateNoteAction(filter: HomeFilter): Boolean = when (filter) {
-    HomeFilter.Active -> true
-    HomeFilter.Archived -> false
+internal fun showCreateNoteAction(destination: HomeDestination): Boolean = when (destination) {
+    HomeDestination.Notes -> true
+    HomeDestination.Archive -> false
 }
 
-private fun isArchivedFilterSelected(filter: HomeFilter): Boolean = when (filter) {
-    HomeFilter.Active -> false
-    HomeFilter.Archived -> true
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun HomeFilterRow(
-    selectedFilter: HomeFilter,
-    onShowActiveNotes: () -> Unit,
-    onShowArchivedNotes: () -> Unit
+private fun HomeNavigationBar(
+    selectedDestination: HomeDestination,
+    onShowNotes: () -> Unit,
+    onShowArchive: () -> Unit
 ) {
-    FilterChip(
-        selected = isArchivedFilterSelected(selectedFilter),
-        onClick = {
-            when (selectedFilter) {
-                HomeFilter.Active -> onShowArchivedNotes()
-                HomeFilter.Archived -> onShowActiveNotes()
-            }
-        },
-        label = { Text(HomeFilter.Archived.label) },
-        leadingIcon = if (isArchivedFilterSelected(selectedFilter)) {
-            {
-                androidx.compose.material3.Icon(
-                    imageVector = Icons.Filled.Check,
+    NavigationBar {
+        NavigationBarItem(
+            selected = selectedDestination == HomeDestination.Notes,
+            onClick = onShowNotes,
+            icon = {
+                Icon(
+                    painter = painterResource(R.drawable.ic_note_stack),
                     contentDescription = null
                 )
-            }
-        } else {
-            null
-        },
-        modifier = Modifier
-            .padding(horizontal = 16.dp, vertical = 8.dp)
-    )
+            },
+            label = { Text(HomeDestination.Notes.label) }
+        )
+        NavigationBarItem(
+            selected = selectedDestination == HomeDestination.Archive,
+            onClick = onShowArchive,
+            icon = {
+                Icon(
+                    imageVector = Icons.Filled.Archive,
+                    contentDescription = null
+                )
+            },
+            label = { Text(HomeDestination.Archive.label) }
+        )
+    }
 }
 
-private val HomeFilter.label: String
+private val HomeDestination.label: String
     get() = when (this) {
-        HomeFilter.Active -> "Active"
-        HomeFilter.Archived -> "Archived"
+        HomeDestination.Notes -> "Notes"
+        HomeDestination.Archive -> "Archive"
     }
 
 @Composable
-private fun EmptyNotes(filter: HomeFilter, modifier: Modifier = Modifier) {
-    val title = when (filter) {
-        HomeFilter.Active -> "No notes yet"
-        HomeFilter.Archived -> "No archived notes"
+private fun EmptyNotes(destination: HomeDestination, modifier: Modifier = Modifier) {
+    val title = when (destination) {
+        HomeDestination.Notes -> "No notes yet"
+        HomeDestination.Archive -> "No archived notes"
     }
-    val description = when (filter) {
-        HomeFilter.Active -> "Create a note to see it here."
-        HomeFilter.Archived -> "Archive a note to see it here."
+    val description = when (destination) {
+        HomeDestination.Notes -> "Create a note to see it here."
+        HomeDestination.Archive -> "Archive a note to see it here."
     }
 
     Column(
@@ -269,7 +270,7 @@ fun HomeScreenNotesPreview() {
                         updatedAt = Instant.EPOCH
                     )
                 ),
-                filter = HomeFilter.Active
+                destination = HomeDestination.Notes
             )
         )
     }
@@ -291,7 +292,7 @@ fun HomeScreenArchivedPreview() {
                         archivedAt = Instant.EPOCH
                     )
                 ),
-                filter = HomeFilter.Archived
+                destination = HomeDestination.Archive
             )
         )
     }

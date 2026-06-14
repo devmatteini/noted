@@ -14,33 +14,33 @@ import org.junit.Test
 
 class HomeViewModelTest {
     @Test
-    fun visibleNotes_returnsActiveNotesForActiveFilter() {
+    fun visibleNotes_returnsActiveNotesForNotesDestination() {
         val activeNote = activeNote()
         val archivedNote = archivedNote()
 
-        val notes = visibleNotes(listOf(activeNote, archivedNote), HomeFilter.Active)
+        val notes = visibleNotes(listOf(activeNote, archivedNote), HomeDestination.Notes)
 
         assertEquals(listOf(activeNote), notes)
     }
 
     @Test
-    fun visibleNotes_returnsArchivedNotesForArchivedFilter() {
+    fun visibleNotes_returnsArchivedNotesForArchiveDestination() {
         val activeNote = activeNote()
         val archivedNote = archivedNote()
 
-        val notes = visibleNotes(listOf(activeNote, archivedNote), HomeFilter.Archived)
+        val notes = visibleNotes(listOf(activeNote, archivedNote), HomeDestination.Archive)
 
         assertEquals(listOf(archivedNote), notes)
     }
 
     @Test
-    fun showCreateNoteAction_returnsTrueForActiveFilter() {
-        assertTrue(showCreateNoteAction(HomeFilter.Active))
+    fun showCreateNoteAction_returnsTrueForNotesDestination() {
+        assertTrue(showCreateNoteAction(HomeDestination.Notes))
     }
 
     @Test
-    fun showCreateNoteAction_returnsFalseForArchivedFilter() {
-        assertFalse(showCreateNoteAction(HomeFilter.Archived))
+    fun showCreateNoteAction_returnsFalseForArchiveDestination() {
+        assertFalse(showCreateNoteAction(HomeDestination.Archive))
     }
 
     private fun activeNote(): ActiveNote = ActiveNote(

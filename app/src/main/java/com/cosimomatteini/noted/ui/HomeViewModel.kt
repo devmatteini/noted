@@ -14,22 +14,22 @@ import kotlinx.coroutines.flow.stateIn
 
 data class HomeUiState(
     val notes: List<Note> = emptyList(),
-    val filter: HomeFilter = HomeFilter.Active
+    val destination: HomeDestination = HomeDestination.Notes
 )
 
-enum class HomeFilter {
-    Active,
-    Archived
+enum class HomeDestination {
+    Notes,
+    Archive
 }
 
 class HomeViewModel(notes: Notes) : ViewModel() {
-    private val filter = MutableStateFlow(HomeFilter.Active)
+    private val destination = MutableStateFlow(HomeDestination.Notes)
 
     val uiState: StateFlow<HomeUiState> = notes()
-        .combine(filter) { notes, filter ->
+        .combine(destination) { notes, destination ->
             HomeUiState(
-                notes = visibleNotes(notes, filter),
-                filter = filter
+                notes = visibleNotes(notes, destination),
+                destination = destination
             )
         }
         .stateIn(
@@ -38,16 +38,17 @@ class HomeViewModel(notes: Notes) : ViewModel() {
             initialValue = HomeUiState()
         )
 
-    fun showActiveNotes() {
-        filter.value = HomeFilter.Active
+    fun showNotes() {
+        destination.value = HomeDestination.Notes
     }
 
-    fun showArchivedNotes() {
-        filter.value = HomeFilter.Archived
+    fun showArchive() {
+        destination.value = HomeDestination.Archive
     }
 }
 
-internal fun visibleNotes(notes: List<Note>, filter: HomeFilter): List<Note> = when (filter) {
-    HomeFilter.Active -> notes.filterIsInstance<ActiveNote>()
-    HomeFilter.Archived -> notes.filterIsInstance<ArchivedNote>()
-}
+internal fun visibleNotes(notes: List<Note>, destination: HomeDestination): List<Note> =
+    when (destination) {
+        HomeDestination.Notes -> notes.filterIsInstance<ActiveNote>()
+        HomeDestination.Archive -> notes.filterIsInstance<ArchivedNote>()
+    }
