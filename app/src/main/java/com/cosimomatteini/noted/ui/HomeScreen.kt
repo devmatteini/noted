@@ -1,18 +1,15 @@
 package com.cosimomatteini.noted.ui
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Archive
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material3.Card
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -35,6 +32,7 @@ import com.cosimomatteini.noted.domain.Note
 import com.cosimomatteini.noted.domain.NoteDescription
 import com.cosimomatteini.noted.domain.NoteId
 import com.cosimomatteini.noted.domain.NoteTitle
+import com.cosimomatteini.noted.domain.ReminderAt
 import com.cosimomatteini.noted.ui.theme.NotedTheme
 import java.time.Instant
 import java.util.UUID
@@ -225,54 +223,6 @@ private fun NotesList(
     }
 }
 
-@Composable
-private fun NoteCard(
-    note: Note,
-    onEditNote: (ActiveNote) -> Unit,
-    onOpenArchivedNote: (ArchivedNote) -> Unit,
-    onOpenDiscardedNote: (DiscardedNote) -> Unit
-) {
-    val modifier = when (note) {
-        is ActiveNote ->
-            Modifier
-                .fillMaxWidth()
-                .clickable { onEditNote(note) }
-
-        is ArchivedNote ->
-            Modifier
-                .fillMaxWidth()
-                .clickable { onOpenArchivedNote(note) }
-
-        is DiscardedNote ->
-            Modifier
-                .fillMaxWidth()
-                .clickable { onOpenDiscardedNote(note) }
-    }
-
-    Card(modifier) {
-        Column(Modifier.padding(16.dp)) {
-            if (note.title.value.isNotEmpty()) {
-                Text(
-                    text = note.title.value,
-                    style = MaterialTheme.typography.titleMedium
-                )
-            }
-            if (note.description.value.isNotEmpty()) {
-                Text(
-                    text = note.description.value,
-                    style = MaterialTheme.typography.bodyMedium
-                )
-            }
-            if (note is ActiveNote && note.reminderAt != null) {
-                Text(
-                    text = "Reminder: ${note.reminderAt.formatReminderDateTime()}",
-                    style = MaterialTheme.typography.bodySmall
-                )
-            }
-        }
-    }
-}
-
 @Preview(showBackground = true)
 @Composable
 fun HomeScreenEmptyPreview() {
@@ -290,8 +240,15 @@ fun HomeScreenNotesPreview() {
                 notes = listOf(
                     ActiveNote(
                         id = NoteId(UUID.randomUUID()),
-                        title = NoteTitle.of("First note"),
-                        description = NoteDescription.of("Remember the milk"),
+                        title = NoteTitle.of("My title"),
+                        description = NoteDescription.of(
+                            "My very looooooong description!!! " +
+                                "This preview keeps going so the card can show truncation after " +
+                                "two hundred and twenty five characters. It should end with an " +
+                                "ellipsis instead of showing the full note body in the list. " +
+                                "More text, more text, more text."
+                        ),
+                        reminderAt = ReminderAt(Instant.EPOCH),
                         createdAt = Instant.EPOCH,
                         updatedAt = Instant.EPOCH
                     ),

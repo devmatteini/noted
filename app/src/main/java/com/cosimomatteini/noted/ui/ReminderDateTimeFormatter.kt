@@ -9,11 +9,6 @@ import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 import java.util.Locale
 
-internal fun ReminderAt.formatReminderDateTime(): String =
-    DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm").format(
-        value.atZone(ZoneId.systemDefault())
-    )
-
 internal fun ReminderAt.formatReminderChipDateTime(): String {
     val zoneId = ZoneId.systemDefault()
     val locale = Locale.getDefault()
@@ -22,7 +17,9 @@ internal fun ReminderAt.formatReminderChipDateTime(): String {
     val today = LocalDate.now(zoneId)
     val date = when (reminderDate) {
         today -> relativeDay(RelativeDateTimeFormatter.Direction.THIS, locale)
+
         today.plusDays(1) -> relativeDay(RelativeDateTimeFormatter.Direction.NEXT, locale)
+
         else ->
             DateTimeFormatter
                 .ofLocalizedDate(FormatStyle.MEDIUM)
