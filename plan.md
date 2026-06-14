@@ -329,7 +329,7 @@
 - Add tests for permanently deleting only discarded notes.
 - Verify Trash details manually.
 
-## 23. Refactor Common Read-Only Details Component
+## 23. Refactor Common Read-Only Details Component (Done)
 
 - Extract common read-only note details UI from archived and discarded details screens.
 - Keep archived and discarded route wiring separate.
