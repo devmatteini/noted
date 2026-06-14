@@ -184,12 +184,12 @@ internal fun NoteReminderChip(text: String, onClick: () -> Unit, modifier: Modif
         Icon(
             imageVector = Icons.Filled.Alarm,
             contentDescription = null,
-            modifier = Modifier.size(18.dp)
+            modifier = Modifier.size(16.dp)
         )
         Text(
             text = text,
             color = MaterialTheme.colorScheme.onSurface,
-            fontSize = 16.sp,
+            fontSize = 14.sp,
             fontWeight = FontWeight.SemiBold
         )
     }

@@ -44,19 +44,19 @@ internal fun NoteCard(
 
     OutlinedCard(modifier) {
         Column(
-            modifier = Modifier.padding(20.dp),
+            modifier = Modifier.padding(12.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             if (note.title.value.isNotEmpty()) {
                 Text(
                     text = note.title.value,
-                    style = MaterialTheme.typography.titleLarge
+                    style = MaterialTheme.typography.titleMedium
                 )
             }
             if (note.description.value.isNotEmpty()) {
                 Text(
                     text = note.description.value.ellipsizeNoteCardDescription(),
-                    style = MaterialTheme.typography.bodyLarge
+                    style = MaterialTheme.typography.bodyMedium
                 )
             }
             if (note is ActiveNote && note.reminderAt != null) {
