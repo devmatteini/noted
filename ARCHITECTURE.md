@@ -11,8 +11,9 @@ selected date/time.
 
 - Single homepage screen for notes.
 - Full-screen editor for creating/editing notes.
-- Notes can be filtered to show archived notes.
-- Archived notes can be opened read-only, deleted, or unarchived.
+- Notes can be filtered to show archived notes or trash.
+- Archived notes can be opened read-only, discarded, or unarchived.
+- Discarded notes can be opened read-only, restored, or permanently deleted.
 - No sync.
 - No backend.
 
@@ -23,18 +24,22 @@ A note has:
 - Title that may be empty.
 - Description that may be empty.
 - Optional reminder.
-- Archive state.
+- Lifecycle state.
 
 The domain model uses a sum type:
 
 ```text
-Note = ActiveNote | ArchivedNote
+Note = ActiveNote | ArchivedNote | DiscardedNote
 ```
 
-Archived notes do not have reminders in the domain model.
+Archived and discarded notes do not have reminders in the domain model.
 
 Archived notes can be restored to active notes. Restored notes have no reminder because archiving
 cancels and clears reminder state.
+
+Discarded notes are notes in the trash. Discarded notes can be restored to active notes. Restored
+discarded notes have no reminder because discarding cancels and clears reminder state for active
+notes.
 
 ## Technology Stack
 
@@ -64,6 +69,7 @@ app/
     Note.kt
     ActiveNote.kt
     ArchivedNote.kt
+    DiscardedNote.kt
     NoteId.kt
     NoteTitle.kt
     NoteDescription.kt
@@ -77,8 +83,10 @@ app/
     CreateEmptyNote.kt
     UpdateNote.kt
     ArchiveNote.kt
-    UnarchiveNote.kt
-    DeleteNote.kt
+    RestoreNote.kt
+    DiscardNote.kt
+    RestoreDiscardedNote.kt
+    PermanentlyDeleteNote.kt
     Notes.kt
     SetNoteReminder.kt
     ClearNoteReminder.kt
@@ -105,6 +113,7 @@ app/
     HomeViewModel.kt
     NoteEditorScreen.kt
     ArchivedNoteDetailsScreen.kt
+    DiscardedNoteDetailsScreen.kt
     ReminderPickerDialog.kt
     ReminderDateTimeFormatter.kt
     SaveReminder.kt
@@ -156,6 +165,7 @@ Use state names:
 ```text
 ActiveNote
 ArchivedNote
+DiscardedNote
 ```
 
 ## Newtypes
@@ -190,8 +200,10 @@ Examples:
 - `CreateEmptyNote`.
 - `UpdateNote`.
 - `ArchiveNote`.
-- `UnarchiveNote`.
-- `DeleteNote`.
+- `RestoreNote`.
+- `DiscardNote`.
+- `RestoreDiscardedNote`.
+- `PermanentlyDeleteNote`.
 - `Notes`.
 - `SetNoteReminder`.
 - `ClearNoteReminder`.
@@ -230,8 +242,9 @@ NoteEntity
   title: String
   description: String
   reminderAtMillis: Long?
-  status: ACTIVE | ARCHIVED
+  status: ACTIVE | ARCHIVED | DISCARDED
   archivedAtMillis: Long?
+  discardedAtMillis: Long?
   createdAtMillis: Long
   updatedAtMillis: Long
 ```
@@ -241,13 +254,14 @@ The repository maps Room entities to domain types:
 ```text
 ACTIVE -> ActiveNote
 ARCHIVED -> ArchivedNote
+DISCARDED -> DiscardedNote
 ```
 
 Entity-to-domain mapping returns `Result`.
 
 When reading from Room, invalid note rows are logged and skipped instead of crashing the notes stream.
 
-Archived domain notes do not expose a reminder.
+Archived and discarded domain notes do not expose a reminder.
 
 ## Reminder Rules
 
@@ -272,7 +286,10 @@ Reminder lifecycle:
 
 - Archive note: cancel reminder.
 - Unarchive note: restore as active note with no reminder.
-- Delete note: cancel reminder.
+- Discard active note: cancel reminder.
+- Discard archived note: no reminder to cancel.
+- Restore discarded note: restore as active note with no reminder.
+- Permanently delete note: only allowed for discarded notes.
 - Remove reminder: cancel alarm.
 - Change reminder: cancel old alarm and schedule new alarm.
 - Reboot device: restore future active reminders.
@@ -319,10 +336,11 @@ Device rebooted
 
 Homepage:
 
-- Archived filter.
+- Notes, Archive, and Trash destinations.
 - Note list.
 - Add note action.
-- Add note action is hidden while archived filter is selected.
+- Add note action is hidden outside the Notes destination.
+- Trash bottom navigation item uses the delete icon.
 
 Editor:
 
@@ -342,7 +360,7 @@ Editor:
 - Reminder action is available.
 - Archive action is available.
 - Delete action is available.
-- Delete immediately for MVP.
+- Delete discards the note into trash.
 
 Archived note details:
 
@@ -354,22 +372,47 @@ Archived note details:
 - Reminder action is not available.
 - Archive action is not available.
 - Delete action is available.
-- Delete immediately.
+- Delete discards the note into trash.
 - Unarchive action is available.
 - Unarchive restores the note as active with no reminder.
 - After unarchive, open the restored note in the editable note editor.
+
+Discarded note details:
+
+- Full-screen read-only details.
+- Opened from discarded note cards in Trash.
+- Show title and description only.
+- Do not show discarded date.
+- Do not allow title or description edits.
+- Reminder action is not available.
+- Archive action is not available.
+- Restore action is available.
+- Restore action restores the note as active with no reminder.
+- After restore, open the restored note in the editable note editor.
+- Permanently delete action is available.
+- Permanently delete action uses the delete forever icon.
+- Permanently delete immediately removes the note.
+- Trash empty state title is `No notes in the trash`.
 
 ## Testing Focus
 
 - Note description validation.
 - Active note archive transition.
+- Active note discard transition.
+- Archived note discard transition.
+- Discarded note restore transition.
 - Archived notes cannot have reminders in domain.
+- Discarded notes cannot have reminders in domain.
 - Archive cancels reminder.
-- Delete cancels reminder.
+- Discard active note cancels reminder.
+- Permanently delete only accepts discarded notes.
 - Reminder update reschedules alarm.
 - Archived filtering.
+- Trash filtering.
 - Archived note details are read-only.
+- Discarded note details are read-only.
 - Unarchive restores an archived note as active with no reminder.
+- Restore discarded note restores as active with no reminder.
 - Reboot restore schedules only active future reminders.
 
 ## Post-MVP
@@ -380,15 +423,11 @@ Keep UUID IDs from day one so import/export can be added later without changing 
 
 Tags are intentionally excluded from MVP.
 
-Trash/restore deleted notes is intentionally excluded from MVP.
-
 Auto-delete for notes where title and description are both empty is intentionally excluded from MVP.
 
-Future deleted-note rules:
+Future UI refactor rules:
 
-- Add trash for deleted notes.
-- Restore deleted notes from trash.
-- Auto-delete empty notes if desired.
+- Extract a shared read-only note details component for archived and discarded note details.
 
 Future tag rules:
 

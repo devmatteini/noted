@@ -267,3 +267,73 @@
 - Keep add note action visible when active filter is selected.
 - Add preview or UI test coverage if practical.
 - Verify switching filters updates add note action visibility.
+
+## 20. Discard Domain And Soft Delete
+
+- Add `DiscardedNote` domain model with `discardedAt`.
+- Add `ActiveNote.discard(discardedAt)` transition.
+- Add `ArchivedNote.discard(discardedAt)` transition.
+- Add `NoteRepository.loadDiscarded`.
+- Add `DiscardNote` feature.
+- Ensure `DiscardNote` supports active and archived notes.
+- Ensure `DiscardNote` rejects discarded notes.
+- Ensure discarding active notes cancels reminders.
+- Ensure discarding archived notes has no reminder to cancel.
+- Add `discardedAtMillis` to `NoteEntity`.
+- Keep Room database version unchanged for this development change.
+- Update exported Room schema for the current version.
+- Add `DISCARDED` persistence status.
+- Map `DISCARDED` entities to `DiscardedNote`.
+- Persist `DiscardedNote` with no reminder.
+- Reject invalid discarded rows without `discardedAtMillis`.
+- Update `NotedAppContainer` wiring.
+- Update editor delete action to call `DiscardNote`.
+- Update archived details delete action to call `DiscardNote`.
+- Keep current `DeleteNote` unchanged for now.
+- Add tests for domain discard transitions.
+- Add tests for discarding active and archived notes.
+- Add tests for discard reminder cancellation.
+- Add repository tests for saving discarded notes.
+- Add repository tests for loading discarded notes.
+- Add repository tests for observing discarded notes.
+- Verify app works after clearing emulator app storage.
+
+## 21. Add Trash Destination
+
+- Add `HomeDestination.Trash`.
+- Add Trash bottom navigation item with delete icon.
+- Filter `DiscardedNote` into Trash.
+- Hide homepage add note action in Trash.
+- Add Trash empty state title `No notes in the trash`.
+- Make discarded note cards route-ready for the detail screen.
+- Add home filtering tests for Trash.
+- Add add-note action visibility tests for Trash.
+- Verify Trash navigation manually.
+
+## 22. Add Trash Detail And Actions
+
+- Add `DiscardedNote.restore(restoredAt)` transition to active note with no reminder.
+- Add `RestoreDiscardedNote` feature.
+- Rename `DeleteNote` to `PermanentlyDeleteNote`.
+- Ensure `PermanentlyDeleteNote` only succeeds for discarded notes.
+- Add `DiscardedNoteDetailsScreen` as a duplicated read-only screen for now.
+- Show discarded note title and description read-only.
+- Do not show discarded date.
+- Add back action.
+- Add restore action.
+- Add permanently delete action with delete forever icon.
+- Restore discarded note and open restored active note in editor.
+- Permanently delete discarded note and return home.
+- Add tests for discarded note restore transition.
+- Add tests for restoring discarded notes.
+- Add tests for permanently deleting only discarded notes.
+- Verify Trash details manually.
+
+## 23. Refactor Common Read-Only Details Component
+
+- Extract common read-only note details UI from archived and discarded details screens.
+- Keep archived and discarded route wiring separate.
+- Preserve archived details behavior.
+- Preserve discarded details behavior.
+- Add preview coverage if useful.
+- Verify both read-only details screens still work.
