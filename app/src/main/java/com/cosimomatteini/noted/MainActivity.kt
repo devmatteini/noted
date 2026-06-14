@@ -17,6 +17,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.cosimomatteini.noted.domain.ActiveNote
 import com.cosimomatteini.noted.domain.ArchivedNote
+import com.cosimomatteini.noted.domain.DiscardedNote
 import com.cosimomatteini.noted.domain.NoteId
 import com.cosimomatteini.noted.infrastructure.ReminderAlarm
 import com.cosimomatteini.noted.ui.ArchivedNoteDetailsRoute
@@ -89,6 +90,10 @@ fun NotedApp(
         screen = NotedScreen.ArchivedNoteDetails(note)
     }
 
+    fun openDiscardedNote(note: DiscardedNote) {
+        showHome()
+    }
+
     fun createAndEditNote() {
         coroutineScope.launch {
             editNote(appContainer.createEmptyNote())
@@ -108,7 +113,8 @@ fun NotedApp(
             viewModel = homeViewModel,
             onCreateNote = ::createAndEditNote,
             onEditNote = ::editNote,
-            onOpenArchivedNote = ::openArchivedNote
+            onOpenArchivedNote = ::openArchivedNote,
+            onOpenDiscardedNote = ::openDiscardedNote
         )
 
         is NotedScreen.EditNote -> EditorRoute(

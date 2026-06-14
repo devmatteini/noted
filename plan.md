@@ -298,7 +298,7 @@
 - Add repository tests for observing discarded notes.
 - Verify app works after clearing emulator app storage.
 
-## 21. Add Trash Destination
+## 21. Add Trash Destination (Done)
 
 - Add `HomeDestination.Trash`.
 - Add Trash bottom navigation item with delete icon.

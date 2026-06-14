@@ -2,6 +2,7 @@ package com.cosimomatteini.noted.ui
 
 import com.cosimomatteini.noted.domain.ActiveNote
 import com.cosimomatteini.noted.domain.ArchivedNote
+import com.cosimomatteini.noted.domain.DiscardedNote
 import com.cosimomatteini.noted.domain.NoteDescription
 import com.cosimomatteini.noted.domain.NoteId
 import com.cosimomatteini.noted.domain.NoteTitle
@@ -17,8 +18,12 @@ class HomeViewModelTest {
     fun visibleNotes_returnsActiveNotesForNotesDestination() {
         val activeNote = activeNote()
         val archivedNote = archivedNote()
+        val discardedNote = discardedNote()
 
-        val notes = visibleNotes(listOf(activeNote, archivedNote), HomeDestination.Notes)
+        val notes = visibleNotes(
+            listOf(activeNote, archivedNote, discardedNote),
+            HomeDestination.Notes
+        )
 
         assertEquals(listOf(activeNote), notes)
     }
@@ -27,10 +32,28 @@ class HomeViewModelTest {
     fun visibleNotes_returnsArchivedNotesForArchiveDestination() {
         val activeNote = activeNote()
         val archivedNote = archivedNote()
+        val discardedNote = discardedNote()
 
-        val notes = visibleNotes(listOf(activeNote, archivedNote), HomeDestination.Archive)
+        val notes = visibleNotes(
+            listOf(activeNote, archivedNote, discardedNote),
+            HomeDestination.Archive
+        )
 
         assertEquals(listOf(archivedNote), notes)
+    }
+
+    @Test
+    fun visibleNotes_returnsDiscardedNotesForTrashDestination() {
+        val activeNote = activeNote()
+        val archivedNote = archivedNote()
+        val discardedNote = discardedNote()
+
+        val notes = visibleNotes(
+            listOf(activeNote, archivedNote, discardedNote),
+            HomeDestination.Trash
+        )
+
+        assertEquals(listOf(discardedNote), notes)
     }
 
     @Test
@@ -41,6 +64,11 @@ class HomeViewModelTest {
     @Test
     fun showCreateNoteAction_returnsFalseForArchiveDestination() {
         assertFalse(showCreateNoteAction(HomeDestination.Archive))
+    }
+
+    @Test
+    fun showCreateNoteAction_returnsFalseForTrashDestination() {
+        assertFalse(showCreateNoteAction(HomeDestination.Trash))
     }
 
     private fun activeNote(): ActiveNote = ActiveNote(
@@ -58,5 +86,14 @@ class HomeViewModelTest {
         createdAt = Instant.EPOCH,
         updatedAt = Instant.EPOCH,
         archivedAt = Instant.EPOCH
+    )
+
+    private fun discardedNote(): DiscardedNote = DiscardedNote(
+        id = NoteId(UUID.randomUUID()),
+        title = NoteTitle.of("Discarded"),
+        description = NoteDescription.of("Discarded note"),
+        createdAt = Instant.EPOCH,
+        updatedAt = Instant.EPOCH,
+        discardedAt = Instant.EPOCH
     )
 }

@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.cosimomatteini.noted.domain.ActiveNote
 import com.cosimomatteini.noted.domain.ArchivedNote
+import com.cosimomatteini.noted.domain.DiscardedNote
 import com.cosimomatteini.noted.domain.Note
 import com.cosimomatteini.noted.features.Notes
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,7 +20,8 @@ data class HomeUiState(
 
 enum class HomeDestination {
     Notes,
-    Archive
+    Archive,
+    Trash
 }
 
 class HomeViewModel(notes: Notes) : ViewModel() {
@@ -45,10 +47,15 @@ class HomeViewModel(notes: Notes) : ViewModel() {
     fun showArchive() {
         destination.value = HomeDestination.Archive
     }
+
+    fun showTrash() {
+        destination.value = HomeDestination.Trash
+    }
 }
 
 internal fun visibleNotes(notes: List<Note>, destination: HomeDestination): List<Note> =
     when (destination) {
         HomeDestination.Notes -> notes.filterIsInstance<ActiveNote>()
         HomeDestination.Archive -> notes.filterIsInstance<ArchivedNote>()
+        HomeDestination.Trash -> notes.filterIsInstance<DiscardedNote>()
     }

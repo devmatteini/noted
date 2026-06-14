@@ -11,6 +11,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Archive
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Card
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -43,7 +44,8 @@ fun HomeRoute(
     viewModel: HomeViewModel,
     onCreateNote: () -> Unit,
     onEditNote: (ActiveNote) -> Unit,
-    onOpenArchivedNote: (ArchivedNote) -> Unit
+    onOpenArchivedNote: (ArchivedNote) -> Unit,
+    onOpenDiscardedNote: (DiscardedNote) -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
     HomeScreen(
@@ -51,8 +53,10 @@ fun HomeRoute(
         onCreateNote = onCreateNote,
         onEditNote = onEditNote,
         onOpenArchivedNote = onOpenArchivedNote,
+        onOpenDiscardedNote = onOpenDiscardedNote,
         onShowNotes = viewModel::showNotes,
-        onShowArchive = viewModel::showArchive
+        onShowArchive = viewModel::showArchive,
+        onShowTrash = viewModel::showTrash
     )
 }
 
@@ -62,8 +66,10 @@ fun HomeScreen(
     onCreateNote: () -> Unit = {},
     onEditNote: (ActiveNote) -> Unit = {},
     onOpenArchivedNote: (ArchivedNote) -> Unit = {},
+    onOpenDiscardedNote: (DiscardedNote) -> Unit = {},
     onShowNotes: () -> Unit = {},
-    onShowArchive: () -> Unit = {}
+    onShowArchive: () -> Unit = {},
+    onShowTrash: () -> Unit = {}
 ) {
     Scaffold(
         floatingActionButton = {
@@ -80,7 +86,8 @@ fun HomeScreen(
             HomeNavigationBar(
                 selectedDestination = uiState.destination,
                 onShowNotes = onShowNotes,
-                onShowArchive = onShowArchive
+                onShowArchive = onShowArchive,
+                onShowTrash = onShowTrash
             )
         }
     ) { innerPadding ->
@@ -99,6 +106,7 @@ fun HomeScreen(
                     notes = uiState.notes,
                     onEditNote = onEditNote,
                     onOpenArchivedNote = onOpenArchivedNote,
+                    onOpenDiscardedNote = onOpenDiscardedNote,
                     modifier = Modifier.weight(1f)
                 )
             }
@@ -109,13 +117,15 @@ fun HomeScreen(
 internal fun showCreateNoteAction(destination: HomeDestination): Boolean = when (destination) {
     HomeDestination.Notes -> true
     HomeDestination.Archive -> false
+    HomeDestination.Trash -> false
 }
 
 @Composable
 private fun HomeNavigationBar(
     selectedDestination: HomeDestination,
     onShowNotes: () -> Unit,
-    onShowArchive: () -> Unit
+    onShowArchive: () -> Unit,
+    onShowTrash: () -> Unit
 ) {
     NavigationBar {
         NavigationBarItem(
@@ -140,6 +150,17 @@ private fun HomeNavigationBar(
             },
             label = { Text(HomeDestination.Archive.label) }
         )
+        NavigationBarItem(
+            selected = selectedDestination == HomeDestination.Trash,
+            onClick = onShowTrash,
+            icon = {
+                Icon(
+                    imageVector = Icons.Filled.Delete,
+                    contentDescription = null
+                )
+            },
+            label = { Text(HomeDestination.Trash.label) }
+        )
     }
 }
 
@@ -147,6 +168,7 @@ private val HomeDestination.label: String
     get() = when (this) {
         HomeDestination.Notes -> "Notes"
         HomeDestination.Archive -> "Archive"
+        HomeDestination.Trash -> "Trash"
     }
 
 @Composable
@@ -154,10 +176,12 @@ private fun EmptyNotes(destination: HomeDestination, modifier: Modifier = Modifi
     val title = when (destination) {
         HomeDestination.Notes -> "No notes yet"
         HomeDestination.Archive -> "No archived notes"
+        HomeDestination.Trash -> "No notes in the trash"
     }
     val description = when (destination) {
         HomeDestination.Notes -> "Create a note to see it here."
         HomeDestination.Archive -> "Archive a note to see it here."
+        HomeDestination.Trash -> "Discard a note to see it here."
     }
 
     Column(
@@ -182,6 +206,7 @@ private fun NotesList(
     notes: List<Note>,
     onEditNote: (ActiveNote) -> Unit,
     onOpenArchivedNote: (ArchivedNote) -> Unit,
+    onOpenDiscardedNote: (DiscardedNote) -> Unit,
     modifier: Modifier = Modifier
 ) {
     LazyColumn(
@@ -193,7 +218,8 @@ private fun NotesList(
             NoteCard(
                 note = note,
                 onEditNote = onEditNote,
-                onOpenArchivedNote = onOpenArchivedNote
+                onOpenArchivedNote = onOpenArchivedNote,
+                onOpenDiscardedNote = onOpenDiscardedNote
             )
         }
     }
@@ -203,7 +229,8 @@ private fun NotesList(
 private fun NoteCard(
     note: Note,
     onEditNote: (ActiveNote) -> Unit,
-    onOpenArchivedNote: (ArchivedNote) -> Unit
+    onOpenArchivedNote: (ArchivedNote) -> Unit,
+    onOpenDiscardedNote: (DiscardedNote) -> Unit
 ) {
     val modifier = when (note) {
         is ActiveNote ->
@@ -216,7 +243,10 @@ private fun NoteCard(
                 .fillMaxWidth()
                 .clickable { onOpenArchivedNote(note) }
 
-        is DiscardedNote -> Modifier.fillMaxWidth()
+        is DiscardedNote ->
+            Modifier
+                .fillMaxWidth()
+                .clickable { onOpenDiscardedNote(note) }
     }
 
     Card(modifier) {
@@ -296,6 +326,28 @@ fun HomeScreenArchivedPreview() {
                     )
                 ),
                 destination = HomeDestination.Archive
+            )
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun HomeScreenTrashPreview() {
+    NotedTheme {
+        HomeScreen(
+            HomeUiState(
+                notes = listOf(
+                    DiscardedNote(
+                        id = NoteId(UUID.randomUUID()),
+                        title = NoteTitle.of("Discarded note"),
+                        description = NoteDescription.of("Trash content"),
+                        createdAt = Instant.EPOCH,
+                        updatedAt = Instant.EPOCH,
+                        discardedAt = Instant.EPOCH
+                    )
+                ),
+                destination = HomeDestination.Trash
             )
         )
     }
