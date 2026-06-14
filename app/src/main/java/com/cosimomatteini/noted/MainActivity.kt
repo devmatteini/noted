@@ -76,6 +76,11 @@ fun NotedApp(
         screen = NotedScreen.Home
     }
 
+    fun showActiveHome() {
+        homeViewModel.showActiveNotes()
+        showHome()
+    }
+
     fun editNote(note: ActiveNote) {
         screen = NotedScreen.EditNote(note)
     }
@@ -110,7 +115,7 @@ fun NotedApp(
             appContainer = appContainer,
             activity = activity,
             note = currentScreen.note,
-            onDone = ::showHome
+            onDone = ::showActiveHome
         )
 
         is NotedScreen.ArchivedNoteDetails -> ArchivedNoteDetailsRoute(
