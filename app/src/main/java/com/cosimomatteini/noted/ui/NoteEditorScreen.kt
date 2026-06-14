@@ -16,7 +16,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -40,7 +39,6 @@ fun NoteEditorScreen(
     onClearReminder: suspend () -> Unit
 ) {
     val coroutineScope = rememberCoroutineScope()
-    val uriHandler = LocalUriHandler.current
     var title by remember(initialTitle) { mutableStateOf(TextFieldValue(initialTitle)) }
     var description by remember(initialDescription) {
         mutableStateOf(TextFieldValue(savedNoteDescriptionAnnotatedString(initialDescription)))
@@ -79,7 +77,7 @@ fun NoteEditorScreen(
             innerPadding = innerPadding,
             imePadding = true
         ) {
-            NoteTextField(
+            TextField(
                 value = title,
                 onValueChange = { title = it },
                 modifier = Modifier.fillMaxWidth(),
@@ -87,13 +85,12 @@ fun NoteEditorScreen(
                 textStyle = noteTitleTextStyle(),
                 singleLine = true
             )
-            NoteTextField(
+            RichTextField(
                 value = description,
                 onValueChange = { description = it },
                 modifier = Modifier.fillMaxWidth(),
                 placeholder = "Note",
-                textStyle = noteDescriptionTextStyle(),
-                onUrlClick = uriHandler::openUri
+                textStyle = noteDescriptionTextStyle()
             )
             reminderAt?.let { reminderAt ->
                 NoteReminderChip(

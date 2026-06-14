@@ -42,6 +42,7 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.TextLayoutResult
@@ -121,35 +122,72 @@ internal fun noteDescriptionTextStyle(): TextStyle = TextStyle(
 )
 
 @Composable
-internal fun NoteTextField(
+internal fun TextField(
+    value: TextFieldValue,
+    onValueChange: (TextFieldValue) -> Unit,
+    modifier: Modifier = Modifier,
+    placeholder: String,
+    textStyle: TextStyle,
+    singleLine: Boolean = false
+) {
+    BaseTextField(
+        value = value,
+        onValueChange = onValueChange,
+        modifier = modifier,
+        placeholder = placeholder,
+        textStyle = textStyle,
+        singleLine = singleLine
+    )
+}
+
+@Composable
+internal fun RichTextField(
+    value: TextFieldValue,
+    onValueChange: (TextFieldValue) -> Unit,
+    modifier: Modifier = Modifier,
+    placeholder: String,
+    textStyle: TextStyle,
+    singleLine: Boolean = false
+) {
+    val uriHandler = LocalUriHandler.current
+    var textLayoutResult: TextLayoutResult? by remember { mutableStateOf(null) }
+    val linkClickModifier = Modifier.openNoteUrlOnTap(
+        textLayoutResult = { textLayoutResult },
+        text = value.annotatedString,
+        onUrlClick = uriHandler::openUri
+    )
+
+    BaseTextField(
+        value = value,
+        onValueChange = onValueChange,
+        modifier = modifier.then(linkClickModifier),
+        placeholder = placeholder,
+        textStyle = textStyle,
+        singleLine = singleLine,
+        onTextLayout = { textLayoutResult = it }
+    )
+}
+
+@Composable
+private fun BaseTextField(
     value: TextFieldValue,
     onValueChange: (TextFieldValue) -> Unit,
     modifier: Modifier = Modifier,
     placeholder: String,
     textStyle: TextStyle,
     singleLine: Boolean = false,
-    onUrlClick: ((String) -> Unit)? = null
+    onTextLayout: (TextLayoutResult) -> Unit = {}
 ) {
     val placeholderColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.72f)
-    var textLayoutResult: TextLayoutResult? by remember { mutableStateOf(null) }
-    val linkClickModifier = if (onUrlClick == null) {
-        Modifier
-    } else {
-        Modifier.openNoteUrlOnTap(
-            textLayoutResult = { textLayoutResult },
-            text = value.annotatedString,
-            onUrlClick = onUrlClick
-        )
-    }
 
     BasicTextField(
         value = value,
         onValueChange = onValueChange,
-        modifier = modifier.then(linkClickModifier),
+        modifier = modifier,
         textStyle = textStyle,
         singleLine = singleLine,
         cursorBrush = SolidColor(MaterialTheme.colorScheme.onSurface),
-        onTextLayout = { textLayoutResult = it },
+        onTextLayout = onTextLayout,
         decorationBox = { innerTextField ->
             Box {
                 if (value.text.isEmpty()) {
