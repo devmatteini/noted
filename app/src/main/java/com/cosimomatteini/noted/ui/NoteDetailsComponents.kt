@@ -55,6 +55,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.cosimomatteini.noted.domain.ReminderAt
 import java.time.Instant
+import kotlinx.coroutines.withTimeoutOrNull
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -173,6 +174,54 @@ internal fun RichTextField(
 }
 
 @Composable
+internal fun ReadOnlyTextField(
+    value: TextFieldValue,
+    modifier: Modifier = Modifier,
+    textStyle: TextStyle,
+    singleLine: Boolean = false
+) {
+    var textFieldValue by remember(value.annotatedString) { mutableStateOf(value) }
+
+    BaseTextField(
+        value = textFieldValue,
+        onValueChange = { textFieldValue = it },
+        modifier = modifier,
+        placeholder = "",
+        textStyle = textStyle,
+        singleLine = singleLine,
+        readOnly = true
+    )
+}
+
+@Composable
+internal fun ReadOnlyRichTextField(
+    value: TextFieldValue,
+    modifier: Modifier = Modifier,
+    textStyle: TextStyle,
+    singleLine: Boolean = false
+) {
+    val uriHandler = LocalUriHandler.current
+    var textFieldValue by remember(value.annotatedString) { mutableStateOf(value) }
+    var textLayoutResult: TextLayoutResult? by remember { mutableStateOf(null) }
+    val linkClickModifier = Modifier.openNoteUrlOnTap(
+        textLayoutResult = { textLayoutResult },
+        text = textFieldValue.annotatedString,
+        onUrlClick = uriHandler::openUri
+    )
+
+    BaseTextField(
+        value = textFieldValue,
+        onValueChange = { textFieldValue = it },
+        modifier = modifier.then(linkClickModifier),
+        placeholder = "",
+        textStyle = textStyle,
+        singleLine = singleLine,
+        readOnly = true,
+        onTextLayout = { textLayoutResult = it }
+    )
+}
+
+@Composable
 private fun BaseTextField(
     value: TextFieldValue,
     onValueChange: (TextFieldValue) -> Unit,
@@ -180,6 +229,7 @@ private fun BaseTextField(
     placeholder: String,
     textStyle: TextStyle,
     singleLine: Boolean = false,
+    readOnly: Boolean = false,
     onTextLayout: (TextLayoutResult) -> Unit = {}
 ) {
     val placeholderColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.72f)
@@ -190,6 +240,7 @@ private fun BaseTextField(
         modifier = modifier,
         textStyle = textStyle,
         singleLine = singleLine,
+        readOnly = readOnly,
         cursorBrush = SolidColor(MaterialTheme.colorScheme.onSurface),
         onTextLayout = onTextLayout,
         decorationBox = { innerTextField ->
@@ -227,8 +278,9 @@ private fun Modifier.openNoteUrlOnTap(
             return@awaitEachGesture
         }
 
-        down.consume()
-        val up = waitForUpOrCancellation(pass = PointerEventPass.Initial)
+        val up = withTimeoutOrNull(viewConfiguration.longPressTimeoutMillis) {
+            waitForUpOrCancellation(pass = PointerEventPass.Initial)
+        }
         if (up != null) {
             up.consume()
             onUrlClick(url)

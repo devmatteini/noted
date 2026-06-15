@@ -4,10 +4,9 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.text.selection.SelectionContainer
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.TextFieldValue
 
 @Composable
 internal fun ReadOnlyNoteDetailsScreen(
@@ -21,24 +20,21 @@ internal fun ReadOnlyNoteDetailsScreen(
     NoteDetailsScaffold(onBack = onBack) { innerPadding ->
         NoteDetailsContentColumn(innerPadding = innerPadding) {
             if (title.isNotEmpty()) {
-                SelectionContainer {
-                    Text(
-                        text = title,
-                        style = noteTitleTextStyle(),
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                }
+                ReadOnlyTextField(
+                    value = TextFieldValue(title),
+                    textStyle = noteTitleTextStyle(),
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true
+                )
             }
             if (description.isNotEmpty()) {
-                SelectionContainer(
-                    modifier = Modifier.weight(1f)
-                ) {
-                    Text(
-                        text = savedNoteDescriptionAnnotatedString(description),
-                        style = noteDescriptionTextStyle(),
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                }
+                ReadOnlyRichTextField(
+                    value = TextFieldValue(savedNoteDescriptionAnnotatedString(description)),
+                    textStyle = noteDescriptionTextStyle(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f)
+                )
             } else {
                 Spacer(Modifier.weight(1f))
             }
