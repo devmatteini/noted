@@ -175,8 +175,10 @@ Use Kotlin value classes for meaningful values.
 Examples:
 
 ```kotlin
-@JvmInline value class NoteId(val value: UUID)
-@JvmInline value class NoteTitle(val value: String)
+@JvmInline
+value class NoteId(val value: UUID)
+@JvmInline
+value class NoteTitle(val value: String)
 ```
 
 Use smart constructors for validated values.
@@ -259,7 +261,8 @@ DISCARDED -> DiscardedNote
 
 Entity-to-domain mapping returns `Result`.
 
-When reading from Room, invalid note rows are logged and skipped instead of crashing the notes stream.
+When reading from Room, invalid note rows are logged and skipped instead of crashing the notes
+stream.
 
 Archived and discarded domain notes do not expose a reminder.
 
@@ -421,18 +424,11 @@ Import/export is intentionally excluded from MVP.
 
 Keep UUID IDs from day one so import/export can be added later without changing the identity model.
 
-Tags are intentionally excluded from MVP.
-
 Auto-delete for notes where title and description are both empty is intentionally excluded from MVP.
 
 Future UI refactor rules:
 
 - Extract a shared read-only note details component for archived and discarded note details.
-
-Future tag rules:
-
-- Add tags to notes.
-- Filter notes by tags.
 
 Future import/export rules:
 
