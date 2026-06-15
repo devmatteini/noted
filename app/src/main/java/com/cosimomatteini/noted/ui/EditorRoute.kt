@@ -18,11 +18,6 @@ internal fun EditorRoute(
         appContainer.updateNote(note.id, title, description)
     }
 
-    suspend fun saveAndClose(title: String, description: String) {
-        saveNote(title, description)
-        onDone()
-    }
-
     suspend fun archiveAndClose(title: String, description: String) {
         saveNote(title, description)
         appContainer.archiveNote(note.id)
@@ -39,7 +34,7 @@ internal fun EditorRoute(
         initialDescription = note.description.value,
         initialReminderAt = note.reminderAt?.value,
         onAutosave = ::saveNote,
-        onBack = ::saveAndClose,
+        onBack = onDone,
         onArchive = ::archiveAndClose,
         onDelete = ::deleteAndClose,
         onSetReminder = { reminderAt ->

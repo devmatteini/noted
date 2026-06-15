@@ -32,7 +32,7 @@ fun NoteEditorScreen(
     initialDescription: String,
     initialReminderAt: Instant?,
     onAutosave: suspend (title: String, description: String) -> Unit,
-    onBack: suspend (title: String, description: String) -> Unit,
+    onBack: () -> Unit,
     onArchive: suspend (title: String, description: String) -> Unit,
     onDelete: suspend () -> Unit,
     onSetReminder: suspend (ReminderAt) -> Boolean,
@@ -50,11 +50,18 @@ fun NoteEditorScreen(
     }
     var showReminderPicker by remember { mutableStateOf(false) }
 
-    BackHandler {
+    fun saveAndGoBack() {
         coroutineScope.launch {
-            onBack(title.text, description.text)
+            if (title.text != lastSavedTitle || description.text != lastSavedDescription) {
+                onAutosave(title.text, description.text)
+                lastSavedTitle = title.text
+                lastSavedDescription = description.text
+            }
+            onBack()
         }
     }
+
+    BackHandler { saveAndGoBack() }
 
     LaunchedEffect(title.text, description.text) {
         if (title.text == lastSavedTitle && description.text == lastSavedDescription) {
@@ -66,13 +73,7 @@ fun NoteEditorScreen(
         lastSavedDescription = description.text
     }
 
-    NoteDetailsScaffold(
-        onBack = {
-            coroutineScope.launch {
-                onBack(title.text, description.text)
-            }
-        }
-    ) { innerPadding ->
+    NoteDetailsScaffold(onBack = { saveAndGoBack() }) { innerPadding ->
         NoteDetailsContentColumn(
             innerPadding = innerPadding,
             imePadding = true
@@ -157,7 +158,7 @@ fun NoteEditorScreenEmptyPreview() {
     NotedTheme {
         NoteEditorScreen(
             onAutosave = { _, _ -> },
-            onBack = { _, _ -> },
+            onBack = {},
             onArchive = { _, _ -> },
             onDelete = {},
             onSetReminder = { true },
@@ -175,7 +176,7 @@ fun NoteEditorScreenOnlyTitlePreview() {
     NotedTheme {
         NoteEditorScreen(
             onAutosave = { _, _ -> },
-            onBack = { _, _ -> },
+            onBack = {},
             onArchive = { _, _ -> },
             onDelete = {},
             onSetReminder = { true },
@@ -193,7 +194,7 @@ fun NoteEditorScreenOnlyDescriptionPreview() {
     NotedTheme {
         NoteEditorScreen(
             onAutosave = { _, _ -> },
-            onBack = { _, _ -> },
+            onBack = {},
             onArchive = { _, _ -> },
             onDelete = {},
             onSetReminder = { true },
@@ -211,7 +212,7 @@ fun NoteEditorScreenTitleAndDescriptionPreview() {
     NotedTheme {
         NoteEditorScreen(
             onAutosave = { _, _ -> },
-            onBack = { _, _ -> },
+            onBack = {},
             onArchive = { _, _ -> },
             onDelete = {},
             onSetReminder = { true },
@@ -229,7 +230,7 @@ fun NoteEditorScreenReminderPreview() {
     NotedTheme {
         NoteEditorScreen(
             onAutosave = { _, _ -> },
-            onBack = { _, _ -> },
+            onBack = {},
             onArchive = { _, _ -> },
             onDelete = {},
             onSetReminder = { true },
