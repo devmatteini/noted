@@ -24,6 +24,7 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Alarm
+import androidx.compose.material.icons.filled.AlarmOff
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -49,8 +50,11 @@ import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.cosimomatteini.noted.domain.ReminderAt
+import java.time.Instant
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -258,7 +262,13 @@ internal fun NoteActionIcon(
 }
 
 @Composable
-internal fun NoteReminderChip(text: String, onClick: () -> Unit, modifier: Modifier = Modifier) {
+internal fun NoteReminderChip(
+    reminderAt: ReminderAt,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val isPast = reminderAt.value < Instant.now()
+
     Row(
         modifier = modifier
             .background(
@@ -271,15 +281,15 @@ internal fun NoteReminderChip(text: String, onClick: () -> Unit, modifier: Modif
         verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(
-            imageVector = Icons.Filled.Alarm,
+            imageVector = if (isPast) Icons.Filled.AlarmOff else Icons.Filled.Alarm,
             contentDescription = null,
             modifier = Modifier.size(16.dp)
         )
         Text(
-            text = text,
-            color = MaterialTheme.colorScheme.onSurface,
+            text = reminderAt.formatReminderChipDateTime(),
             fontSize = 14.sp,
-            fontWeight = FontWeight.SemiBold
+            fontWeight = FontWeight.SemiBold,
+            textDecoration = if (isPast) TextDecoration.LineThrough else null
         )
     }
 }

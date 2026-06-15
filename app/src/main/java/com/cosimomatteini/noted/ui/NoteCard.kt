@@ -61,7 +61,7 @@ internal fun NoteCard(
             }
             if (note is ActiveNote && note.reminderAt != null) {
                 NoteReminderChip(
-                    text = note.reminderAt.formatReminderChipDateTime(),
+                    reminderAt = note.reminderAt,
                     onClick = { onEditNote(note) }
                 )
             }

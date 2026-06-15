@@ -94,7 +94,7 @@ fun NoteEditorScreen(
             )
             reminderAt?.let { reminderAt ->
                 NoteReminderChip(
-                    text = reminderAt.formatReminderChipDateTime(),
+                    reminderAt = reminderAt,
                     modifier = Modifier.padding(top = 12.dp),
                     onClick = { showReminderPicker = true }
                 )
