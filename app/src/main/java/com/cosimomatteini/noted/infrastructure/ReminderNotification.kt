@@ -34,7 +34,7 @@ class ReminderNotification(private val context: Context) {
         notificationManager.notify(
             note.id.value.hashCode(),
             NotificationCompat.Builder(context, CHANNEL_ID)
-                .setSmallIcon(R.drawable.ic_launcher_foreground)
+                .setSmallIcon(R.drawable.ic_stat_notification)
                 .setContentTitle(reminderNotificationText(note.title.value, note.description.value))
                 .setContentIntent(contentIntent(note))
                 .setAutoCancel(true)
