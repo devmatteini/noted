@@ -6,6 +6,7 @@ import com.cosimomatteini.noted.domain.DiscardedNote
 import com.cosimomatteini.noted.domain.Note
 import com.cosimomatteini.noted.domain.NoteId
 import com.cosimomatteini.noted.domain.NoteRepository
+import java.time.Instant
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 
@@ -31,5 +32,11 @@ class InMemoryNoteRepository(vararg notes: Note) : NoteRepository {
 
     override suspend fun delete(id: NoteId) {
         notes.removeAll { it.id == id }
+    }
+
+    override suspend fun deleteDiscardedBefore(cutoff: Instant) {
+        notes.removeAll { note ->
+            note is DiscardedNote && note.discardedAt.toEpochMilli() <= cutoff.toEpochMilli()
+        }
     }
 }

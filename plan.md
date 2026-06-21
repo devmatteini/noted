@@ -352,3 +352,18 @@
 - Add URL detection tests if practical.
 - Verify autosave still persists plain description text.
 - Verify external browser opens for saved URLs.
+
+## 25. Auto-Delete Old Discarded Notes (Done)
+
+- Add repository support to delete discarded notes before a cutoff instant.
+- Add DAO query to delete `DISCARDED` notes by `discardedAtMillis` cutoff.
+- Add `DeleteExpiredDiscardedNotes` feature.
+- Use exact 30-day retention based on `discardedAt`.
+- Run cleanup once on app open from `MainActivity.onCreate`.
+- Run cleanup on `Dispatchers.IO` without blocking UI startup.
+- Wire feature in `NotedAppContainer`.
+- Add tests for deleting discarded notes at or older than 30 days.
+- Add tests for keeping discarded notes newer than 30 days.
+- Add tests for keeping active and archived notes.
+- Add repository tests for cutoff delete.
+- Verify app-open cleanup does not run on destination changes.

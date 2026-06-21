@@ -14,6 +14,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.cosimomatteini.noted.domain.ActiveNote
 import com.cosimomatteini.noted.domain.ArchivedNote
@@ -27,6 +28,7 @@ import com.cosimomatteini.noted.ui.HomeRoute
 import com.cosimomatteini.noted.ui.HomeViewModel
 import com.cosimomatteini.noted.ui.theme.NotedTheme
 import java.util.UUID
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
@@ -36,6 +38,9 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         appContainer = NotedAppContainer(applicationContext)
+        lifecycleScope.launch(Dispatchers.IO) {
+            appContainer.deleteExpiredDiscardedNotes()
+        }
         noteToOpenFromNotification = intent.notificationNote()
         enableEdgeToEdge()
         setContent {

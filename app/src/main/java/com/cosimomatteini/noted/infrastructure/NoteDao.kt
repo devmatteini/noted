@@ -19,4 +19,7 @@ interface NoteDao {
 
     @Query("DELETE FROM notes WHERE id = :id")
     suspend fun delete(id: UUID)
+
+    @Query("DELETE FROM notes WHERE status = 'DISCARDED' AND discardedAtMillis <= :cutoffMillis")
+    suspend fun deleteDiscardedBefore(cutoffMillis: Long)
 }

@@ -366,6 +366,42 @@ class RoomNoteRepositoryTest {
         assertEquals(emptyList<NoteEntity>(), noteDao.notes)
     }
 
+    @Test
+    fun deleteDiscardedBefore_removesOnlyDiscardedNotesAtOrBeforeCutoff() = runTest {
+        val expiredDiscardedNote = noteEntity(
+            status = "DISCARDED",
+            discardedAtMillis = 1_000
+        )
+        val cutoffDiscardedNote = noteEntity(
+            status = "DISCARDED",
+            discardedAtMillis = 2_000
+        )
+        val retainedDiscardedNote = noteEntity(
+            status = "DISCARDED",
+            discardedAtMillis = 2_001
+        )
+        val activeNote = noteEntity(discardedAtMillis = 1_000)
+        val archivedNote = noteEntity(
+            status = "ARCHIVED",
+            archivedAtMillis = 1_000,
+            discardedAtMillis = 1_000
+        )
+        val noteDao = InMemoryNoteDao(
+            mutableListOf(
+                expiredDiscardedNote,
+                cutoffDiscardedNote,
+                retainedDiscardedNote,
+                activeNote,
+                archivedNote
+            )
+        )
+        val repository = RoomNoteRepository(noteDao, EmptyLogger)
+
+        repository.deleteDiscardedBefore(Instant.ofEpochMilli(2_000))
+
+        assertEquals(listOf(retainedDiscardedNote, activeNote, archivedNote), noteDao.notes)
+    }
+
     private class InMemoryNoteDao(val notes: MutableList<NoteEntity> = mutableListOf()) : NoteDao {
         override fun observe(): Flow<List<NoteEntity>> = flowOf(notes)
 
@@ -378,6 +414,13 @@ class RoomNoteRepositoryTest {
 
         override suspend fun delete(id: UUID) {
             notes.removeAll { it.id == id }
+        }
+
+        override suspend fun deleteDiscardedBefore(cutoffMillis: Long) {
+            notes.removeAll { note ->
+                note.status == "DISCARDED" &&
+                    (note.discardedAtMillis ?: Long.MAX_VALUE) <= cutoffMillis
+            }
         }
     }
 

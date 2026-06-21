@@ -41,6 +41,10 @@ class RoomNoteRepository(private val noteDao: NoteDao, private val logger: Logge
         noteDao.delete(id.value)
     }
 
+    override suspend fun deleteDiscardedBefore(cutoff: Instant) {
+        noteDao.deleteDiscardedBefore(cutoff.toEpochMilli())
+    }
+
     private fun Note.toEntity(): NoteEntity = when (this) {
         is ActiveNote -> NoteEntity(
             id = id.value,

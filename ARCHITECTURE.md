@@ -14,6 +14,7 @@ selected date/time.
 - Notes can be filtered to show archived notes or trash.
 - Archived notes can be opened read-only, discarded, or unarchived.
 - Discarded notes can be opened read-only, restored, or permanently deleted.
+- Discarded notes are automatically permanently deleted after 30 days.
 - No sync.
 - No backend.
 
@@ -40,6 +41,9 @@ cancels and clears reminder state.
 Discarded notes are notes in the trash. Discarded notes can be restored to active notes. Restored
 discarded notes have no reminder because discarding cancels and clears reminder state for active
 notes.
+
+Discarded notes are retained for 30 days from `discardedAt`, then permanently deleted by app-open
+cleanup.
 
 ## Technology Stack
 
@@ -206,6 +210,7 @@ Examples:
 - `DiscardNote`.
 - `RestoreDiscardedNote`.
 - `PermanentlyDeleteNote`.
+- `DeleteExpiredDiscardedNotes`.
 - `Notes`.
 - `SetNoteReminder`.
 - `ClearNoteReminder`.
@@ -293,9 +298,17 @@ Reminder lifecycle:
 - Discard archived note: no reminder to cancel.
 - Restore discarded note: restore as active note with no reminder.
 - Permanently delete note: only allowed for discarded notes.
+- App open: permanently delete discarded notes whose `discardedAt` is at least 30 days old.
 - Remove reminder: cancel alarm.
 - Change reminder: cancel old alarm and schedule new alarm.
 - Reboot device: restore future active reminders.
+
+## Trash Retention
+
+Discarded notes are retained for exactly 30 days from `discardedAt`.
+
+Cleanup runs once when `MainActivity` is created. It runs on `Dispatchers.IO` and does not block UI
+startup. Destination changes such as switching to Notes, Archive, or Trash do not trigger cleanup.
 
 ## Exact Alarm Permission UX
 
@@ -409,6 +422,7 @@ Discarded note details:
 - Archive cancels reminder.
 - Discard active note cancels reminder.
 - Permanently delete only accepts discarded notes.
+- Expired discarded note cleanup deletes only notes at or older than 30 days.
 - Reminder update reschedules alarm.
 - Archived filtering.
 - Trash filtering.

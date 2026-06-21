@@ -1,5 +1,6 @@
 package com.cosimomatteini.noted.domain
 
+import java.time.Instant
 import kotlinx.coroutines.flow.Flow
 
 interface NoteRepository {
@@ -16,4 +17,6 @@ interface NoteRepository {
     suspend fun save(note: Note)
 
     suspend fun delete(id: NoteId)
+
+    suspend fun deleteDiscardedBefore(cutoff: Instant)
 }
