@@ -89,7 +89,7 @@ private fun saveReminder(
     }
 }
 
-private fun Activity.reminderPermissionState(): ReminderPermissionState {
+internal fun Activity.reminderPermissionState(): ReminderPermissionState {
     val alarmManager = getSystemService(AlarmManager::class.java)
     val notificationPermissionRequested = getSharedPreferences(
         PERMISSIONS_PREFS,
@@ -110,21 +110,21 @@ private fun Activity.reminderPermissionState(): ReminderPermissionState {
     )
 }
 
-private fun Context.markNotificationPermissionRequested() {
+internal fun Context.markNotificationPermissionRequested() {
     getSharedPreferences(PERMISSIONS_PREFS, Context.MODE_PRIVATE)
         .edit {
             putBoolean(KEY_NOTIFICATION_PERMISSION_REQUESTED, true)
         }
 }
 
-private fun Context.openNotificationSettings() {
+internal fun Context.openNotificationSettings() {
     startActivity(
         Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS)
             .putExtra(Settings.EXTRA_APP_PACKAGE, packageName)
     )
 }
 
-private fun Context.openExactAlarmSettings() {
+internal fun Context.openExactAlarmSettings() {
     startActivity(
         Intent(
             Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM,

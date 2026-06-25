@@ -1,5 +1,6 @@
 package com.cosimomatteini.noted
 
+import android.Manifest
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -22,6 +23,8 @@ import com.cosimomatteini.noted.domain.ActiveNote
 import com.cosimomatteini.noted.domain.ArchivedNote
 import com.cosimomatteini.noted.domain.DiscardedNote
 import com.cosimomatteini.noted.domain.NoteId
+import com.cosimomatteini.noted.features.BackupError
+import com.cosimomatteini.noted.features.BackupJsonCodec
 import com.cosimomatteini.noted.features.ExportedNotes
 import com.cosimomatteini.noted.infrastructure.ReminderAlarm
 import com.cosimomatteini.noted.ui.ArchivedNoteDetailsRoute
@@ -29,6 +32,12 @@ import com.cosimomatteini.noted.ui.DiscardedNoteDetailsRoute
 import com.cosimomatteini.noted.ui.EditorRoute
 import com.cosimomatteini.noted.ui.HomeRoute
 import com.cosimomatteini.noted.ui.HomeViewModel
+import com.cosimomatteini.noted.ui.ImportPermissionAction
+import com.cosimomatteini.noted.ui.markNotificationPermissionRequested
+import com.cosimomatteini.noted.ui.nextImportPermissionAction
+import com.cosimomatteini.noted.ui.openExactAlarmSettings
+import com.cosimomatteini.noted.ui.openNotificationSettings
+import com.cosimomatteini.noted.ui.reminderPermissionState
 import com.cosimomatteini.noted.ui.theme.NotedTheme
 import java.util.UUID
 import kotlinx.coroutines.Dispatchers
@@ -76,6 +85,9 @@ fun NotedApp(
     var screen by remember { mutableStateOf<NotedScreen>(NotedScreen.Home) }
     var notificationMessage by remember { mutableStateOf<String?>(null) }
     var pendingExport by remember { mutableStateOf<ExportedNotes?>(null) }
+    var pendingImportContent by remember { mutableStateOf<String?>(null) }
+    var requestImportNotificationPermission by remember { mutableStateOf(false) }
+    val backupJsonCodec = remember { BackupJsonCodec() }
     val coroutineScope = rememberCoroutineScope()
     val exportDocumentLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.CreateDocument("application/json")
@@ -97,6 +109,85 @@ fun NotedApp(
                 notificationMessage = "Notes exported"
             }.onFailure {
                 notificationMessage = "Export failed"
+            }
+        }
+    }
+    fun importNotes(content: String) {
+        coroutineScope.launch {
+            runCatching {
+                withContext(Dispatchers.IO) { appContainer.importNotes(content).getOrThrow() }
+            }.onSuccess { importedNotes ->
+                notificationMessage = "Imported ${importedNotes.count} notes"
+            }.onFailure { failure ->
+                notificationMessage = failure.importFailureMessage()
+            }
+        }
+    }
+
+    fun handleImportContent(content: String) {
+        val notes = backupJsonCodec.decode(content).getOrElse { failure ->
+            notificationMessage = failure.importFailureMessage()
+            return
+        }
+
+        when (
+            nextImportPermissionAction(
+                notes = notes,
+                now = appContainer.clock.now(),
+                state = activity.reminderPermissionState()
+            )
+        ) {
+            ImportPermissionAction.Import -> importNotes(content)
+            ImportPermissionAction.RequestNotification -> {
+                pendingImportContent = content
+                activity.markNotificationPermissionRequested()
+                requestImportNotificationPermission = true
+            }
+
+            ImportPermissionAction.OpenNotificationSettings -> {
+                notificationMessage = "Enable notifications to import reminders"
+                activity.openNotificationSettings()
+            }
+
+            ImportPermissionAction.OpenExactAlarmSettings -> {
+                notificationMessage = "Enable exact alarms to import reminders"
+                activity.openExactAlarmSettings()
+            }
+        }
+    }
+
+    val importNotificationPermissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { granted ->
+        val content = pendingImportContent
+        pendingImportContent = null
+        if (granted && content != null) {
+            handleImportContent(content)
+        } else {
+            notificationMessage = "Import requires notification permission"
+        }
+    }
+    LaunchedEffect(requestImportNotificationPermission) {
+        if (requestImportNotificationPermission) {
+            requestImportNotificationPermission = false
+            importNotificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+        }
+    }
+    val importDocumentLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.OpenDocument()
+    ) { uri ->
+        if (uri == null) return@rememberLauncherForActivityResult
+        coroutineScope.launch {
+            runCatching {
+                withContext(Dispatchers.IO) {
+                    activity.contentResolver.openInputStream(uri)?.use { stream ->
+                        stream.reader().use { reader -> reader.readText() }
+                    } ?: error("Could not open import file.")
+                }
+            }.onSuccess { content ->
+                handleImportContent(content)
+            }.onFailure {
+                notificationMessage = "Import failed"
             }
         }
     }
@@ -163,6 +254,9 @@ fun NotedApp(
                         notificationMessage = "Export failed"
                     }
                 }
+            },
+            onImportNotes = {
+                importDocumentLauncher.launch(arrayOf("application/json"))
             },
             notificationMessage = notificationMessage,
             onNotificationMessageShown = { notificationMessage = null }
@@ -232,3 +326,9 @@ private sealed interface NotedScreen {
 
 private fun Intent.notificationNote(): NoteId? = getStringExtra(ReminderAlarm.EXTRA_NOTE_ID)
     ?.let { runCatching { NoteId(UUID.fromString(it)) }.getOrNull() }
+
+private fun Throwable.importFailureMessage(): String = when (this) {
+    is BackupError.UnsupportedVersion -> "Unsupported backup version"
+    is BackupError.MalformedBackup -> "Malformed backup file"
+    else -> "Import failed"
+}

@@ -65,6 +65,7 @@ fun HomeRoute(
     onOpenArchivedNote: (ArchivedNote) -> Unit,
     onOpenDiscardedNote: (DiscardedNote) -> Unit,
     onExportNotes: () -> Unit,
+    onImportNotes: () -> Unit,
     notificationMessage: String?,
     onNotificationMessageShown: () -> Unit
 ) {
@@ -80,6 +81,7 @@ fun HomeRoute(
         onShowTrash = viewModel::showTrash,
         onToggleLayout = viewModel::toggleLayout,
         onExportNotes = onExportNotes,
+        onImportNotes = onImportNotes,
         notificationMessage = notificationMessage,
         onNotificationMessageShown = onNotificationMessageShown
     )
@@ -97,6 +99,7 @@ fun HomeScreen(
     onShowTrash: () -> Unit = {},
     onToggleLayout: () -> Unit = {},
     onExportNotes: () -> Unit = {},
+    onImportNotes: () -> Unit = {},
     notificationMessage: String? = null,
     onNotificationMessageShown: () -> Unit = {}
 ) {
@@ -115,7 +118,8 @@ fun HomeScreen(
                 destination = uiState.destination,
                 layout = uiState.layout,
                 onToggleLayout = onToggleLayout,
-                onExportNotes = onExportNotes
+                onExportNotes = onExportNotes,
+                onImportNotes = onImportNotes
             )
         },
         floatingActionButton = {
@@ -166,7 +170,8 @@ private fun HomeTopBar(
     destination: HomeDestination,
     layout: NotesLayout,
     onToggleLayout: () -> Unit,
-    onExportNotes: () -> Unit
+    onExportNotes: () -> Unit,
+    onImportNotes: () -> Unit
 ) {
     var menuExpanded by remember { mutableStateOf(false) }
 
@@ -206,6 +211,13 @@ private fun HomeTopBar(
                         onClick = {
                             menuExpanded = false
                             onExportNotes()
+                        }
+                    )
+                    DropdownMenuItem(
+                        text = { Text("Import") },
+                        onClick = {
+                            menuExpanded = false
+                            onImportNotes()
                         }
                     )
                 }

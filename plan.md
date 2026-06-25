@@ -451,7 +451,7 @@
 - Add tests for skipping past, archived, and discarded reminders.
 - Verify tests pass.
 
-## 30. Add Import UI And Permission Gate
+## 30. Add Import UI And Permission Gate (Done)
 
 - Reuse or extract reminder permission logic from editor.
 - Add tests for import permission requirement decision.
