@@ -386,3 +386,95 @@
 - Make note cards accept external modifiers.
 - Add tests for persisted layout loading and toggling.
 - Verify tests and lint pass.
+
+## 27. Add Backup JSON Format
+
+- Add Kotlin serialization Gradle plugin.
+- Add `kotlinx-serialization-json` dependency.
+- Add backup DTOs for schema version 1.
+- Use ISO-8601 strings for instants.
+- Use UUID strings for note IDs.
+- Encode all note lifecycle states to backup DTOs.
+- Decode schema version 1 backup DTOs to domain notes.
+- Reject unsupported schema versions with a domain error.
+- Reject malformed backup JSON with a domain error.
+- Reject invalid lifecycle field combinations with a domain error.
+- Keep duplicate note IDs in a file by letting the last note survive.
+- Add codec tests for active notes.
+- Add codec tests for archived notes.
+- Add codec tests for discarded notes.
+- Add codec tests for unsupported version errors.
+- Add codec tests for malformed file errors.
+- Add codec tests for duplicate IDs keeping last.
+- Verify tests pass.
+
+## 28. Export Notes
+
+- Add repository `loadAll` support.
+- Implement `loadAll` in `NoteDao`.
+- Implement `loadAll` in `RoomNoteRepository`.
+- Add repository tests for `loadAll`.
+- Add `ExportNotes` feature returning JSON text.
+- Include `schemaVersion = 1`.
+- Include `exportedAt` from `Clock`.
+- Include all notes, not only active notes.
+- Use default filename `noted-backup-yyyy-MM-dd.json`.
+- Wire `ExportNotes` in `NotedAppContainer`.
+- Add feature tests for exporting all lifecycle states.
+- Add home top-bar overflow menu.
+- Add Export action.
+- Use `CreateDocument("application/json")`.
+- Write exported JSON to selected URI.
+- Show export success message.
+- Show export failure message.
+- Verify export manually with device file picker.
+
+## 29. Import Notes
+
+- Add repository bulk upsert support.
+- Make Room bulk upsert transactional.
+- Add tests for transactional bulk upsert rollback.
+- Add `ImportNotes` feature that parses and validates all notes before writing.
+- Append notes with new UUIDs.
+- Override existing DB notes with same UUID.
+- Preserve imported timestamps.
+- Cancel alarms for every imported note ID after successful import.
+- Schedule only active imported notes with future reminders after successful import.
+- Do not schedule past reminders.
+- Do not schedule archived or discarded notes.
+- Wire `ImportNotes` in `NotedAppContainer`.
+- Add tests for append import.
+- Add tests for same UUID override.
+- Add tests for transaction rollback when any imported note is invalid.
+- Add tests for canceling imported note alarms.
+- Add tests for scheduling active future reminders.
+- Add tests for skipping past, archived, and discarded reminders.
+- Verify tests pass.
+
+## 30. Add Import UI And Permission Gate
+
+- Reuse or extract reminder permission logic from editor.
+- Add tests for import permission requirement decision.
+- Add Import action to home top-bar overflow menu.
+- Use `OpenDocument` for JSON files.
+- Read selected URI text.
+- Validate import before requesting permissions.
+- If import has no active future reminders, import without permission prompts.
+- If import has active future reminders, require notification permission before import.
+- If import has active future reminders, require exact alarm permission before import.
+- Block import until required permissions are granted.
+- Surface permission denial or settings redirect without importing.
+- Run transactional import after permissions pass.
+- Show imported note count.
+- Show unsupported version error clearly.
+- Show malformed file error clearly.
+- Verify import manually with exported file.
+
+## 31. Document Import/Export
+
+- Update `ARCHITECTURE.md` with import/export features and files.
+- Update architecture docs if new package/file roles need mention.
+- Run full unit tests.
+- Run lint.
+- Run app build.
+- Verify export then import round trip manually.
