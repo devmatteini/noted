@@ -22,9 +22,9 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.cosimomatteini.noted.domain.ActiveNote
 import com.cosimomatteini.noted.domain.ArchivedNote
 import com.cosimomatteini.noted.domain.DiscardedNote
+import com.cosimomatteini.noted.domain.Note
 import com.cosimomatteini.noted.domain.NoteId
 import com.cosimomatteini.noted.features.BackupError
-import com.cosimomatteini.noted.features.BackupJsonCodec
 import com.cosimomatteini.noted.features.ExportedNotes
 import com.cosimomatteini.noted.infrastructure.ReminderAlarm
 import com.cosimomatteini.noted.ui.ArchivedNoteDetailsRoute
@@ -85,9 +85,8 @@ fun NotedApp(
     var screen by remember { mutableStateOf<NotedScreen>(NotedScreen.Home) }
     var notificationMessage by remember { mutableStateOf<String?>(null) }
     var pendingExport by remember { mutableStateOf<ExportedNotes?>(null) }
-    var pendingImportContent by remember { mutableStateOf<String?>(null) }
+    var pendingImportNotes by remember { mutableStateOf<List<Note>?>(null) }
     var requestImportNotificationPermission by remember { mutableStateOf(false) }
-    val backupJsonCodec = remember { BackupJsonCodec() }
     val coroutineScope = rememberCoroutineScope()
     val exportDocumentLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.CreateDocument("application/json")
@@ -112,10 +111,10 @@ fun NotedApp(
             }
         }
     }
-    fun importNotes(content: String) {
+    fun importNotes(notes: List<Note>) {
         coroutineScope.launch {
             runCatching {
-                withContext(Dispatchers.IO) { appContainer.importNotes(content).getOrThrow() }
+                withContext(Dispatchers.IO) { appContainer.importNotes(notes).getOrThrow() }
             }.onSuccess { importedNotes ->
                 notificationMessage = "Imported ${importedNotes.count} notes"
             }.onFailure { failure ->
@@ -124,12 +123,7 @@ fun NotedApp(
         }
     }
 
-    fun handleImportContent(content: String) {
-        val notes = backupJsonCodec.decode(content).getOrElse { failure ->
-            notificationMessage = failure.importFailureMessage()
-            return
-        }
-
+    fun handleParsedImportNotes(notes: List<Note>) {
         when (
             nextImportPermissionAction(
                 notes = notes,
@@ -137,9 +131,9 @@ fun NotedApp(
                 state = activity.reminderPermissionState()
             )
         ) {
-            ImportPermissionAction.Import -> importNotes(content)
+            ImportPermissionAction.Import -> importNotes(notes)
             ImportPermissionAction.RequestNotification -> {
-                pendingImportContent = content
+                pendingImportNotes = notes
                 activity.markNotificationPermissionRequested()
                 requestImportNotificationPermission = true
             }
@@ -156,13 +150,21 @@ fun NotedApp(
         }
     }
 
+    fun handleImportContent(content: String) {
+        val notes = appContainer.parseNotesBackupFile(content).getOrElse { failure ->
+            notificationMessage = failure.importFailureMessage()
+            return
+        }
+        handleParsedImportNotes(notes)
+    }
+
     val importNotificationPermissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { granted ->
-        val content = pendingImportContent
-        pendingImportContent = null
-        if (granted && content != null) {
-            handleImportContent(content)
+        val notes = pendingImportNotes
+        pendingImportNotes = null
+        if (granted && notes != null) {
+            handleParsedImportNotes(notes)
         } else {
             notificationMessage = "Import requires notification permission"
         }

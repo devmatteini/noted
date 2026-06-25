@@ -11,6 +11,7 @@ import com.cosimomatteini.noted.features.DiscardNote
 import com.cosimomatteini.noted.features.ExportNotes
 import com.cosimomatteini.noted.features.ImportNotes
 import com.cosimomatteini.noted.features.Notes
+import com.cosimomatteini.noted.features.ParseNotesBackupFile
 import com.cosimomatteini.noted.features.PermanentlyDeleteNote
 import com.cosimomatteini.noted.features.RestoreDiscardedNote
 import com.cosimomatteini.noted.features.RestoreNote
@@ -32,6 +33,7 @@ class NotedAppContainer(context: Context, val clock: Clock = AndroidClock()) {
     val notesLayoutPreference = SharedPreferencesNotesLayoutPreference(context)
     val notes = Notes(noteRepository)
     val exportNotes = ExportNotes(noteRepository, clock)
+    val parseNotesBackupFile = ParseNotesBackupFile()
     val importNotes = ImportNotes(noteRepository, reminderScheduler, clock)
     val createEmptyNote = CreateEmptyNote(noteRepository, clock)
     val updateNote = UpdateNote(noteRepository, clock)

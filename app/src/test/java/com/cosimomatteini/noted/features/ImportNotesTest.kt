@@ -14,7 +14,6 @@ import java.time.Instant
 import java.util.UUID
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class ImportNotesTest {
@@ -27,7 +26,7 @@ class ImportNotesTest {
         val repository = InMemoryNoteRepository(existingNote)
         val importNotes = importNotes(repository)
 
-        val result = importNotes(backup(importedNote)).getOrThrow()
+        val result = importNotes(listOf(importedNote)).getOrThrow()
 
         assertEquals(ImportedNotes(count = 1), result)
         assertEquals(listOf(existingNote, importedNote), repository.notes)
@@ -40,50 +39,9 @@ class ImportNotesTest {
         val importedNote = activeNote(id = noteId, title = "New")
         val repository = InMemoryNoteRepository(oldNote)
 
-        importNotes(repository)(backup(importedNote)).getOrThrow()
+        importNotes(repository)(listOf(importedNote)).getOrThrow()
 
         assertEquals(listOf(importedNote), repository.notes)
-    }
-
-    @Test
-    fun importNotes_doesNotWriteWhenAnyImportedNoteIsInvalid() = runTest {
-        val existingNote = activeNote(title = "Existing")
-        val repository = InMemoryNoteRepository(existingNote)
-        val content = """
-            {
-              "schemaVersion": 1,
-              "exportedAt": "2026-06-25T10:00:00Z",
-              "notes": [
-                {
-                  "id": "00000000-0000-0000-0000-000000000001",
-                  "status": "ACTIVE",
-                  "title": "Valid",
-                  "description": "Write nothing",
-                  "createdAt": "2026-06-25T10:00:00Z",
-                  "updatedAt": "2026-06-25T10:00:00Z",
-                  "reminderAt": null,
-                  "archivedAt": null,
-                  "discardedAt": null
-                },
-                {
-                  "id": "00000000-0000-0000-0000-000000000002",
-                  "status": "ARCHIVED",
-                  "title": "Invalid",
-                  "description": "Missing archivedAt",
-                  "createdAt": "2026-06-25T10:00:00Z",
-                  "updatedAt": "2026-06-25T10:00:00Z",
-                  "reminderAt": null,
-                  "archivedAt": null,
-                  "discardedAt": null
-                }
-              ]
-            }
-        """.trimIndent()
-
-        val result = importNotes(repository)(content)
-
-        assertTrue(result.exceptionOrNull() is BackupError.InvalidNote)
-        assertEquals(listOf(existingNote), repository.notes)
     }
 
     @Test
@@ -94,7 +52,7 @@ class ImportNotesTest {
         val reminderScheduler = InMemoryReminderScheduler()
 
         importNotes(reminderScheduler = reminderScheduler)(
-            backup(activeNote, archivedNote, discardedNote)
+            listOf(activeNote, archivedNote, discardedNote)
         ).getOrThrow()
 
         assertEquals(
@@ -109,7 +67,7 @@ class ImportNotesTest {
         val note = activeNote(reminderAt = reminderAt)
         val reminderScheduler = InMemoryReminderScheduler()
 
-        importNotes(reminderScheduler = reminderScheduler)(backup(note)).getOrThrow()
+        importNotes(reminderScheduler = reminderScheduler)(listOf(note)).getOrThrow()
 
         assertEquals(listOf(note.id to reminderAt), reminderScheduler.scheduled)
     }
@@ -124,7 +82,7 @@ class ImportNotesTest {
         val reminderScheduler = InMemoryReminderScheduler()
 
         importNotes(reminderScheduler = reminderScheduler)(
-            backup(pastActiveNote, archivedNote, discardedNote)
+            listOf(pastActiveNote, archivedNote, discardedNote)
         ).getOrThrow()
 
         assertEquals(emptyList<Pair<NoteId, ReminderAt>>(), reminderScheduler.scheduled)
@@ -134,9 +92,6 @@ class ImportNotesTest {
         repository: InMemoryNoteRepository = InMemoryNoteRepository(),
         reminderScheduler: InMemoryReminderScheduler = InMemoryReminderScheduler()
     ): ImportNotes = ImportNotes(repository, reminderScheduler, FixedClock(now))
-
-    private fun backup(vararg notes: com.cosimomatteini.noted.domain.Note): String =
-        BackupJsonCodec(prettyPrint = false).encode(notes.toList(), now)
 
     private fun activeNote(
         id: NoteId = NoteId(UUID.randomUUID()),
