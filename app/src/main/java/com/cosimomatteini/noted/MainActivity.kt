@@ -74,8 +74,10 @@ fun NotedApp(
     val homeViewModel: HomeViewModel = viewModel(
         factory = object : ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
-            override fun <T : ViewModel> create(modelClass: Class<T>): T =
-                HomeViewModel(appContainer.notes) as T
+            override fun <T : ViewModel> create(modelClass: Class<T>): T = HomeViewModel(
+                notes = appContainer.notes,
+                notesLayoutPreference = appContainer.notesLayoutPreference
+            ) as T
         }
     )
 

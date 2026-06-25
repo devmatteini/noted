@@ -367,3 +367,22 @@
 - Add tests for keeping active and archived notes.
 - Add repository tests for cutoff delete.
 - Verify app-open cleanup does not run on destination changes.
+
+## 26. Add Persisted Notes Grid Layout (Done)
+
+- Add notes layout mode with list and grid values.
+- Persist selected notes layout with `SharedPreferences`.
+- Wire layout preference through `NotedAppContainer`.
+- Add layout to `HomeUiState`.
+- Load persisted layout in `HomeViewModel`.
+- Add layout toggle action in `HomeViewModel`.
+- Add top app bar on Notes, Archive, and Trash.
+- Show destination title in the top app bar.
+- Add top app bar layout toggle icon.
+- Keep one layout preference shared by all home destinations.
+- Keep existing list layout with `LazyColumn`.
+- Add two-column grid layout with `LazyVerticalStaggeredGrid`.
+- Reuse existing note cards in list and grid.
+- Make note cards accept external modifiers.
+- Add tests for persisted layout loading and toggling.
+- Verify tests and lint pass.

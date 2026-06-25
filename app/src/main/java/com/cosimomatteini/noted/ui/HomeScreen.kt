@@ -3,19 +3,30 @@ package com.cosimomatteini.noted.ui
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
+import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
+import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Archive
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.GridView
+import androidx.compose.material.icons.filled.ViewAgenda
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -54,7 +65,8 @@ fun HomeRoute(
         onOpenDiscardedNote = onOpenDiscardedNote,
         onShowNotes = viewModel::showNotes,
         onShowArchive = viewModel::showArchive,
-        onShowTrash = viewModel::showTrash
+        onShowTrash = viewModel::showTrash,
+        onToggleLayout = viewModel::toggleLayout
     )
 }
 
@@ -67,9 +79,17 @@ fun HomeScreen(
     onOpenDiscardedNote: (DiscardedNote) -> Unit = {},
     onShowNotes: () -> Unit = {},
     onShowArchive: () -> Unit = {},
-    onShowTrash: () -> Unit = {}
+    onShowTrash: () -> Unit = {},
+    onToggleLayout: () -> Unit = {}
 ) {
     Scaffold(
+        topBar = {
+            HomeTopBar(
+                destination = uiState.destination,
+                layout = uiState.layout,
+                onToggleLayout = onToggleLayout
+            )
+        },
         floatingActionButton = {
             if (showCreateNoteAction(uiState.destination)) {
                 FloatingActionButton(onClick = onCreateNote) {
@@ -102,6 +122,7 @@ fun HomeScreen(
             } else {
                 NotesList(
                     notes = uiState.notes,
+                    layout = uiState.layout,
                     onEditNote = onEditNote,
                     onOpenArchivedNote = onOpenArchivedNote,
                     onOpenDiscardedNote = onOpenDiscardedNote,
@@ -111,6 +132,48 @@ fun HomeScreen(
         }
     }
 }
+
+@Composable
+private fun HomeTopBar(
+    destination: HomeDestination,
+    layout: NotesLayout,
+    onToggleLayout: () -> Unit
+) {
+    Surface(color = MaterialTheme.colorScheme.surface) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .statusBarsPadding()
+                .height(64.dp)
+                .padding(start = 24.dp, end = 8.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
+        ) {
+            Text(
+                text = destination.label,
+                style = MaterialTheme.typography.headlineSmall
+            )
+            IconButton(onClick = onToggleLayout) {
+                Icon(
+                    imageVector = layout.toggleIcon,
+                    contentDescription = layout.toggleContentDescription
+                )
+            }
+        }
+    }
+}
+
+private val NotesLayout.toggleIcon
+    get() = when (this) {
+        NotesLayout.List -> Icons.Filled.GridView
+        NotesLayout.Grid -> Icons.Filled.ViewAgenda
+    }
+
+private val NotesLayout.toggleContentDescription: String
+    get() = when (this) {
+        NotesLayout.List -> "Show notes in grid"
+        NotesLayout.Grid -> "Show notes in list"
+    }
 
 internal fun showCreateNoteAction(destination: HomeDestination): Boolean = when (destination) {
     HomeDestination.Notes -> true
@@ -202,6 +265,34 @@ private fun EmptyNotes(destination: HomeDestination, modifier: Modifier = Modifi
 @Composable
 private fun NotesList(
     notes: List<Note>,
+    layout: NotesLayout,
+    onEditNote: (ActiveNote) -> Unit,
+    onOpenArchivedNote: (ArchivedNote) -> Unit,
+    onOpenDiscardedNote: (DiscardedNote) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    when (layout) {
+        NotesLayout.List -> NotesColumn(
+            notes = notes,
+            onEditNote = onEditNote,
+            onOpenArchivedNote = onOpenArchivedNote,
+            onOpenDiscardedNote = onOpenDiscardedNote,
+            modifier = modifier
+        )
+
+        NotesLayout.Grid -> NotesGrid(
+            notes = notes,
+            onEditNote = onEditNote,
+            onOpenArchivedNote = onOpenArchivedNote,
+            onOpenDiscardedNote = onOpenDiscardedNote,
+            modifier = modifier
+        )
+    }
+}
+
+@Composable
+private fun NotesColumn(
+    notes: List<Note>,
     onEditNote: (ActiveNote) -> Unit,
     onOpenArchivedNote: (ArchivedNote) -> Unit,
     onOpenDiscardedNote: (DiscardedNote) -> Unit,
@@ -211,6 +302,33 @@ private fun NotesList(
         modifier = modifier.fillMaxSize(),
         contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        items(notes, key = { it.id.value }) { note ->
+            NoteCard(
+                note = note,
+                onEditNote = onEditNote,
+                onOpenArchivedNote = onOpenArchivedNote,
+                onOpenDiscardedNote = onOpenDiscardedNote,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
+    }
+}
+
+@Composable
+private fun NotesGrid(
+    notes: List<Note>,
+    onEditNote: (ActiveNote) -> Unit,
+    onOpenArchivedNote: (ArchivedNote) -> Unit,
+    onOpenDiscardedNote: (DiscardedNote) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    LazyVerticalStaggeredGrid(
+        columns = StaggeredGridCells.Fixed(2),
+        modifier = modifier.fillMaxSize(),
+        contentPadding = PaddingValues(16.dp),
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        verticalItemSpacing = 12.dp
     ) {
         items(notes, key = { it.id.value }) { note ->
             NoteCard(

@@ -3,7 +3,6 @@ package com.cosimomatteini.noted.ui
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
@@ -23,26 +22,21 @@ internal fun NoteCard(
     note: Note,
     onEditNote: (ActiveNote) -> Unit,
     onOpenArchivedNote: (ArchivedNote) -> Unit,
-    onOpenDiscardedNote: (DiscardedNote) -> Unit
+    onOpenDiscardedNote: (DiscardedNote) -> Unit,
+    modifier: Modifier = Modifier
 ) {
-    val modifier = when (note) {
+    val cardModifier = when (note) {
         is ActiveNote ->
-            Modifier
-                .fillMaxWidth()
-                .clickable { onEditNote(note) }
+            modifier.clickable { onEditNote(note) }
 
         is ArchivedNote ->
-            Modifier
-                .fillMaxWidth()
-                .clickable { onOpenArchivedNote(note) }
+            modifier.clickable { onOpenArchivedNote(note) }
 
         is DiscardedNote ->
-            Modifier
-                .fillMaxWidth()
-                .clickable { onOpenDiscardedNote(note) }
+            modifier.clickable { onOpenDiscardedNote(note) }
     }
 
-    OutlinedCard(modifier) {
+    OutlinedCard(cardModifier) {
         Column(
             modifier = Modifier.padding(12.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
@@ -62,7 +56,8 @@ internal fun NoteCard(
             if (note is ActiveNote && note.reminderAt != null) {
                 NoteReminderChip(
                     reminderAt = note.reminderAt,
-                    onClick = { onEditNote(note) }
+                    onClick = { onEditNote(note) },
+                    compact = true
                 )
             }
         }

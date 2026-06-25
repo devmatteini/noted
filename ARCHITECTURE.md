@@ -10,6 +10,7 @@ selected date/time.
 ## Product Scope
 
 - Single homepage screen for notes.
+- Notes can be shown as a list or two-column grid with a persisted user preference.
 - Full-screen editor for creating/editing notes.
 - Notes can be filtered to show archived notes or trash.
 - Archived notes can be opened read-only, discarded, or unarchived.
@@ -110,6 +111,7 @@ app/
     ReminderBootReceiver.kt
     AndroidClock.kt
     AndroidLogger.kt
+    SharedPreferencesNotesLayoutPreference.kt
 
   ui/
     HomeScreen.kt
@@ -123,6 +125,7 @@ app/
     SaveReminder.kt
     SaveReminderRequest.kt
     ReminderPermission.kt
+    NotesLayoutPreference.kt
 
   MainActivity.kt
   NotedAppContainer.kt

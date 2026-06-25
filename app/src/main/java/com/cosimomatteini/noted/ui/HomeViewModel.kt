@@ -15,7 +15,8 @@ import kotlinx.coroutines.flow.stateIn
 
 data class HomeUiState(
     val notes: List<Note> = emptyList(),
-    val destination: HomeDestination = HomeDestination.Notes
+    val destination: HomeDestination = HomeDestination.Notes,
+    val layout: NotesLayout = NotesLayout.List
 )
 
 enum class HomeDestination {
@@ -24,20 +25,24 @@ enum class HomeDestination {
     Trash
 }
 
-class HomeViewModel(notes: Notes) : ViewModel() {
+class HomeViewModel(notes: Notes, private val notesLayoutPreference: NotesLayoutPreference) :
+    ViewModel() {
     private val destination = MutableStateFlow(HomeDestination.Notes)
+    private val layout = MutableStateFlow(notesLayoutPreference.load())
 
     val uiState: StateFlow<HomeUiState> = notes()
-        .combine(destination) { notes, destination ->
+        .combine(destination) { notes, destination -> notes to destination }
+        .combine(layout) { (notes, destination), layout ->
             HomeUiState(
                 notes = visibleNotes(notes, destination),
-                destination = destination
+                destination = destination,
+                layout = layout
             )
         }
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = HomeUiState()
+            initialValue = HomeUiState(layout = layout.value)
         )
 
     fun showNotes() {
@@ -50,6 +55,15 @@ class HomeViewModel(notes: Notes) : ViewModel() {
 
     fun showTrash() {
         destination.value = HomeDestination.Trash
+    }
+
+    fun toggleLayout() {
+        val nextLayout = when (layout.value) {
+            NotesLayout.List -> NotesLayout.Grid
+            NotesLayout.Grid -> NotesLayout.List
+        }
+        layout.value = nextLayout
+        notesLayoutPreference.save(nextLayout)
     }
 }
 

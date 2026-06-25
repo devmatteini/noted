@@ -51,6 +51,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.cosimomatteini.noted.domain.ReminderAt
@@ -317,30 +318,42 @@ internal fun NoteActionIcon(
 internal fun NoteReminderChip(
     reminderAt: ReminderAt,
     onClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    compact: Boolean = false
 ) {
     val isPast = reminderAt.value < Instant.now()
+    val horizontalPadding = if (compact) 6.dp else 6.dp
+    val verticalPadding = if (compact) 4.dp else 6.dp
+    val iconSize = if (compact) 14.dp else 16.dp
+    val fontSize = if (compact) 12.sp else 14.sp
+    val text = if (compact) {
+        reminderAt.formatCompactReminderChipDateTime()
+    } else {
+        reminderAt.formatReminderChipDateTime()
+    }
 
     Row(
         modifier = modifier
             .background(
                 color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.85f),
-                shape = RoundedCornerShape(12.dp)
+                shape = RoundedCornerShape(if (compact) 10.dp else 12.dp)
             )
             .clickable(onClick = onClick)
-            .padding(horizontal = 6.dp, vertical = 6.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
+            .padding(horizontal = horizontalPadding, vertical = verticalPadding),
+        horizontalArrangement = Arrangement.spacedBy(if (compact) 6.dp else 8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(
             imageVector = if (isPast) Icons.Filled.AlarmOff else Icons.Filled.Alarm,
             contentDescription = null,
-            modifier = Modifier.size(16.dp)
+            modifier = Modifier.size(iconSize)
         )
         Text(
-            text = reminderAt.formatReminderChipDateTime(),
-            fontSize = 14.sp,
+            text = text,
+            fontSize = fontSize,
             fontWeight = FontWeight.SemiBold,
+            maxLines = 1,
+            overflow = TextOverflow.Clip,
             textDecoration = if (isPast) TextDecoration.LineThrough else null
         )
     }

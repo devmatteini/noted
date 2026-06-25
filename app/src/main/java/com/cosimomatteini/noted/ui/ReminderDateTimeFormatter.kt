@@ -34,6 +34,30 @@ internal fun ReminderAt.formatReminderChipDateTime(): String {
     return "$date, $time"
 }
 
+internal fun ReminderAt.formatCompactReminderChipDateTime(): String {
+    val zoneId = ZoneId.systemDefault()
+    val locale = Locale.getDefault()
+    val reminderDateTime = value.atZone(zoneId)
+    val reminderDate = reminderDateTime.toLocalDate()
+    val today = LocalDate.now(zoneId)
+    val date = when (reminderDate) {
+        today -> relativeDay(RelativeDateTimeFormatter.Direction.THIS, locale)
+
+        today.plusDays(1) -> relativeDay(RelativeDateTimeFormatter.Direction.NEXT, locale)
+
+        else ->
+            DateTimeFormatter
+                .ofPattern(if (reminderDate.year == today.year) "d MMM" else "d MMM yyyy", locale)
+                .format(reminderDate)
+    }
+    val time = DateTimeFormatter
+        .ofLocalizedTime(FormatStyle.SHORT)
+        .withLocale(locale)
+        .format(reminderDateTime)
+
+    return "$date, $time"
+}
+
 private fun relativeDay(direction: RelativeDateTimeFormatter.Direction, locale: Locale): String =
     RelativeDateTimeFormatter
         .getInstance(locale)
