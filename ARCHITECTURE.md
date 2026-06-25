@@ -16,6 +16,8 @@ selected date/time.
 - Archived notes can be opened read-only, discarded, or unarchived.
 - Discarded notes can be opened read-only, restored, or permanently deleted.
 - Discarded notes are automatically permanently deleted after 30 days.
+- Notes can be exported to a versioned JSON backup file.
+- Notes can be imported from a versioned JSON backup file.
 - No sync.
 - No backend.
 
@@ -96,6 +98,11 @@ app/
     SetNoteReminder.kt
     ClearNoteReminder.kt
     RestoreReminders.kt
+    DeleteExpiredDiscardedNotes.kt
+    BackupJsonCodec.kt
+    ExportNotes.kt
+    ParseNotesBackupFile.kt
+    ImportNotes.kt
 
   infrastructure/
     NotedDatabase.kt
@@ -125,6 +132,8 @@ app/
     SaveReminder.kt
     SaveReminderRequest.kt
     ReminderPermission.kt
+    ImportReminderPermission.kt
+    ImportNotesFile.kt
     NotesLayoutPreference.kt
 
   MainActivity.kt
@@ -218,6 +227,10 @@ Examples:
 - `SetNoteReminder`.
 - `ClearNoteReminder`.
 - `RestoreReminders`.
+- `DeleteExpiredDiscardedNotes`.
+- `ExportNotes`.
+- `ParseNotesBackupFile`.
+- `ImportNotes`.
 
 ## Dependency Injection
 
@@ -239,6 +252,54 @@ The container wires:
 - Clock.
 - Logger.
 - Feature classes.
+
+## Import/Export
+
+Backups use versioned JSON in `BackupJsonCodec`.
+
+Schema version 1 stores:
+
+- `schemaVersion`.
+- `exportedAt` as an ISO-8601 instant string.
+- Notes with UUID string IDs.
+- Note lifecycle state: `ACTIVE`, `ARCHIVED`, or `DISCARDED`.
+- Note timestamps as ISO-8601 instant strings.
+- Reminder timestamp only for active notes.
+- Archive timestamp only for archived notes.
+- Discard timestamp only for discarded notes.
+
+Export flow:
+
+```text
+Home overflow Export
+-> ExportNotes loads all notes
+-> BackupJsonCodec encodes schema version 1 JSON
+-> ActivityResultContracts.CreateDocument("application/json")
+-> write JSON to selected URI
+```
+
+Import flow:
+
+```text
+Home overflow Import
+-> ActivityResultContracts.OpenDocument()
+-> read selected URI text
+-> ParseNotesBackupFile parses and validates JSON into domain notes
+-> if active future reminders exist, require reminder permissions
+-> ImportNotes transactionally upserts parsed notes
+-> cancel/schedule alarms for imported active notes only
+```
+
+Import parses and validates the whole file before writing. If parsing fails, no database writes or
+alarm changes happen.
+
+Duplicate note IDs inside one backup file keep the last note.
+
+Imported notes preserve UUIDs and timestamps. If an imported UUID already exists in the database,
+the imported note replaces that database note.
+
+`ImportNotes` accepts already parsed domain notes. It does not parse JSON. This keeps file parsing,
+permission gating, persistence, and alarm scheduling as separate responsibilities.
 
 ## Persistence
 
@@ -305,6 +366,8 @@ Reminder lifecycle:
 - Remove reminder: cancel alarm.
 - Change reminder: cancel old alarm and schedule new alarm.
 - Reboot device: restore future active reminders.
+- Import notes: cancel alarms for imported active notes, then schedule imported active future
+  reminders only.
 
 ## Trash Retention
 
@@ -317,7 +380,7 @@ startup. Destination changes such as switching to Notes, Archive, or Trash do no
 
 Do not ask permissions on app start.
 
-Ask only when user sets a reminder.
+Ask only when user sets a reminder or imports notes with active future reminders.
 
 Flow:
 
@@ -333,6 +396,23 @@ User selects reminder
 If either permission is denied, no reminder is set.
 
 The note itself can still be saved without a reminder.
+
+## Import Reminder Permission UX
+
+Do not ask reminder permissions just because the user selects an import file.
+
+Parse and validate the import file first.
+
+If the parsed import has no active future reminders, import without permission prompts.
+
+If the parsed import has active future reminders:
+
+- Require notification permission.
+- Require exact alarm access.
+- If notification permission can be requested, request it.
+- If notification permission cannot be requested, open notification settings.
+- If exact alarm access is missing, open exact alarm settings.
+- Do not import until required permissions are granted.
 
 ## Reboot Restore
 
@@ -360,6 +440,7 @@ Homepage:
 - Add note action.
 - Add note action is hidden outside the Notes destination.
 - Trash bottom navigation item uses the delete icon.
+- Top-bar overflow has Export and Import actions.
 
 Editor:
 
@@ -434,27 +515,17 @@ Discarded note details:
 - Unarchive restores an archived note as active with no reminder.
 - Restore discarded note restores as active with no reminder.
 - Reboot restore schedules only active future reminders.
+- Backup JSON encodes and decodes active, archived, and discarded notes.
+- Backup JSON rejects unsupported schema versions.
+- Backup JSON rejects malformed or invalid lifecycle data.
+- Export includes all lifecycle states.
+- Import appends new notes and overrides notes with the same UUID.
+- Import parses and validates notes before writing.
+- Import bulk upsert is transactional.
+- Import cancels alarms for imported active notes only.
+- Import schedules imported active future reminders only.
+- Import permission decision only requires permissions for active future reminders.
 
 ## Post-MVP
 
-Import/export is intentionally excluded from MVP.
-
-Keep UUID IDs from day one so import/export can be added later without changing the identity model.
-
 Auto-delete for notes where title and description are both empty is intentionally excluded from MVP.
-
-Future UI refactor rules:
-
-- Extract a shared read-only note details component for archived and discarded note details.
-
-Future import/export rules:
-
-- Use versioned JSON.
-- Export notes.
-- Preserve UUIDs on export.
-- Preserve imported UUIDs when there is no conflict.
-- Generate a new UUID if imported note ID conflicts with an existing note.
-- Expired imported reminders are removed.
-- Archived imported notes have no reminders.
-- Future imported reminders require permissions.
-- If permissions are denied during import, import notes without reminders.
