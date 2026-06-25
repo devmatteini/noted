@@ -1,4 +1,5 @@
-.PHONY: build test android-test lint format release clear-app-data configure-hooks copy-export
+SHELL := bash
+.SHELLFLAGS := -euo pipefail -c
 
 TODAY := $(shell date --iso-8601)
 
@@ -28,3 +29,5 @@ copy-export:
 
 configure-hooks:
 	git config core.hooksPath .githooks
+
+.PHONY: build test android-test lint format release clear-app-data configure-hooks copy-export
