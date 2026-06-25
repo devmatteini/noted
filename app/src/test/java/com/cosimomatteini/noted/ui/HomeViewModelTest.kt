@@ -186,6 +186,8 @@ class HomeViewModelTest {
 
         override fun observe(): Flow<List<Note>> = notes
 
+        override suspend fun loadAll(): List<Note> = notes.value
+
         override suspend fun load(id: NoteId): Note? = null
 
         override suspend fun loadActive(id: NoteId): ActiveNote? = null

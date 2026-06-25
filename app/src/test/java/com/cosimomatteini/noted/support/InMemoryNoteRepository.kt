@@ -15,6 +15,8 @@ class InMemoryNoteRepository(vararg notes: Note) : NoteRepository {
 
     override fun observe(): Flow<List<Note>> = flowOf(notes)
 
+    override suspend fun loadAll(): List<Note> = notes
+
     override suspend fun load(id: NoteId): Note? = notes.firstOrNull {
         it.id == id
     }

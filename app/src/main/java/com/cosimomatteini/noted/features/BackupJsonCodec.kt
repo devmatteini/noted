@@ -1,5 +1,6 @@
 package com.cosimomatteini.noted.features
 
+import com.cosimomatteini.noted.BuildConfig
 import com.cosimomatteini.noted.domain.ActiveNote
 import com.cosimomatteini.noted.domain.ArchivedNote
 import com.cosimomatteini.noted.domain.DiscardedNote
@@ -11,7 +12,6 @@ import com.cosimomatteini.noted.domain.ReminderAt
 import java.time.Instant
 import java.time.format.DateTimeParseException
 import java.util.UUID
-import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
@@ -20,7 +20,13 @@ import kotlinx.serialization.json.decodeFromJsonElement
 import kotlinx.serialization.json.intOrNull
 import kotlinx.serialization.json.jsonPrimitive
 
-class BackupJsonCodec {
+class BackupJsonCodec(prettyPrint: Boolean = BuildConfig.DEBUG) {
+    private val json = Json {
+        explicitNulls = true
+        ignoreUnknownKeys = true
+        this.prettyPrint = prettyPrint
+    }
+
     fun encode(notes: List<Note>, exportedAt: Instant): String = json.encodeToString(
         BackupFileV1(
             schemaVersion = SCHEMA_VERSION,
@@ -176,13 +182,6 @@ class BackupJsonCodec {
         const val STATUS_ACTIVE = "ACTIVE"
         const val STATUS_ARCHIVED = "ARCHIVED"
         const val STATUS_DISCARDED = "DISCARDED"
-
-        @OptIn(ExperimentalSerializationApi::class)
-        val json = Json {
-            explicitNulls = true
-            ignoreUnknownKeys = true
-            prettyPrint = true
-        }
     }
 }
 

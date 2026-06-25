@@ -33,6 +33,21 @@ class BackupJsonCodecTest {
     }
 
     @Test
+    fun encode_skipsPrettyPrintWhenDisabled() {
+        val note = ActiveNote(
+            id = NoteId(UUID.fromString("00000000-0000-0000-0000-000000000007")),
+            title = NoteTitle.of("Compact"),
+            description = NoteDescription.of("Small file"),
+            createdAt = Instant.parse("2026-06-01T10:00:00Z"),
+            updatedAt = Instant.parse("2026-06-02T10:00:00Z")
+        )
+
+        val json = BackupJsonCodec(prettyPrint = false).encode(listOf(note), exportedAt)
+
+        assertEquals(false, json.contains("\n"))
+    }
+
+    @Test
     fun encodeDecode_archivedNote() {
         val note = ArchivedNote(
             id = NoteId(UUID.fromString("00000000-0000-0000-0000-000000000002")),

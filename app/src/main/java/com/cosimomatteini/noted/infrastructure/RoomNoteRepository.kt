@@ -17,13 +17,10 @@ import kotlinx.coroutines.flow.map
 class RoomNoteRepository(private val noteDao: NoteDao, private val logger: Logger) :
     NoteRepository {
     override fun observe(): Flow<List<Note>> = noteDao.observe().map { entities ->
-        entities.mapNotNull { entity ->
-            entity.toDomain().getOrElse { failure ->
-                logger.warn(TAG, "Skipping invalid note ${entity.id}", failure)
-                null
-            }
-        }
+        entities.toDomainNotes()
     }
+
+    override suspend fun loadAll(): List<Note> = noteDao.loadAll().toDomainNotes()
 
     override suspend fun load(id: NoteId): Note? = noteDao.load(id.value)?.toDomain()?.getOrNull()
 
@@ -81,6 +78,13 @@ class RoomNoteRepository(private val noteDao: NoteDao, private val logger: Logge
             createdAtMillis = createdAt.toEpochMilli(),
             updatedAtMillis = updatedAt.toEpochMilli()
         )
+    }
+
+    private fun List<NoteEntity>.toDomainNotes(): List<Note> = mapNotNull { entity ->
+        entity.toDomain().getOrElse { failure ->
+            logger.warn(TAG, "Skipping invalid note ${entity.id}", failure)
+            null
+        }
     }
 
     private fun NoteEntity.toDomain(): Result<Note> {

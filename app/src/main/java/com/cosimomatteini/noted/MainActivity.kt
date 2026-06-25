@@ -3,8 +3,10 @@ package com.cosimomatteini.noted
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -20,6 +22,7 @@ import com.cosimomatteini.noted.domain.ActiveNote
 import com.cosimomatteini.noted.domain.ArchivedNote
 import com.cosimomatteini.noted.domain.DiscardedNote
 import com.cosimomatteini.noted.domain.NoteId
+import com.cosimomatteini.noted.features.ExportedNotes
 import com.cosimomatteini.noted.infrastructure.ReminderAlarm
 import com.cosimomatteini.noted.ui.ArchivedNoteDetailsRoute
 import com.cosimomatteini.noted.ui.DiscardedNoteDetailsRoute
@@ -30,6 +33,7 @@ import com.cosimomatteini.noted.ui.theme.NotedTheme
 import java.util.UUID
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class MainActivity : ComponentActivity() {
     private lateinit var appContainer: NotedAppContainer
@@ -70,7 +74,32 @@ fun NotedApp(
     onNotificationNoteShown: () -> Unit = {}
 ) {
     var screen by remember { mutableStateOf<NotedScreen>(NotedScreen.Home) }
+    var notificationMessage by remember { mutableStateOf<String?>(null) }
+    var pendingExport by remember { mutableStateOf<ExportedNotes?>(null) }
     val coroutineScope = rememberCoroutineScope()
+    val exportDocumentLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.CreateDocument("application/json")
+    ) { uri ->
+        if (uri == null) {
+            pendingExport = null
+            return@rememberLauncherForActivityResult
+        }
+        val export = pendingExport ?: return@rememberLauncherForActivityResult
+        pendingExport = null
+        coroutineScope.launch {
+            runCatching {
+                withContext(Dispatchers.IO) {
+                    activity.contentResolver.openOutputStream(uri)?.use { stream ->
+                        stream.writer().use { writer -> writer.write(export.json) }
+                    } ?: error("Could not open export file.")
+                }
+            }.onSuccess {
+                notificationMessage = "Notes exported"
+            }.onFailure {
+                notificationMessage = "Export failed"
+            }
+        }
+    }
     val homeViewModel: HomeViewModel = viewModel(
         factory = object : ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
@@ -122,7 +151,21 @@ fun NotedApp(
             onCreateNote = ::createAndEditNote,
             onEditNote = ::editNote,
             onOpenArchivedNote = ::openArchivedNote,
-            onOpenDiscardedNote = ::openDiscardedNote
+            onOpenDiscardedNote = ::openDiscardedNote,
+            onExportNotes = {
+                coroutineScope.launch {
+                    runCatching {
+                        withContext(Dispatchers.IO) { appContainer.exportNotes() }
+                    }.onSuccess { export ->
+                        pendingExport = export
+                        exportDocumentLauncher.launch(export.filename)
+                    }.onFailure {
+                        notificationMessage = "Export failed"
+                    }
+                }
+            },
+            notificationMessage = notificationMessage,
+            onNotificationMessageShown = { notificationMessage = null }
         )
 
         is NotedScreen.EditNote -> EditorRoute(

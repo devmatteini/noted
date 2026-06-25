@@ -6,6 +6,8 @@ import kotlinx.coroutines.flow.Flow
 interface NoteRepository {
     fun observe(): Flow<List<Note>>
 
+    suspend fun loadAll(): List<Note>
+
     suspend fun load(id: NoteId): Note?
 
     suspend fun loadActive(id: NoteId): ActiveNote?

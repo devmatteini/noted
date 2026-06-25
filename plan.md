@@ -408,7 +408,7 @@
 - Add codec tests for duplicate IDs keeping last.
 - Verify tests pass.
 
-## 28. Export Notes
+## 28. Export Notes (Done)
 
 - Add repository `loadAll` support.
 - Implement `loadAll` in `NoteDao`.

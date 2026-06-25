@@ -39,6 +39,24 @@ class RoomNoteRepositoryTest {
     }
 
     @Test
+    fun loadAll_returnsValidNotes() = runTest {
+        val noteId = UUID.randomUUID()
+        val repository = RoomNoteRepository(
+            InMemoryNoteDao(
+                mutableListOf(
+                    noteEntity(id = noteId),
+                    noteEntity(status = "UNKNOWN")
+                )
+            ),
+            EmptyLogger
+        )
+
+        val notes = repository.loadAll()
+
+        assertEquals(listOf(NoteId(noteId)), notes.map { it.id })
+    }
+
+    @Test
     fun save_persistsActiveNoteEntity() = runTest {
         val noteDao = InMemoryNoteDao()
         val repository = RoomNoteRepository(noteDao, EmptyLogger)
@@ -404,6 +422,8 @@ class RoomNoteRepositoryTest {
 
     private class InMemoryNoteDao(val notes: MutableList<NoteEntity> = mutableListOf()) : NoteDao {
         override fun observe(): Flow<List<NoteEntity>> = flowOf(notes)
+
+        override suspend fun loadAll(): List<NoteEntity> = notes
 
         override suspend fun load(id: UUID): NoteEntity? = notes.firstOrNull { it.id == id }
 

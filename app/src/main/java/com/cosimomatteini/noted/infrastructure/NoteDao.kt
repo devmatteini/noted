@@ -11,6 +11,9 @@ interface NoteDao {
     @Query("SELECT * FROM notes ORDER BY updatedAtMillis DESC")
     fun observe(): Flow<List<NoteEntity>>
 
+    @Query("SELECT * FROM notes ORDER BY updatedAtMillis DESC")
+    suspend fun loadAll(): List<NoteEntity>
+
     @Query("SELECT * FROM notes WHERE id = :id")
     suspend fun load(id: UUID): NoteEntity?
 

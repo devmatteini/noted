@@ -18,7 +18,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Archive
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.GridView
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.ViewAgenda
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -26,11 +29,17 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -54,7 +63,10 @@ fun HomeRoute(
     onCreateNote: () -> Unit,
     onEditNote: (ActiveNote) -> Unit,
     onOpenArchivedNote: (ArchivedNote) -> Unit,
-    onOpenDiscardedNote: (DiscardedNote) -> Unit
+    onOpenDiscardedNote: (DiscardedNote) -> Unit,
+    onExportNotes: () -> Unit,
+    notificationMessage: String?,
+    onNotificationMessageShown: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
     HomeScreen(
@@ -66,7 +78,10 @@ fun HomeRoute(
         onShowNotes = viewModel::showNotes,
         onShowArchive = viewModel::showArchive,
         onShowTrash = viewModel::showTrash,
-        onToggleLayout = viewModel::toggleLayout
+        onToggleLayout = viewModel::toggleLayout,
+        onExportNotes = onExportNotes,
+        notificationMessage = notificationMessage,
+        onNotificationMessageShown = onNotificationMessageShown
     )
 }
 
@@ -80,14 +95,27 @@ fun HomeScreen(
     onShowNotes: () -> Unit = {},
     onShowArchive: () -> Unit = {},
     onShowTrash: () -> Unit = {},
-    onToggleLayout: () -> Unit = {}
+    onToggleLayout: () -> Unit = {},
+    onExportNotes: () -> Unit = {},
+    notificationMessage: String? = null,
+    onNotificationMessageShown: () -> Unit = {}
 ) {
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    LaunchedEffect(notificationMessage) {
+        val currentMessage = notificationMessage ?: return@LaunchedEffect
+        snackbarHostState.showSnackbar(currentMessage)
+        onNotificationMessageShown()
+    }
+
     Scaffold(
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
             HomeTopBar(
                 destination = uiState.destination,
                 layout = uiState.layout,
-                onToggleLayout = onToggleLayout
+                onToggleLayout = onToggleLayout,
+                onExportNotes = onExportNotes
             )
         },
         floatingActionButton = {
@@ -137,8 +165,11 @@ fun HomeScreen(
 private fun HomeTopBar(
     destination: HomeDestination,
     layout: NotesLayout,
-    onToggleLayout: () -> Unit
+    onToggleLayout: () -> Unit,
+    onExportNotes: () -> Unit
 ) {
+    var menuExpanded by remember { mutableStateOf(false) }
+
     Surface(color = MaterialTheme.colorScheme.surface) {
         Row(
             modifier = Modifier
@@ -153,11 +184,31 @@ private fun HomeTopBar(
                 text = destination.label,
                 style = MaterialTheme.typography.headlineSmall
             )
-            IconButton(onClick = onToggleLayout) {
-                Icon(
-                    imageVector = layout.toggleIcon,
-                    contentDescription = layout.toggleContentDescription
-                )
+            Row {
+                IconButton(onClick = onToggleLayout) {
+                    Icon(
+                        imageVector = layout.toggleIcon,
+                        contentDescription = layout.toggleContentDescription
+                    )
+                }
+                IconButton(onClick = { menuExpanded = true }) {
+                    Icon(
+                        imageVector = Icons.Filled.MoreVert,
+                        contentDescription = "Open more actions"
+                    )
+                }
+                DropdownMenu(
+                    expanded = menuExpanded,
+                    onDismissRequest = { menuExpanded = false }
+                ) {
+                    DropdownMenuItem(
+                        text = { Text("Export") },
+                        onClick = {
+                            menuExpanded = false
+                            onExportNotes()
+                        }
+                    )
+                }
             }
         }
     }
