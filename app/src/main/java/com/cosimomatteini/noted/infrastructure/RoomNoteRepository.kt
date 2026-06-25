@@ -34,6 +34,10 @@ class RoomNoteRepository(private val noteDao: NoteDao, private val logger: Logge
         noteDao.upsert(note.toEntity())
     }
 
+    override suspend fun saveAll(notes: List<Note>) {
+        noteDao.upsertAll(notes.map { it.toEntity() })
+    }
+
     override suspend fun delete(id: NoteId) {
         noteDao.delete(id.value)
     }

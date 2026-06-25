@@ -429,7 +429,7 @@
 - Show export failure message.
 - Verify export manually with device file picker.
 
-## 29. Import Notes
+## 29. Import Notes (Done)
 
 - Add repository bulk upsert support.
 - Make Room bulk upsert transactional.

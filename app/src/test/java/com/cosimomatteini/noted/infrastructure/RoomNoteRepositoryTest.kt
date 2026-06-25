@@ -105,6 +105,59 @@ class RoomNoteRepositoryTest {
     }
 
     @Test
+    fun saveAll_persistsNotesTransactionally() = runTest {
+        val existingNote = noteEntity(title = "Existing")
+        val failingNoteId = UUID.randomUUID()
+        val noteDao = InMemoryNoteDao(mutableListOf(existingNote), failUpsertId = failingNoteId)
+        val repository = RoomNoteRepository(noteDao, EmptyLogger)
+
+        runCatching {
+            repository.saveAll(
+                listOf(
+                    ActiveNote(
+                        id = NoteId(UUID.randomUUID()),
+                        title = NoteTitle.of("New"),
+                        description = NoteDescription.of("Inserted"),
+                        createdAt = Instant.EPOCH,
+                        updatedAt = Instant.EPOCH
+                    ),
+                    ActiveNote(
+                        id = NoteId(failingNoteId),
+                        title = NoteTitle.of("Fail"),
+                        description = NoteDescription.of("Rollback"),
+                        createdAt = Instant.EPOCH,
+                        updatedAt = Instant.EPOCH
+                    )
+                )
+            )
+        }
+
+        assertEquals(listOf(existingNote), noteDao.notes)
+    }
+
+    @Test
+    fun saveAll_overridesExistingNotesById() = runTest {
+        val noteId = UUID.randomUUID()
+        val noteDao = InMemoryNoteDao(mutableListOf(noteEntity(id = noteId, title = "Old")))
+        val repository = RoomNoteRepository(noteDao, EmptyLogger)
+
+        repository.saveAll(
+            listOf(
+                ActiveNote(
+                    id = NoteId(noteId),
+                    title = NoteTitle.of("New"),
+                    description = NoteDescription.of("Updated"),
+                    createdAt = Instant.ofEpochMilli(1_000),
+                    updatedAt = Instant.ofEpochMilli(2_000)
+                )
+            )
+        )
+
+        assertEquals("New", noteDao.notes.single().title)
+        assertEquals("Updated", noteDao.notes.single().description)
+    }
+
+    @Test
     fun observe_mapsReminderToActiveNoteOnly() = runTest {
         val activeNoteId = UUID.randomUUID()
         val archivedNoteId = UUID.randomUUID()
@@ -420,7 +473,10 @@ class RoomNoteRepositoryTest {
         assertEquals(listOf(retainedDiscardedNote, activeNote, archivedNote), noteDao.notes)
     }
 
-    private class InMemoryNoteDao(val notes: MutableList<NoteEntity> = mutableListOf()) : NoteDao {
+    private class InMemoryNoteDao(
+        val notes: MutableList<NoteEntity> = mutableListOf(),
+        private val failUpsertId: UUID? = null
+    ) : NoteDao {
         override fun observe(): Flow<List<NoteEntity>> = flowOf(notes)
 
         override suspend fun loadAll(): List<NoteEntity> = notes
@@ -428,8 +484,24 @@ class RoomNoteRepositoryTest {
         override suspend fun load(id: UUID): NoteEntity? = notes.firstOrNull { it.id == id }
 
         override suspend fun upsert(note: NoteEntity) {
+            if (note.id == failUpsertId) error("Failed upsert")
             notes.removeAll { it.id == note.id }
             notes += note
+        }
+
+        override suspend fun upsertAll(notes: List<NoteEntity>) {
+            val previousNotes = this.notes.toList()
+            try {
+                super.upsertAll(notes)
+            } catch (failure: Throwable) {
+                this.notes.clear()
+                this.notes += previousNotes
+                throw failure
+            }
+        }
+
+        override suspend fun upsertEntities(notes: List<NoteEntity>) {
+            notes.forEach { upsert(it) }
         }
 
         override suspend fun delete(id: UUID) {

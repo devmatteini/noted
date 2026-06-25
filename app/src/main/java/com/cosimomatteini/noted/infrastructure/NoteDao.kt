@@ -2,6 +2,7 @@ package com.cosimomatteini.noted.infrastructure
 
 import androidx.room.Dao
 import androidx.room.Query
+import androidx.room.Transaction
 import androidx.room.Upsert
 import java.util.UUID
 import kotlinx.coroutines.flow.Flow
@@ -19,6 +20,14 @@ interface NoteDao {
 
     @Upsert
     suspend fun upsert(note: NoteEntity)
+
+    @Transaction
+    suspend fun upsertAll(notes: List<NoteEntity>) {
+        upsertEntities(notes)
+    }
+
+    @Upsert
+    suspend fun upsertEntities(notes: List<NoteEntity>)
 
     @Query("DELETE FROM notes WHERE id = :id")
     suspend fun delete(id: UUID)

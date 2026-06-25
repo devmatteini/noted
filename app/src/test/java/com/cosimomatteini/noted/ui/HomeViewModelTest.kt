@@ -198,6 +198,8 @@ class HomeViewModelTest {
 
         override suspend fun save(note: Note) = Unit
 
+        override suspend fun saveAll(notes: List<Note>) = Unit
+
         override suspend fun delete(id: NoteId) = Unit
 
         override suspend fun deleteDiscardedBefore(cutoff: Instant) = Unit

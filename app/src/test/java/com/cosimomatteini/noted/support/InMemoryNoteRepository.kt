@@ -32,6 +32,10 @@ class InMemoryNoteRepository(vararg notes: Note) : NoteRepository {
         notes += note
     }
 
+    override suspend fun saveAll(notes: List<Note>) {
+        notes.forEach { save(it) }
+    }
+
     override suspend fun delete(id: NoteId) {
         notes.removeAll { it.id == id }
     }

@@ -18,6 +18,8 @@ interface NoteRepository {
 
     suspend fun save(note: Note)
 
+    suspend fun saveAll(notes: List<Note>)
+
     suspend fun delete(id: NoteId)
 
     suspend fun deleteDiscardedBefore(cutoff: Instant)
