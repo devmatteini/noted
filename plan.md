@@ -387,7 +387,7 @@
 - Add tests for persisted layout loading and toggling.
 - Verify tests and lint pass.
 
-## 27. Add Backup JSON Format
+## 27. Add Backup JSON Format (Done)
 
 - Add Kotlin serialization Gradle plugin.
 - Add `kotlinx-serialization-json` dependency.
