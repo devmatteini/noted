@@ -7,10 +7,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AddAlert
-import androidx.compose.material.icons.filled.Archive
-import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.PushPin
+import androidx.compose.material.icons.outlined.AddAlert
+import androidx.compose.material.icons.outlined.Archive
+import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.PushPin
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -120,12 +120,12 @@ fun NoteEditorScreen(
             Spacer(Modifier.weight(1f))
             NoteActionsRow {
                 NoteActionIcon(
-                    imageVector = Icons.Filled.AddAlert,
+                    imageVector = Icons.Outlined.AddAlert,
                     contentDescription = "Set reminder",
                     onClick = { showReminderPicker = true }
                 )
                 NoteActionIcon(
-                    imageVector = Icons.Filled.Archive,
+                    imageVector = Icons.Outlined.Archive,
                     contentDescription = "Archive note",
                     onClick = {
                         coroutineScope.launch {
@@ -150,7 +150,7 @@ fun NoteEditorScreen(
                     }
                 )
                 NoteActionIcon(
-                    imageVector = Icons.Filled.Delete,
+                    imageVector = Icons.Outlined.Delete,
                     contentDescription = "Delete note",
                     onClick = {
                         coroutineScope.launch {

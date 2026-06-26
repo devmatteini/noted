@@ -8,7 +8,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.outlined.ArrowDropDown
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.DatePicker
@@ -162,7 +162,7 @@ private fun ReminderRow(text: String, onClick: () -> Unit) {
                 modifier = Modifier.weight(1f)
             )
             Icon(
-                imageVector = Icons.Filled.ArrowDropDown,
+                imageVector = Icons.Outlined.ArrowDropDown,
                 contentDescription = null
             )
         }

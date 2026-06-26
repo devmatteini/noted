@@ -96,6 +96,11 @@ Archived and discarded notes do not have pins in the domain model.
 
 ## UX
 
+### UI
+
+- Use outlined icons by default.
+- Use non-outlined icons only when they communicate state, such as selected or active.
+
 ### Homepage
 
 - Homepage has Notes, Archive, and Trash destinations.

@@ -15,11 +15,11 @@ import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Archive
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.GridView
-import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.filled.ViewAgenda
+import androidx.compose.material.icons.outlined.Archive
+import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material.icons.outlined.GridView
+import androidx.compose.material.icons.outlined.MoreVert
+import androidx.compose.material.icons.outlined.ViewAgenda
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.FloatingActionButton
@@ -198,7 +198,7 @@ private fun HomeTopBar(
                 }
                 IconButton(onClick = { menuExpanded = true }) {
                     Icon(
-                        imageVector = Icons.Filled.MoreVert,
+                        imageVector = Icons.Outlined.MoreVert,
                         contentDescription = "Open more actions"
                     )
                 }
@@ -228,8 +228,8 @@ private fun HomeTopBar(
 
 private val NotesLayout.toggleIcon
     get() = when (this) {
-        NotesLayout.List -> Icons.Filled.GridView
-        NotesLayout.Grid -> Icons.Filled.ViewAgenda
+        NotesLayout.List -> Icons.Outlined.GridView
+        NotesLayout.Grid -> Icons.Outlined.ViewAgenda
     }
 
 private val NotesLayout.toggleContentDescription: String
@@ -268,7 +268,7 @@ private fun HomeNavigationBar(
             onClick = onShowArchive,
             icon = {
                 Icon(
-                    imageVector = Icons.Filled.Archive,
+                    imageVector = Icons.Outlined.Archive,
                     contentDescription = null
                 )
             },
@@ -279,7 +279,7 @@ private fun HomeNavigationBar(
             onClick = onShowTrash,
             icon = {
                 Icon(
-                    imageVector = Icons.Filled.Delete,
+                    imageVector = Icons.Outlined.Delete,
                     contentDescription = null
                 )
             },

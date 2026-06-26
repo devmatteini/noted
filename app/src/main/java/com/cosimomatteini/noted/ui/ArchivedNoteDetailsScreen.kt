@@ -1,8 +1,8 @@
 package com.cosimomatteini.noted.ui
 
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Unarchive
+import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material.icons.outlined.Unarchive
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.tooling.preview.Preview
@@ -47,7 +47,7 @@ fun ArchivedNoteDetailsScreen(
         onBack = onBack
     ) {
         NoteActionIcon(
-            imageVector = Icons.Filled.Unarchive,
+            imageVector = Icons.Outlined.Unarchive,
             contentDescription = "Restore note",
             onClick = {
                 coroutineScope.launch {
@@ -56,7 +56,7 @@ fun ArchivedNoteDetailsScreen(
             }
         )
         NoteActionIcon(
-            imageVector = Icons.Filled.Delete,
+            imageVector = Icons.Outlined.Delete,
             contentDescription = "Delete note",
             onClick = {
                 coroutineScope.launch {
