@@ -45,6 +45,7 @@ class ParseNotesBackupFileTest {
                   "createdAt": "2026-06-25T10:00:00Z",
                   "updatedAt": "2026-06-25T10:00:00Z",
                   "reminderAt": null,
+                  "isPinned": false,
                   "archivedAt": null,
                   "discardedAt": null
                 }

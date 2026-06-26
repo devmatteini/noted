@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "8c2dbe5c64170a13470c3a0e88dee669",
+    "identityHash": "8107a2667ae15d14d405cd45353cda87",
     "entities": [
       {
         "tableName": "notes",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `title` TEXT NOT NULL, `description` TEXT NOT NULL, `reminderAtMillis` INTEGER, `status` TEXT NOT NULL, `archivedAtMillis` INTEGER, `discardedAtMillis` INTEGER, `createdAtMillis` INTEGER NOT NULL, `updatedAtMillis` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `title` TEXT NOT NULL, `description` TEXT NOT NULL, `reminderAtMillis` INTEGER, `isPinned` INTEGER NOT NULL, `status` TEXT NOT NULL, `archivedAtMillis` INTEGER, `discardedAtMillis` INTEGER, `createdAtMillis` INTEGER NOT NULL, `updatedAtMillis` INTEGER NOT NULL, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -30,6 +30,12 @@
             "fieldPath": "reminderAtMillis",
             "columnName": "reminderAtMillis",
             "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "isPinned",
+            "columnName": "isPinned",
+            "affinity": "INTEGER",
+            "notNull": true
           },
           {
             "fieldPath": "status",
@@ -70,7 +76,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '8c2dbe5c64170a13470c3a0e88dee669')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '8107a2667ae15d14d405cd45353cda87')"
     ]
   }
 }

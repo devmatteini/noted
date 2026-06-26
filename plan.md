@@ -470,7 +470,7 @@
 - Show malformed file error clearly.
 - Verify import manually with exported file.
 
-## 31. Pin Active Notes
+## 31. Pin Active Notes (Done)
 
 - Add `isPinned: Boolean = false` to `ActiveNote`.
 - Add pure `ActiveNote.pin(updatedAt)` transition.

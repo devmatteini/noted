@@ -10,6 +10,7 @@ data class NoteEntity(
     val title: String,
     val description: String,
     val reminderAtMillis: Long?,
+    val isPinned: Boolean,
     val status: String,
     val archivedAtMillis: Long?,
     val discardedAtMillis: Long?,

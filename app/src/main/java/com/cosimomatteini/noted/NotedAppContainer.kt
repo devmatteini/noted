@@ -13,9 +13,11 @@ import com.cosimomatteini.noted.features.ImportNotes
 import com.cosimomatteini.noted.features.Notes
 import com.cosimomatteini.noted.features.ParseNotesBackupFile
 import com.cosimomatteini.noted.features.PermanentlyDeleteNote
+import com.cosimomatteini.noted.features.PinNote
 import com.cosimomatteini.noted.features.RestoreDiscardedNote
 import com.cosimomatteini.noted.features.RestoreNote
 import com.cosimomatteini.noted.features.SetNoteReminder
+import com.cosimomatteini.noted.features.UnpinNote
 import com.cosimomatteini.noted.features.UpdateNote
 import com.cosimomatteini.noted.infrastructure.AlarmReminderScheduler
 import com.cosimomatteini.noted.infrastructure.AndroidClock
@@ -43,6 +45,8 @@ class NotedAppContainer(context: Context, val clock: Clock = AndroidClock()) {
     val archiveNote = ArchiveNote(noteRepository, reminderScheduler, clock)
     val restoreNote = RestoreNote(noteRepository, clock)
     val restoreDiscardedNote = RestoreDiscardedNote(noteRepository, clock)
+    val pinNote = PinNote(noteRepository, clock)
+    val unpinNote = UnpinNote(noteRepository, clock)
     val setNoteReminder = SetNoteReminder(noteRepository, reminderScheduler, clock)
     val clearNoteReminder = ClearNoteReminder(noteRepository, reminderScheduler, clock)
 }

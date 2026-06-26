@@ -77,6 +77,7 @@ class RoomNoteRepositoryTest {
                 id = noteId,
                 title = "Groceries",
                 description = "Buy coffee",
+                isPinned = false,
                 createdAtMillis = 1_000,
                 updatedAtMillis = 2_000
             ),
@@ -102,6 +103,25 @@ class RoomNoteRepositoryTest {
         )
 
         assertEquals(3_000L, noteDao.notes.single().reminderAtMillis)
+    }
+
+    @Test
+    fun save_persistsActiveNotePin() = runTest {
+        val noteDao = InMemoryNoteDao()
+        val repository = RoomNoteRepository(noteDao, EmptyLogger)
+
+        repository.save(
+            ActiveNote(
+                id = NoteId(UUID.randomUUID()),
+                title = NoteTitle.of("Groceries"),
+                description = NoteDescription.of("Buy coffee"),
+                isPinned = true,
+                createdAt = Instant.ofEpochMilli(1_000),
+                updatedAt = Instant.ofEpochMilli(2_000)
+            )
+        )
+
+        assertEquals(true, noteDao.notes.single().isPinned)
     }
 
     @Test
@@ -205,6 +225,19 @@ class RoomNoteRepositoryTest {
             ),
             note
         )
+    }
+
+    @Test
+    fun load_returnsPinnedActiveNoteById() = runTest {
+        val noteId = UUID.randomUUID()
+        val repository = RoomNoteRepository(
+            InMemoryNoteDao(mutableListOf(noteEntity(id = noteId, isPinned = true))),
+            EmptyLogger
+        )
+
+        val note = repository.load(NoteId(noteId))
+
+        assertEquals(true, (note as ActiveNote).isPinned)
     }
 
     @Test
@@ -362,6 +395,7 @@ class RoomNoteRepositoryTest {
                 id = noteId,
                 title = "Groceries",
                 description = "Buy coffee",
+                isPinned = false,
                 status = "ARCHIVED",
                 archivedAtMillis = 3_000,
                 createdAtMillis = 1_000,
@@ -394,6 +428,7 @@ class RoomNoteRepositoryTest {
                 title = "Groceries",
                 description = "Buy coffee",
                 reminderAtMillis = null,
+                isPinned = false,
                 status = "DISCARDED",
                 archivedAtMillis = null,
                 discardedAtMillis = 4_000,
@@ -521,6 +556,7 @@ class RoomNoteRepositoryTest {
         title: String = "",
         description: String = "Buy coffee",
         reminderAtMillis: Long? = null,
+        isPinned: Boolean = false,
         status: String = "ACTIVE",
         archivedAtMillis: Long? = null,
         discardedAtMillis: Long? = null,
@@ -531,6 +567,7 @@ class RoomNoteRepositoryTest {
         title = title,
         description = description,
         reminderAtMillis = reminderAtMillis,
+        isPinned = isPinned,
         status = status,
         archivedAtMillis = archivedAtMillis,
         discardedAtMillis = discardedAtMillis,

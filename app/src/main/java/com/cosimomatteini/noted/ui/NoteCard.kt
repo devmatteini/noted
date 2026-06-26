@@ -1,9 +1,11 @@
 package com.cosimomatteini.noted.ui
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Text
@@ -14,6 +16,7 @@ import com.cosimomatteini.noted.domain.ActiveNote
 import com.cosimomatteini.noted.domain.ArchivedNote
 import com.cosimomatteini.noted.domain.DiscardedNote
 import com.cosimomatteini.noted.domain.Note
+import com.cosimomatteini.noted.ui.theme.PinOrange
 
 private const val DESCRIPTION_MAX_CHARS = 225
 
@@ -36,7 +39,16 @@ internal fun NoteCard(
             modifier.clickable { onOpenDiscardedNote(note) }
     }
 
-    OutlinedCard(cardModifier) {
+    val border = if (note is ActiveNote && note.isPinned) {
+        BorderStroke(1.dp, PinOrange)
+    } else {
+        CardDefaults.outlinedCardBorder()
+    }
+
+    OutlinedCard(
+        modifier = cardModifier,
+        border = border
+    ) {
         Column(
             modifier = Modifier.padding(12.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)

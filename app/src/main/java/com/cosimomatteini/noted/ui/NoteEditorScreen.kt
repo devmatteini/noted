@@ -10,6 +10,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddAlert
 import androidx.compose.material.icons.filled.Archive
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.PushPin
+import androidx.compose.material.icons.outlined.PushPin
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -36,10 +38,13 @@ fun NoteEditorScreen(
     initialTitle: String,
     initialDescription: String,
     initialReminderAt: Instant?,
+    initialIsPinned: Boolean,
     onAutosave: suspend (title: String, description: String) -> Unit,
     onBack: () -> Unit,
     onArchive: suspend (title: String, description: String) -> Unit,
     onDelete: suspend () -> Unit,
+    onPin: suspend () -> Boolean,
+    onUnpin: suspend () -> Boolean,
     onSetReminder: suspend (ReminderAt) -> Boolean,
     onClearReminder: suspend () -> Unit
 ) {
@@ -54,6 +59,7 @@ fun NoteEditorScreen(
     var reminderAt by remember(initialReminderAt) {
         mutableStateOf(initialReminderAt?.let(::ReminderAt))
     }
+    var isPinned by remember(initialIsPinned) { mutableStateOf(initialIsPinned) }
     var showReminderPicker by remember { mutableStateOf(false) }
 
     fun saveAndGoBack() {
@@ -123,6 +129,22 @@ fun NoteEditorScreen(
                     }
                 )
                 NoteActionIcon(
+                    imageVector = if (isPinned) Icons.Filled.PushPin else Icons.Outlined.PushPin,
+                    contentDescription = if (isPinned) "Unpin note" else "Pin note",
+                    onClick = {
+                        coroutineScope.launch {
+                            val didUpdate = if (isPinned) {
+                                onUnpin()
+                            } else {
+                                onPin()
+                            }
+                            if (didUpdate) {
+                                isPinned = !isPinned
+                            }
+                        }
+                    }
+                )
+                NoteActionIcon(
                     imageVector = Icons.Filled.AddAlert,
                     contentDescription = "Set reminder",
                     onClick = { showReminderPicker = true }
@@ -172,11 +194,14 @@ fun NoteEditorScreenEmptyPreview() {
             onBack = {},
             onArchive = { _, _ -> },
             onDelete = {},
+            onPin = { true },
+            onUnpin = { true },
             onSetReminder = { true },
             onClearReminder = {},
             initialTitle = "",
             initialDescription = "",
-            initialReminderAt = null
+            initialReminderAt = null,
+            initialIsPinned = false
         )
     }
 }
@@ -190,11 +215,14 @@ fun NoteEditorScreenOnlyTitlePreview() {
             onBack = {},
             onArchive = { _, _ -> },
             onDelete = {},
+            onPin = { true },
+            onUnpin = { true },
             onSetReminder = { true },
             onClearReminder = {},
             initialTitle = "My title",
             initialDescription = "",
-            initialReminderAt = null
+            initialReminderAt = null,
+            initialIsPinned = false
         )
     }
 }
@@ -208,11 +236,14 @@ fun NoteEditorScreenOnlyDescriptionPreview() {
             onBack = {},
             onArchive = { _, _ -> },
             onDelete = {},
+            onPin = { true },
+            onUnpin = { true },
             onSetReminder = { true },
             onClearReminder = {},
             initialTitle = "",
             initialDescription = "My long description.\nThis is very long.",
-            initialReminderAt = null
+            initialReminderAt = null,
+            initialIsPinned = false
         )
     }
 }
@@ -226,11 +257,14 @@ fun NoteEditorScreenTitleAndDescriptionPreview() {
             onBack = {},
             onArchive = { _, _ -> },
             onDelete = {},
+            onPin = { true },
+            onUnpin = { true },
             onSetReminder = { true },
             onClearReminder = {},
             initialTitle = "My title",
             initialDescription = "My long description.\nThis is very long.",
-            initialReminderAt = null
+            initialReminderAt = null,
+            initialIsPinned = false
         )
     }
 }
@@ -244,11 +278,14 @@ fun NoteEditorScreenReminderPreview() {
             onBack = {},
             onArchive = { _, _ -> },
             onDelete = {},
+            onPin = { true },
+            onUnpin = { true },
             onSetReminder = { true },
             onClearReminder = {},
             initialTitle = "My title",
             initialDescription = "My very long description!!!",
-            initialReminderAt = Instant.EPOCH
+            initialReminderAt = Instant.EPOCH,
+            initialIsPinned = false
         )
     }
 }

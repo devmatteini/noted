@@ -8,6 +8,7 @@ data class ActiveNote(
     override val title: NoteTitle,
     override val description: NoteDescription,
     val reminderAt: ReminderAt? = null,
+    val isPinned: Boolean = false,
     override val createdAt: Instant,
     override val updatedAt: Instant
 ) : Note {
@@ -18,6 +19,7 @@ data class ActiveNote(
                 title = NoteTitle.of(""),
                 description = NoteDescription.of(""),
                 reminderAt = null,
+                isPinned = false,
                 createdAt = createdAt,
                 updatedAt = createdAt
             )
@@ -36,6 +38,16 @@ data class ActiveNote(
 
     fun clearReminder(updatedAt: Instant): ActiveNote = copy(
         reminderAt = null,
+        updatedAt = updatedAt
+    )
+
+    fun pin(updatedAt: Instant): ActiveNote = copy(
+        isPinned = true,
+        updatedAt = updatedAt
+    )
+
+    fun unpin(updatedAt: Instant): ActiveNote = copy(
+        isPinned = false,
         updatedAt = updatedAt
     )
 

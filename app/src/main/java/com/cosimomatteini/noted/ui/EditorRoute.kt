@@ -33,10 +33,17 @@ internal fun EditorRoute(
         initialTitle = note.title.value,
         initialDescription = note.description.value,
         initialReminderAt = note.reminderAt?.value,
+        initialIsPinned = note.isPinned,
         onAutosave = ::saveNote,
         onBack = onDone,
         onArchive = ::archiveAndClose,
         onDelete = ::deleteAndClose,
+        onPin = {
+            appContainer.pinNote(note.id).isSuccess
+        },
+        onUnpin = {
+            appContainer.unpinNote(note.id).isSuccess
+        },
         onSetReminder = { reminderAt ->
             saveReminder(SaveReminderRequest(note.id, reminderAt))
         },

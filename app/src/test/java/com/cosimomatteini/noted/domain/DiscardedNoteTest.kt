@@ -36,5 +36,6 @@ class DiscardedNoteTest {
             restoredNote
         )
         assertNull(restoredNote.reminderAt)
+        assertEquals(false, restoredNote.isPinned)
     }
 }

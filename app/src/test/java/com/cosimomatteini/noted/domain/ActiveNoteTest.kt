@@ -18,6 +18,7 @@ class ActiveNoteTest {
             title = NoteTitle.of("Groceries"),
             description = NoteDescription.of("Buy coffee"),
             reminderAt = ReminderAt(Instant.parse("2026-06-06T11:30:00Z")),
+            isPinned = true,
             createdAt = createdAt,
             updatedAt = updatedAt
         )
@@ -48,6 +49,7 @@ class ActiveNoteTest {
             title = NoteTitle.of("Groceries"),
             description = NoteDescription.of("Buy coffee"),
             reminderAt = ReminderAt(Instant.parse("2026-06-06T11:30:00Z")),
+            isPinned = true,
             createdAt = createdAt,
             updatedAt = updatedAt
         )
@@ -89,5 +91,28 @@ class ActiveNoteTest {
 
         assertNull(updatedNote.reminderAt)
         assertEquals(Instant.parse("2026-06-06T12:00:00Z"), updatedNote.updatedAt)
+    }
+
+    @Test
+    fun pin_returnsPinnedActiveNote() {
+        val note = ActiveNote.empty(Instant.parse("2026-06-06T10:00:00Z"))
+        val updatedAt = Instant.parse("2026-06-06T11:00:00Z")
+
+        val updatedNote = note.pin(updatedAt)
+
+        assertEquals(true, updatedNote.isPinned)
+        assertEquals(updatedAt, updatedNote.updatedAt)
+    }
+
+    @Test
+    fun unpin_returnsUnpinnedActiveNote() {
+        val note = ActiveNote.empty(Instant.parse("2026-06-06T10:00:00Z"))
+            .pin(Instant.parse("2026-06-06T11:00:00Z"))
+        val updatedAt = Instant.parse("2026-06-06T12:00:00Z")
+
+        val updatedNote = note.unpin(updatedAt)
+
+        assertEquals(false, updatedNote.isPinned)
+        assertEquals(updatedAt, updatedNote.updatedAt)
     }
 }

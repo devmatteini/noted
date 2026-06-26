@@ -23,6 +23,7 @@ class BackupJsonCodecTest {
             title = NoteTitle.of("Groceries"),
             description = NoteDescription.of("Buy coffee"),
             reminderAt = ReminderAt(Instant.parse("2026-06-07T10:00:00Z")),
+            isPinned = true,
             createdAt = Instant.parse("2026-06-01T10:00:00Z"),
             updatedAt = Instant.parse("2026-06-02T10:00:00Z")
         )
@@ -114,6 +115,7 @@ class BackupJsonCodecTest {
                   "createdAt": "2026-06-01T10:00:00Z",
                   "updatedAt": "2026-06-03T10:00:00Z",
                   "reminderAt": null,
+                  "isPinned": false,
                   "archivedAt": null,
                   "discardedAt": null
                 }
@@ -141,6 +143,7 @@ class BackupJsonCodecTest {
                   "createdAt": "2026-06-01T10:00:00Z",
                   "updatedAt": "2026-06-02T10:00:00Z",
                   "reminderAt": null,
+                  "isPinned": true,
                   "archivedAt": "2026-06-03T10:00:00Z",
                   "discardedAt": "2026-06-04T10:00:00Z"
                 }
@@ -152,6 +155,7 @@ class BackupJsonCodecTest {
 
         assertEquals(1, decoded.size)
         assertTrue(decoded.single() is ActiveNote)
+        assertEquals(true, (decoded.single() as ActiveNote).isPinned)
     }
 
     @Test
@@ -168,6 +172,7 @@ class BackupJsonCodecTest {
                   "createdAt": "2026-06-01T10:00:00Z",
                   "updatedAt": "2026-06-02T10:00:00Z",
                   "reminderAt": null,
+                  "isPinned": false,
                   "archivedAt": null,
                   "discardedAt": null
                 },
@@ -179,6 +184,7 @@ class BackupJsonCodecTest {
                   "createdAt": "2026-06-01T10:00:00Z",
                   "updatedAt": "2026-06-03T10:00:00Z",
                   "reminderAt": null,
+                  "isPinned": true,
                   "archivedAt": null,
                   "discardedAt": null
                 }
@@ -191,6 +197,7 @@ class BackupJsonCodecTest {
         assertEquals(1, decoded.size)
         assertTrue(decoded.single() is ActiveNote)
         assertEquals("Last", decoded.single().title.value)
+        assertEquals(true, (decoded.single() as ActiveNote).isPinned)
     }
 
     private fun backupJson(noteJson: String): String = """

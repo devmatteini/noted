@@ -55,6 +55,20 @@ class HomeViewModelTest {
     }
 
     @Test
+    fun visibleNotes_preservesRepositoryOrderForActiveNotes() {
+        val firstNote = activeNote(title = "First")
+        val secondNote = activeNote(title = "Second")
+        val thirdNote = activeNote(title = "Third")
+
+        val notes = visibleNotes(
+            listOf(firstNote, secondNote, thirdNote),
+            HomeDestination.Notes
+        )
+
+        assertEquals(listOf(firstNote, secondNote, thirdNote), notes)
+    }
+
+    @Test
     fun visibleNotes_returnsArchivedNotesForArchiveDestination() {
         val activeNote = activeNote()
         val archivedNote = archivedNote()
@@ -139,12 +153,17 @@ class HomeViewModelTest {
         assertEquals(NotesLayout.List, preference.layout)
     }
 
-    private fun activeNote(): ActiveNote = ActiveNote(
+    private fun activeNote(
+        title: String = "Active",
+        updatedAt: Instant = Instant.EPOCH,
+        isPinned: Boolean = false
+    ): ActiveNote = ActiveNote(
         id = NoteId(UUID.randomUUID()),
-        title = NoteTitle.of("Active"),
+        title = NoteTitle.of(title),
         description = NoteDescription.of("Active note"),
+        isPinned = isPinned,
         createdAt = Instant.EPOCH,
-        updatedAt = Instant.EPOCH
+        updatedAt = updatedAt
     )
 
     private fun archivedNote(): ArchivedNote = ArchivedNote(

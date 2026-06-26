@@ -77,6 +77,7 @@ class BackupJsonCodec(prettyPrint: Boolean = BuildConfig.DEBUG) {
             createdAt = createdAt.toString(),
             updatedAt = updatedAt.toString(),
             reminderAt = reminderAt?.value?.toString(),
+            isPinned = isPinned,
             archivedAt = null,
             discardedAt = null
         )
@@ -89,6 +90,7 @@ class BackupJsonCodec(prettyPrint: Boolean = BuildConfig.DEBUG) {
             createdAt = createdAt.toString(),
             updatedAt = updatedAt.toString(),
             reminderAt = null,
+            isPinned = false,
             archivedAt = archivedAt.toString(),
             discardedAt = null
         )
@@ -101,6 +103,7 @@ class BackupJsonCodec(prettyPrint: Boolean = BuildConfig.DEBUG) {
             createdAt = createdAt.toString(),
             updatedAt = updatedAt.toString(),
             reminderAt = null,
+            isPinned = false,
             archivedAt = null,
             discardedAt = discardedAt.toString()
         )
@@ -123,6 +126,7 @@ class BackupJsonCodec(prettyPrint: Boolean = BuildConfig.DEBUG) {
                 title = noteTitle,
                 description = noteDescription,
                 reminderAt = reminderAt?.let { ReminderAt(parseInstant(it, "note.reminderAt")) },
+                isPinned = isPinned,
                 createdAt = noteCreatedAt,
                 updatedAt = noteUpdatedAt
             )
@@ -219,6 +223,7 @@ private data class BackupNoteV1(
     val createdAt: String,
     val updatedAt: String,
     val reminderAt: String?,
+    val isPinned: Boolean,
     val archivedAt: String?,
     val discardedAt: String?
 )

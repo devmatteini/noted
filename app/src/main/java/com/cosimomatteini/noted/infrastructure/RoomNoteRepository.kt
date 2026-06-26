@@ -52,6 +52,7 @@ class RoomNoteRepository(private val noteDao: NoteDao, private val logger: Logge
             title = title.value,
             description = description.value,
             reminderAtMillis = reminderAt?.value?.toEpochMilli(),
+            isPinned = isPinned,
             status = STATUS_ACTIVE,
             archivedAtMillis = null,
             discardedAtMillis = null,
@@ -64,6 +65,7 @@ class RoomNoteRepository(private val noteDao: NoteDao, private val logger: Logge
             title = title.value,
             description = description.value,
             reminderAtMillis = null,
+            isPinned = false,
             status = STATUS_ARCHIVED,
             archivedAtMillis = archivedAt.toEpochMilli(),
             discardedAtMillis = null,
@@ -76,6 +78,7 @@ class RoomNoteRepository(private val noteDao: NoteDao, private val logger: Logge
             title = title.value,
             description = description.value,
             reminderAtMillis = null,
+            isPinned = false,
             status = STATUS_DISCARDED,
             archivedAtMillis = null,
             discardedAtMillis = discardedAt.toEpochMilli(),
@@ -105,6 +108,7 @@ class RoomNoteRepository(private val noteDao: NoteDao, private val logger: Logge
                     title = noteTitle,
                     description = noteDescription,
                     reminderAt = reminderAtMillis?.let { ReminderAt(Instant.ofEpochMilli(it)) },
+                    isPinned = isPinned,
                     createdAt = createdAt,
                     updatedAt = updatedAt
                 )

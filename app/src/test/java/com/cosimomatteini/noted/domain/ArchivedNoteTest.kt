@@ -36,6 +36,7 @@ class ArchivedNoteTest {
             restoredNote
         )
         assertNull(restoredNote.reminderAt)
+        assertEquals(false, restoredNote.isPinned)
     }
 
     @Test
