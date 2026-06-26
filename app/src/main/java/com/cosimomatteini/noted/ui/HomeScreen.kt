@@ -19,6 +19,7 @@ import androidx.compose.material.icons.outlined.Archive
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.GridView
 import androidx.compose.material.icons.outlined.MoreVert
+import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.ViewAgenda
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -64,6 +65,7 @@ fun HomeRoute(
     onEditNote: (ActiveNote) -> Unit,
     onOpenArchivedNote: (ArchivedNote) -> Unit,
     onOpenDiscardedNote: (DiscardedNote) -> Unit,
+    onOpenSearch: () -> Unit,
     onExportNotes: () -> Unit,
     onImportNotes: () -> Unit,
     notificationMessage: String?,
@@ -76,6 +78,7 @@ fun HomeRoute(
         onEditNote = onEditNote,
         onOpenArchivedNote = onOpenArchivedNote,
         onOpenDiscardedNote = onOpenDiscardedNote,
+        onOpenSearch = onOpenSearch,
         onShowNotes = viewModel::showNotes,
         onShowArchive = viewModel::showArchive,
         onShowTrash = viewModel::showTrash,
@@ -94,6 +97,7 @@ fun HomeScreen(
     onEditNote: (ActiveNote) -> Unit = {},
     onOpenArchivedNote: (ArchivedNote) -> Unit = {},
     onOpenDiscardedNote: (DiscardedNote) -> Unit = {},
+    onOpenSearch: () -> Unit = {},
     onShowNotes: () -> Unit = {},
     onShowArchive: () -> Unit = {},
     onShowTrash: () -> Unit = {},
@@ -117,6 +121,7 @@ fun HomeScreen(
             HomeTopBar(
                 destination = uiState.destination,
                 layout = uiState.layout,
+                onOpenSearch = onOpenSearch,
                 onToggleLayout = onToggleLayout,
                 onExportNotes = onExportNotes,
                 onImportNotes = onImportNotes
@@ -169,6 +174,7 @@ fun HomeScreen(
 private fun HomeTopBar(
     destination: HomeDestination,
     layout: NotesLayout,
+    onOpenSearch: () -> Unit,
     onToggleLayout: () -> Unit,
     onExportNotes: () -> Unit,
     onImportNotes: () -> Unit
@@ -190,6 +196,12 @@ private fun HomeTopBar(
                 style = MaterialTheme.typography.headlineSmall
             )
             Row {
+                IconButton(onClick = onOpenSearch) {
+                    Icon(
+                        imageVector = Icons.Outlined.Search,
+                        contentDescription = "Search notes"
+                    )
+                }
                 IconButton(onClick = onToggleLayout) {
                     Icon(
                         imageVector = layout.toggleIcon,

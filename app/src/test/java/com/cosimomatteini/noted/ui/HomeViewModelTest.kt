@@ -153,36 +153,103 @@ class HomeViewModelTest {
         assertEquals(NotesLayout.List, preference.layout)
     }
 
+    @Test
+    fun searchResults_returnsEmptyResultsForBlankSearch() {
+        val note = activeNote(title = "Match")
+
+        val results = searchResults(listOf(note), " ")
+
+        assertEquals(SearchResults(), results)
+    }
+
+    @Test
+    fun searchResults_matchesTitle() {
+        val matchingNote = activeNote(title = "Grocery list")
+        val otherNote = activeNote(title = "Work")
+
+        val results = searchResults(listOf(matchingNote, otherNote), "grocery")
+
+        assertEquals(listOf(matchingNote), results.activeNotes)
+    }
+
+    @Test
+    fun searchResults_matchesDescription() {
+        val matchingNote = activeNote(description = "Buy oat milk")
+        val otherNote = activeNote(description = "Read book")
+
+        val results = searchResults(listOf(matchingNote, otherNote), "oat")
+
+        assertEquals(listOf(matchingNote), results.activeNotes)
+    }
+
+    @Test
+    fun searchResults_matchesCaseInsensitive() {
+        val note = activeNote(title = "Firefox Dump")
+
+        val results = searchResults(listOf(note), "firefox")
+
+        assertEquals(listOf(note), results.activeNotes)
+    }
+
+    @Test
+    fun searchResults_doesNotMatchNonTitleOrDescriptionFields() {
+        val note = activeNote(
+            id = NoteId(UUID.fromString("00000000-0000-0000-0000-000000000123")),
+            title = "Title",
+            description = "Description"
+        )
+
+        val results = searchResults(listOf(note), "123")
+
+        assertEquals(SearchResults(), results)
+    }
+
+    @Test
+    fun searchResults_groupsActiveArchivedAndDiscardedNotes() {
+        val archivedNote = archivedNote(description = "shared text")
+        val discardedNote = discardedNote(description = "shared text")
+        val activeNote = activeNote(description = "shared text")
+
+        val results = searchResults(listOf(archivedNote, discardedNote, activeNote), "shared")
+
+        assertEquals(listOf(activeNote), results.activeNotes)
+        assertEquals(listOf(archivedNote), results.archivedNotes)
+        assertEquals(listOf(discardedNote), results.discardedNotes)
+    }
+
     private fun activeNote(
+        id: NoteId = NoteId(UUID.randomUUID()),
         title: String = "Active",
+        description: String = "Active note",
         updatedAt: Instant = Instant.EPOCH,
         isPinned: Boolean = false
     ): ActiveNote = ActiveNote(
-        id = NoteId(UUID.randomUUID()),
+        id = id,
         title = NoteTitle.of(title),
-        description = NoteDescription.of("Active note"),
+        description = NoteDescription.of(description),
         isPinned = isPinned,
         createdAt = Instant.EPOCH,
         updatedAt = updatedAt
     )
 
-    private fun archivedNote(): ArchivedNote = ArchivedNote(
+    private fun archivedNote(description: String = "Archived note"): ArchivedNote = ArchivedNote(
         id = NoteId(UUID.randomUUID()),
         title = NoteTitle.of("Archived"),
-        description = NoteDescription.of("Archived note"),
+        description = NoteDescription.of(description),
         createdAt = Instant.EPOCH,
         updatedAt = Instant.EPOCH,
         archivedAt = Instant.EPOCH
     )
 
-    private fun discardedNote(): DiscardedNote = DiscardedNote(
-        id = NoteId(UUID.randomUUID()),
-        title = NoteTitle.of("Discarded"),
-        description = NoteDescription.of("Discarded note"),
-        createdAt = Instant.EPOCH,
-        updatedAt = Instant.EPOCH,
-        discardedAt = Instant.EPOCH
-    )
+    private fun discardedNote(description: String = "Discarded note"): DiscardedNote =
+        DiscardedNote(
+            id = NoteId(UUID.randomUUID()),
+            title = NoteTitle.of("Discarded"),
+            description = NoteDescription.of(description),
+            createdAt = Instant.EPOCH,
+            updatedAt = Instant.EPOCH,
+            discardedAt = Instant.EPOCH
+        )
 
     private fun homeViewModel(
         layout: NotesLayout = NotesLayout.List,

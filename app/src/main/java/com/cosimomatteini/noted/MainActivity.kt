@@ -29,6 +29,7 @@ import com.cosimomatteini.noted.ui.DiscardedNoteDetailsRoute
 import com.cosimomatteini.noted.ui.EditorRoute
 import com.cosimomatteini.noted.ui.HomeRoute
 import com.cosimomatteini.noted.ui.HomeViewModel
+import com.cosimomatteini.noted.ui.SearchRoute
 import com.cosimomatteini.noted.ui.rememberImportNotesFile
 import com.cosimomatteini.noted.ui.theme.NotedTheme
 import java.util.UUID
@@ -122,21 +123,30 @@ fun NotedApp(
         screen = NotedScreen.Home
     }
 
+    fun showSearch() {
+        screen = NotedScreen.Search
+    }
+
+    fun openSearch() {
+        homeViewModel.clearSearchQuery()
+        showSearch()
+    }
+
     fun showActiveHome() {
         homeViewModel.showNotes()
         showHome()
     }
 
-    fun editNote(note: ActiveNote) {
-        screen = NotedScreen.EditNote(note)
+    fun editNote(note: ActiveNote, fromSearch: Boolean = false) {
+        screen = NotedScreen.EditNote(note, fromSearch)
     }
 
-    fun openArchivedNote(note: ArchivedNote) {
-        screen = NotedScreen.ArchivedNoteDetails(note)
+    fun openArchivedNote(note: ArchivedNote, fromSearch: Boolean = false) {
+        screen = NotedScreen.ArchivedNoteDetails(note, fromSearch)
     }
 
-    fun openDiscardedNote(note: DiscardedNote) {
-        screen = NotedScreen.DiscardedNoteDetails(note)
+    fun openDiscardedNote(note: DiscardedNote, fromSearch: Boolean = false) {
+        screen = NotedScreen.DiscardedNoteDetails(note, fromSearch)
     }
 
     fun createAndEditNote() {
@@ -160,6 +170,7 @@ fun NotedApp(
             onEditNote = ::editNote,
             onOpenArchivedNote = ::openArchivedNote,
             onOpenDiscardedNote = ::openDiscardedNote,
+            onOpenSearch = ::openSearch,
             onExportNotes = {
                 coroutineScope.launch {
                     runCatching {
@@ -177,38 +188,54 @@ fun NotedApp(
             onNotificationMessageShown = { notificationMessage = null }
         )
 
+        NotedScreen.Search -> SearchRoute(
+            viewModel = homeViewModel,
+            onBack = ::showHome,
+            onEditNote = { note -> editNote(note, fromSearch = true) },
+            onOpenArchivedNote = { note -> openArchivedNote(note, fromSearch = true) },
+            onOpenDiscardedNote = { note -> openDiscardedNote(note, fromSearch = true) }
+        )
+
         is NotedScreen.EditNote -> EditorRoute(
             appContainer = appContainer,
             activity = activity,
             note = currentScreen.note,
-            onDone = ::showActiveHome
+            onDone = if (currentScreen.fromSearch) ::showSearch else ::showActiveHome
         )
 
         is NotedScreen.ArchivedNoteDetails -> ArchivedNoteDetailsRoute(
             note = currentScreen.note,
-            onBack = ::showHome,
+            onBack = if (currentScreen.fromSearch) ::showSearch else ::showHome,
             onRestore = {
-                appContainer.restoreNote(currentScreen.note.id).getOrNull()?.let(::editNote)
-                    ?: showHome()
+                val restoredNote = appContainer.restoreNote(currentScreen.note.id).getOrNull()
+                if (restoredNote == null) {
+                    if (currentScreen.fromSearch) showSearch() else showHome()
+                } else {
+                    editNote(restoredNote, fromSearch = currentScreen.fromSearch)
+                }
             },
             onDelete = {
                 appContainer.discardNote(currentScreen.note.id)
-                showHome()
+                if (currentScreen.fromSearch) showSearch() else showHome()
             }
         )
 
         is NotedScreen.DiscardedNoteDetails -> DiscardedNoteDetailsRoute(
             note = currentScreen.note,
-            onBack = ::showHome,
+            onBack = if (currentScreen.fromSearch) ::showSearch else ::showHome,
             onRestore = {
-                appContainer.restoreDiscardedNote(
+                val restoredNote = appContainer.restoreDiscardedNote(
                     currentScreen.note.id
-                ).getOrNull()?.let(::editNote)
-                    ?: showHome()
+                ).getOrNull()
+                if (restoredNote == null) {
+                    if (currentScreen.fromSearch) showSearch() else showHome()
+                } else {
+                    editNote(restoredNote, fromSearch = currentScreen.fromSearch)
+                }
             },
             onPermanentlyDelete = {
                 appContainer.permanentlyDeleteNote(currentScreen.note.id)
-                showHome()
+                if (currentScreen.fromSearch) showSearch() else showHome()
             }
         )
     }
@@ -232,11 +259,15 @@ private fun NotificationOpenHandler(
 private sealed interface NotedScreen {
     data object Home : NotedScreen
 
-    data class EditNote(val note: ActiveNote) : NotedScreen
+    data object Search : NotedScreen
 
-    data class ArchivedNoteDetails(val note: ArchivedNote) : NotedScreen
+    data class EditNote(val note: ActiveNote, val fromSearch: Boolean = false) : NotedScreen
 
-    data class DiscardedNoteDetails(val note: DiscardedNote) : NotedScreen
+    data class ArchivedNoteDetails(val note: ArchivedNote, val fromSearch: Boolean = false) :
+        NotedScreen
+
+    data class DiscardedNoteDetails(val note: DiscardedNote, val fromSearch: Boolean = false) :
+        NotedScreen
 }
 
 private fun Intent.notificationNote(): NoteId? = getStringExtra(ReminderAlarm.EXTRA_NOTE_ID)

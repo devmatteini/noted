@@ -16,8 +16,36 @@ import kotlinx.coroutines.flow.stateIn
 data class HomeUiState(
     val notes: List<Note> = emptyList(),
     val destination: HomeDestination = HomeDestination.Notes,
-    val layout: NotesLayout = NotesLayout.List
+    val layout: NotesLayout = NotesLayout.List,
+    val searchQuery: String = "",
+    val searchResults: SearchResults = SearchResults()
 )
+
+data class SearchResults(
+    val activeNotes: List<ActiveNote> = emptyList(),
+    val archivedNotes: List<ArchivedNote> = emptyList(),
+    val discardedNotes: List<DiscardedNote> = emptyList()
+)
+
+val SearchResults.isEmpty: Boolean
+    get() = activeNotes.isEmpty() && archivedNotes.isEmpty() && discardedNotes.isEmpty()
+
+internal fun searchResults(notes: List<Note>, query: String): SearchResults {
+    val normalizedQuery = query.trim()
+    if (normalizedQuery.isEmpty()) {
+        return SearchResults()
+    }
+
+    val matchingNotes = notes.filter { note -> note.matches(normalizedQuery) }
+    return SearchResults(
+        activeNotes = matchingNotes.filterIsInstance<ActiveNote>(),
+        archivedNotes = matchingNotes.filterIsInstance<ArchivedNote>(),
+        discardedNotes = matchingNotes.filterIsInstance<DiscardedNote>()
+    )
+}
+
+private fun Note.matches(query: String): Boolean = title.value.contains(query, ignoreCase = true) ||
+    description.value.contains(query, ignoreCase = true)
 
 enum class HomeDestination {
     Notes,
@@ -29,14 +57,20 @@ class HomeViewModel(notes: Notes, private val notesLayoutPreference: NotesLayout
     ViewModel() {
     private val destination = MutableStateFlow(HomeDestination.Notes)
     private val layout = MutableStateFlow(notesLayoutPreference.load())
+    private val searchQuery = MutableStateFlow("")
 
     val uiState: StateFlow<HomeUiState> = notes()
         .combine(destination) { notes, destination -> notes to destination }
         .combine(layout) { (notes, destination), layout ->
+            Triple(notes, destination, layout)
+        }
+        .combine(searchQuery) { (notes, destination, layout), searchQuery ->
             HomeUiState(
                 notes = visibleNotes(notes, destination),
                 destination = destination,
-                layout = layout
+                layout = layout,
+                searchQuery = searchQuery,
+                searchResults = searchResults(notes, searchQuery)
             )
         }
         .stateIn(
@@ -64,6 +98,14 @@ class HomeViewModel(notes: Notes, private val notesLayoutPreference: NotesLayout
         }
         layout.value = nextLayout
         notesLayoutPreference.save(nextLayout)
+    }
+
+    fun updateSearchQuery(query: String) {
+        searchQuery.value = query
+    }
+
+    fun clearSearchQuery() {
+        searchQuery.value = ""
     }
 }
 

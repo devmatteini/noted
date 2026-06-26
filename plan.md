@@ -509,7 +509,7 @@
 - Run `./gradlew ktlintFormat`.
 - Run relevant unit tests.
 
-## 32. Search Notes
+## 32. Search Notes (Done)
 
 - Add search action to the homepage top bar.
 - Add a search screen with back button, text input, and clear action.
