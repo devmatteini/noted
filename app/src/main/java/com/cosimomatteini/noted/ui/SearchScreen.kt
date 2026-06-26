@@ -229,35 +229,43 @@ private fun SearchResultsColumn(
         contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        items(results.activeNotes, key = { it.id.value }) { note ->
-            SearchResultCard(
-                note = note,
-                onEditNote = onEditNote,
-                onOpenArchivedNote = onOpenArchivedNote,
-                onOpenDiscardedNote = onOpenDiscardedNote,
-                modifier = Modifier.fillMaxWidth()
-            )
-        }
+        searchResultItems(
+            notes = results.activeNotes,
+            onEditNote = onEditNote,
+            onOpenArchivedNote = onOpenArchivedNote,
+            onOpenDiscardedNote = onOpenDiscardedNote
+        )
         searchSection("Archive", results.archivedNotes)
-        items(results.archivedNotes, key = { it.id.value }) { note ->
-            SearchResultCard(
-                note = note,
-                onEditNote = onEditNote,
-                onOpenArchivedNote = onOpenArchivedNote,
-                onOpenDiscardedNote = onOpenDiscardedNote,
-                modifier = Modifier.fillMaxWidth()
-            )
-        }
+        searchResultItems(
+            notes = results.archivedNotes,
+            onEditNote = onEditNote,
+            onOpenArchivedNote = onOpenArchivedNote,
+            onOpenDiscardedNote = onOpenDiscardedNote
+        )
         searchSection("Trash", results.discardedNotes)
-        items(results.discardedNotes, key = { it.id.value }) { note ->
-            SearchResultCard(
-                note = note,
-                onEditNote = onEditNote,
-                onOpenArchivedNote = onOpenArchivedNote,
-                onOpenDiscardedNote = onOpenDiscardedNote,
-                modifier = Modifier.fillMaxWidth()
-            )
-        }
+        searchResultItems(
+            notes = results.discardedNotes,
+            onEditNote = onEditNote,
+            onOpenArchivedNote = onOpenArchivedNote,
+            onOpenDiscardedNote = onOpenDiscardedNote
+        )
+    }
+}
+
+private fun <T : Note> LazyListScope.searchResultItems(
+    notes: List<T>,
+    onEditNote: (ActiveNote) -> Unit,
+    onOpenArchivedNote: (ArchivedNote) -> Unit,
+    onOpenDiscardedNote: (DiscardedNote) -> Unit
+) {
+    items(notes, key = { it.id.value }) { note ->
+        NoteCard(
+            note = note,
+            onEditNote = onEditNote,
+            onOpenArchivedNote = onOpenArchivedNote,
+            onOpenDiscardedNote = onOpenDiscardedNote,
+            modifier = Modifier.fillMaxWidth()
+        )
     }
 }
 
@@ -284,32 +292,42 @@ private fun SearchResultsGrid(
         horizontalArrangement = Arrangement.spacedBy(12.dp),
         verticalItemSpacing = 12.dp
     ) {
-        items(results.activeNotes, key = { it.id.value }) { note ->
-            SearchResultCard(
-                note = note,
-                onEditNote = onEditNote,
-                onOpenArchivedNote = onOpenArchivedNote,
-                onOpenDiscardedNote = onOpenDiscardedNote
-            )
-        }
+        searchGridResultItems(
+            notes = results.activeNotes,
+            onEditNote = onEditNote,
+            onOpenArchivedNote = onOpenArchivedNote,
+            onOpenDiscardedNote = onOpenDiscardedNote
+        )
         searchGridSection("Archive", results.archivedNotes)
-        items(results.archivedNotes, key = { it.id.value }) { note ->
-            SearchResultCard(
-                note = note,
-                onEditNote = onEditNote,
-                onOpenArchivedNote = onOpenArchivedNote,
-                onOpenDiscardedNote = onOpenDiscardedNote
-            )
-        }
+        searchGridResultItems(
+            notes = results.archivedNotes,
+            onEditNote = onEditNote,
+            onOpenArchivedNote = onOpenArchivedNote,
+            onOpenDiscardedNote = onOpenDiscardedNote
+        )
         searchGridSection("Trash", results.discardedNotes)
-        items(results.discardedNotes, key = { it.id.value }) { note ->
-            SearchResultCard(
-                note = note,
-                onEditNote = onEditNote,
-                onOpenArchivedNote = onOpenArchivedNote,
-                onOpenDiscardedNote = onOpenDiscardedNote
-            )
-        }
+        searchGridResultItems(
+            notes = results.discardedNotes,
+            onEditNote = onEditNote,
+            onOpenArchivedNote = onOpenArchivedNote,
+            onOpenDiscardedNote = onOpenDiscardedNote
+        )
+    }
+}
+
+private fun <T : Note> LazyStaggeredGridScope.searchGridResultItems(
+    notes: List<T>,
+    onEditNote: (ActiveNote) -> Unit,
+    onOpenArchivedNote: (ArchivedNote) -> Unit,
+    onOpenDiscardedNote: (DiscardedNote) -> Unit
+) {
+    items(notes, key = { it.id.value }) { note ->
+        NoteCard(
+            note = note,
+            onEditNote = onEditNote,
+            onOpenArchivedNote = onOpenArchivedNote,
+            onOpenDiscardedNote = onOpenDiscardedNote
+        )
     }
 }
 
@@ -328,23 +346,6 @@ private fun SearchSectionHeader(title: String) {
         modifier = Modifier.padding(top = 12.dp, start = 4.dp, end = 4.dp),
         style = MaterialTheme.typography.titleMedium,
         color = MaterialTheme.colorScheme.onSurfaceVariant
-    )
-}
-
-@Composable
-private fun SearchResultCard(
-    note: Note,
-    onEditNote: (ActiveNote) -> Unit,
-    onOpenArchivedNote: (ArchivedNote) -> Unit,
-    onOpenDiscardedNote: (DiscardedNote) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    NoteCard(
-        note = note,
-        onEditNote = onEditNote,
-        onOpenArchivedNote = onOpenArchivedNote,
-        onOpenDiscardedNote = onOpenDiscardedNote,
-        modifier = modifier
     )
 }
 
