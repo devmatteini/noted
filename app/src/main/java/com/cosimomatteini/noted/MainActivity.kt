@@ -149,6 +149,18 @@ fun NotedApp(
         screen = NotedScreen.DiscardedNoteDetails(note, fromSearch)
     }
 
+    fun openPreviousScreenOrHome(fromSearch: Boolean) {
+        if (fromSearch) showSearch() else showHome()
+    }
+
+    fun openRestoredOrPreviousScreen(restoredNote: ActiveNote?, fromSearch: Boolean) {
+        if (restoredNote == null) {
+            openPreviousScreenOrHome(fromSearch)
+        } else {
+            editNote(restoredNote, fromSearch = fromSearch)
+        }
+    }
+
     fun createAndEditNote() {
         coroutineScope.launch {
             editNote(appContainer.createEmptyNote())
@@ -205,37 +217,29 @@ fun NotedApp(
 
         is NotedScreen.ArchivedNoteDetails -> ArchivedNoteDetailsRoute(
             note = currentScreen.note,
-            onBack = if (currentScreen.fromSearch) ::showSearch else ::showHome,
+            onBack = { openPreviousScreenOrHome(currentScreen.fromSearch) },
             onRestore = {
                 val restoredNote = appContainer.restoreNote(currentScreen.note.id).getOrNull()
-                if (restoredNote == null) {
-                    if (currentScreen.fromSearch) showSearch() else showHome()
-                } else {
-                    editNote(restoredNote, fromSearch = currentScreen.fromSearch)
-                }
+                openRestoredOrPreviousScreen(restoredNote, currentScreen.fromSearch)
             },
             onDelete = {
                 appContainer.discardNote(currentScreen.note.id)
-                if (currentScreen.fromSearch) showSearch() else showHome()
+                openPreviousScreenOrHome(currentScreen.fromSearch)
             }
         )
 
         is NotedScreen.DiscardedNoteDetails -> DiscardedNoteDetailsRoute(
             note = currentScreen.note,
-            onBack = if (currentScreen.fromSearch) ::showSearch else ::showHome,
+            onBack = { openPreviousScreenOrHome(currentScreen.fromSearch) },
             onRestore = {
                 val restoredNote = appContainer.restoreDiscardedNote(
                     currentScreen.note.id
                 ).getOrNull()
-                if (restoredNote == null) {
-                    if (currentScreen.fromSearch) showSearch() else showHome()
-                } else {
-                    editNote(restoredNote, fromSearch = currentScreen.fromSearch)
-                }
+                openRestoredOrPreviousScreen(restoredNote, currentScreen.fromSearch)
             },
             onPermanentlyDelete = {
                 appContainer.permanentlyDeleteNote(currentScreen.note.id)
-                if (currentScreen.fromSearch) showSearch() else showHome()
+                openPreviousScreenOrHome(currentScreen.fromSearch)
             }
         )
     }
