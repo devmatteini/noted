@@ -11,6 +11,7 @@ date/time.
 
 - Single homepage for notes.
 - Notes can be shown as a list or two-column grid with a persisted user preference.
+- Active notes can be pinned so important notes appear first in the Notes list/grid.
 - Full-screen editor for creating and editing notes.
 - Notes can be filtered to show active notes, archived notes, or trash.
 - Archived notes can be opened read-only, discarded, or unarchived.
@@ -28,6 +29,7 @@ A note has:
 - Title that may be empty.
 - Description that may be empty.
 - Optional reminder.
+- Active-only pin flag.
 - Lifecycle state.
 
 The domain model uses a sum type:
@@ -37,6 +39,8 @@ Note = ActiveNote | ArchivedNote | DiscardedNote
 ```
 
 Archived and discarded notes do not have reminders in the domain model.
+
+Archived and discarded notes do not have pins in the domain model.
 
 ## Business Rules
 
@@ -52,6 +56,17 @@ Archived and discarded notes do not have reminders in the domain model.
 - Restored discarded notes have no reminder.
 - Discarded notes are retained for exactly 30 days from `discardedAt`.
 - Expired discarded notes are permanently deleted on app open.
+
+### Pin Rules
+
+- Pins are available only on active notes.
+- Multiple active notes can be pinned.
+- Pinned active notes sort before unpinned active notes.
+- Within pinned and unpinned groups, active notes keep newest-updated-first ordering.
+- Archiving an active note removes its pin.
+- Discarding an active note removes its pin.
+- Restored archived notes are not pinned.
+- Restored discarded notes are not pinned.
 
 ### Reminder Rules
 
@@ -84,6 +99,8 @@ Archived and discarded notes do not have reminders in the domain model.
 ### Homepage
 
 - Homepage has Notes, Archive, and Trash destinations.
+- Notes sorts pinned notes first, then by most recent updated notes
+- Pinned note cards use a different border.
 - Add note action is visible only on the Notes destination.
 - Top-bar overflow has Export and Import actions.
 - Trash empty state title is `No notes in the trash`.
@@ -95,6 +112,7 @@ Archived and discarded notes do not have reminders in the domain model.
 - Back flushes pending autosave before returning home.
 - Title and description may be empty.
 - Reminder, archive, and delete actions are available for active notes.
+- Pin and unpin actions are available for active notes.
 - Delete discards the note into trash.
 
 ### Read-Only Details
@@ -213,8 +231,7 @@ Use `features/` instead of `usecase/`.
 Features are app actions.
 
 Feature classes should stay small and express one user-visible or lifecycle action, such as
-creating,
-editing, archiving, restoring, deleting, exporting, importing, or scheduling reminders.
+creating, editing...
 
 ### Dependency Injection
 
@@ -242,6 +259,8 @@ When reading from Room, invalid note rows are logged and skipped instead of cras
 stream.
 
 Archived and discarded domain notes do not expose a reminder.
+
+Archived and discarded domain notes do not expose a pin.
 
 ### Import/Export Design
 

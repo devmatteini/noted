@@ -469,3 +469,42 @@
 - Show unsupported version error clearly.
 - Show malformed file error clearly.
 - Verify import manually with exported file.
+
+## 31. Pin Active Notes
+
+- Add `isPinned: Boolean = false` to `ActiveNote`.
+- Add pure `ActiveNote.pin(updatedAt)` transition.
+- Add pure `ActiveNote.unpin(updatedAt)` transition.
+- Ensure `ActiveNote.archive()` drops the pin.
+- Ensure `ActiveNote.discard()` drops the pin.
+- Ensure archived restore creates unpinned active notes.
+- Ensure discarded restore creates unpinned active notes.
+- Add `PinNote` feature.
+- Add `UnpinNote` feature.
+- Wire `PinNote` and `UnpinNote` in `NotedAppContainer`.
+- Add `isPinned: Boolean` to `NoteEntity`.
+- Keep Room database version `1`.
+- Add no Room migration.
+- Map active note `isPinned` to and from Room.
+- Persist archived and discarded notes with `isPinned = false`.
+- Keep backup schema version `1`.
+- Add `isPinned` to backup note JSON.
+- Export active note pin state.
+- Import active note pin state.
+- Treat archived and discarded imported notes as unpinned/non-active.
+- Sort active notes with pinned notes first.
+- Keep newest-updated-first ordering inside pinned and unpinned groups.
+- Allow multiple pinned active notes.
+- Add pin/unpin action to active note editor.
+- Pass initial `isPinned` into editor screen.
+- Highlight pinned active note cards with `#ff5a22` border.
+- Leave unpinned, archived, and discarded note cards with existing border.
+- Add tests for active note pin/unpin transitions.
+- Add tests for archive/discard removing pins.
+- Add tests for restore creating unpinned active notes.
+- Add tests for `PinNote` and `UnpinNote`.
+- Add Room repository tests for saving/loading `isPinned`.
+- Add backup codec tests for `isPinned` encode/decode.
+- Add HomeViewModel tests for pinned-first ordering.
+- Run `./gradlew ktlintFormat`.
+- Run relevant unit tests.
