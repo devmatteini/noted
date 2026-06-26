@@ -13,6 +13,7 @@ Gradle.
   add Hilt unless explicitly requested.
 - Keep [ARCHITECTURE.md](./ARCHITECTURE.md) in sync, but verify roadmap claims against code before
   treating them as implemented.
+- When modifying code, run `./gradlew ktlintFormat` before any Kotlin lint command.
 
 ## More Context
 
