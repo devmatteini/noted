@@ -1,0 +1,12 @@
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="stone" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(512 492) rotate(90) scale(430)">
+      <stop offset="0" stop-color="#131418"/>
+      <stop offset="0.58" stop-color="#0f1013"/>
+      <stop offset="1" stop-color="#0b0c0e"/>
+    </radialGradient>
+  </defs>
+  <path d="M512 92L858 292V692L512 892L166 692V292L512 92Z" fill="url(#stone)" stroke="#FFFFFF" stroke-width="42" stroke-linejoin="round"/>
+  <path d="M512 92L458 246L241 735" stroke="#FFFFFF" stroke-width="32" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M458 246L673 799" stroke="#FFFFFF" stroke-width="32" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
