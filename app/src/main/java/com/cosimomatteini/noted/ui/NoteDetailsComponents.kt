@@ -21,6 +21,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Alarm
@@ -134,7 +136,9 @@ internal fun TextField(
     modifier: Modifier = Modifier,
     placeholder: String,
     textStyle: TextStyle,
-    singleLine: Boolean = false
+    singleLine: Boolean = false,
+    keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
+    keyboardActions: KeyboardActions = KeyboardActions.Default
 ) {
     BaseTextField(
         value = value,
@@ -142,7 +146,9 @@ internal fun TextField(
         modifier = modifier,
         placeholder = placeholder,
         textStyle = textStyle,
-        singleLine = singleLine
+        singleLine = singleLine,
+        keyboardOptions = keyboardOptions,
+        keyboardActions = keyboardActions
     )
 }
 
@@ -231,6 +237,8 @@ private fun BaseTextField(
     textStyle: TextStyle,
     singleLine: Boolean = false,
     readOnly: Boolean = false,
+    keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
+    keyboardActions: KeyboardActions = KeyboardActions.Default,
     onTextLayout: (TextLayoutResult) -> Unit = {}
 ) {
     val placeholderColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.72f)
@@ -242,6 +250,8 @@ private fun BaseTextField(
         textStyle = textStyle,
         singleLine = singleLine,
         readOnly = readOnly,
+        keyboardOptions = keyboardOptions,
+        keyboardActions = keyboardActions,
         cursorBrush = SolidColor(MaterialTheme.colorScheme.onSurface),
         onTextLayout = onTextLayout,
         decorationBox = { innerTextField ->

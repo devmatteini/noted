@@ -23,8 +23,7 @@ internal fun ReadOnlyNoteDetailsScreen(
                 ReadOnlyTextField(
                     value = TextFieldValue(title),
                     textStyle = noteTitleTextStyle(),
-                    modifier = Modifier.fillMaxWidth(),
-                    singleLine = true
+                    modifier = Modifier.fillMaxWidth()
                 )
             }
             if (description.isNotEmpty()) {
