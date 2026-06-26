@@ -1,5 +1,6 @@
 package com.cosimomatteini.noted.ui
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -84,6 +85,8 @@ fun SearchScreen(
     onOpenArchivedNote: (ArchivedNote) -> Unit = {},
     onOpenDiscardedNote: (DiscardedNote) -> Unit = {}
 ) {
+    BackHandler(onBack = onBack)
+
     Scaffold(
         topBar = {
             SearchTopBar(
