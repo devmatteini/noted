@@ -14,6 +14,7 @@ date/time.
 - Active notes can be pinned so important notes appear first in the Notes list/grid.
 - Full-screen editor for creating and editing notes.
 - Notes can be filtered to show active notes, archived notes, or trash.
+- Notes can be searched by title and description across all lifecycle states.
 - Archived notes can be opened read-only, discarded, or unarchived.
 - Discarded notes can be opened read-only, restored, or permanently deleted.
 - Discarded notes are automatically permanently deleted after 30 days.
@@ -107,8 +108,25 @@ Archived and discarded notes do not have pins in the domain model.
 - Notes sorts pinned notes first, then by most recent updated notes
 - Pinned note cards use a different border.
 - Add note action is visible only on the Notes destination.
+- Top bar has a search action that opens the search screen.
 - Top-bar overflow has Export and Import actions.
 - Trash empty state title is `No notes in the trash`.
+
+### Search
+
+- Search is opened from the homepage top bar.
+- Search has its own screen with a back button, text input, and clear action.
+- Back from search returns to the homepage.
+- Search matches note title and description only.
+- Search is case-insensitive.
+- Blank search shows an empty list/grid.
+- Nonblank search with no matches shows `No notes found`.
+- Search includes active, archived, and discarded notes.
+- Search results show active notes first, archived notes below `Archive`, and discarded notes below
+  `Trash`.
+- Search results use the persisted notes list/grid layout preference.
+- Opening a note from search keeps search active in the back stack.
+- Back from a note opened from search returns to the search screen with the same query.
 
 ### Editor
 

@@ -508,3 +508,36 @@
 - Add HomeViewModel tests for pinned-first ordering.
 - Run `./gradlew ktlintFormat`.
 - Run relevant unit tests.
+
+## 32. Search Notes
+
+- Add search action to the homepage top bar.
+- Add a search screen with back button, text input, and clear action.
+- Back from search returns to the homepage.
+- Store search query so it survives opening a note from search.
+- Match notes by title and description only.
+- Make matching case-insensitive.
+- Show an empty list/grid for blank search.
+- Show `No notes found` for nonblank search with no matches.
+- Include active, archived, and discarded notes.
+- Show active results first.
+- Show archived results below `Archive` header.
+- Show discarded results below `Trash` header.
+- Preserve repository order inside each lifecycle group.
+- Use the persisted notes list/grid layout preference for results.
+- Reuse note cards for list and grid results.
+- Opening active note from search opens editor.
+- Opening archived note from search opens archived read-only details.
+- Opening discarded note from search opens discarded read-only details.
+- Back from any note opened from search returns to the search screen with same query.
+- Keep existing home, archive, and trash navigation behavior unchanged.
+- Add tests for blank search.
+- Add tests for title match.
+- Add tests for description match.
+- Add tests for case-insensitive match.
+- Add tests that non-title/description fields do not match.
+- Add tests for active/archive/trash result grouping order.
+- Update search behavior in `ARCHITECTURE.md`.
+- Run `./gradlew ktlintFormat`.
+- Run `./gradlew test`.
+- Run `./gradlew ktlintCheck`.
