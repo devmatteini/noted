@@ -27,7 +27,13 @@ clear-app-data:
 copy-export:
 	adb pull /sdcard/Download/noted-backup-${TODAY}.json .
 
+generate-fixture:
+	./gradlew :app:generateFixture
+
+upload-fixture:
+	adb push noted-fixture-${TODAY}.json /sdcard/Download/
+
 configure-hooks:
 	git config core.hooksPath .githooks
 
-.PHONY: build test android-test lint format release clear-app-data configure-hooks copy-export
+.PHONY: build test android-test lint format release clear-app-data configure-hooks copy-export generate-fixture upload-fixture

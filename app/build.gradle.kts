@@ -44,6 +44,11 @@ android {
         buildConfig = true
         compose = true
     }
+    sourceSets {
+        getByName("test") {
+            kotlin.srcDir("src/fixture/kotlin")
+        }
+    }
 }
 
 room {
@@ -85,5 +90,24 @@ tasks.withType<Test>().configureEach {
         showCauses = true
         showExceptions = true
         showStackTraces = true
+    }
+}
+
+tasks.register<JavaExec>("generateFixture") {
+    group = "fixture"
+    description = "Generates a scenario backup fixture file."
+
+    dependsOn("compileDebugUnitTestKotlin", "compileDebugUnitTestJavaWithJavac")
+
+    classpath(
+        configurations.named("debugUnitTestRuntimeClasspath"),
+        tasks.named("compileDebugUnitTestKotlin").map { it.outputs.files },
+        tasks.named("compileDebugUnitTestJavaWithJavac").map { it.outputs.files }
+    )
+    mainClass.set("com.cosimomatteini.noted.fixture.GenerateFixtureFileKt")
+    workingDir = rootProject.layout.projectDirectory.asFile
+
+    providers.gradleProperty("output").orNull?.let { output ->
+        args(output)
     }
 }

@@ -10,3 +10,5 @@
 local.properties
 .env*
 .kotlin
+noted-fixture-*.json
+noted-backup-*.json
