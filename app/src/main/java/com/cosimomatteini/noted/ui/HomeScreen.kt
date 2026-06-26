@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -264,40 +265,55 @@ private fun HomeNavigationBar(
     onShowTrash: () -> Unit
 ) {
     NavigationBar {
-        NavigationBarItem(
+        HomeNavItem(
             selected = selectedDestination == HomeDestination.Notes,
             onClick = onShowNotes,
+            label = HomeDestination.Notes.label,
             icon = {
                 Icon(
                     painter = painterResource(R.drawable.ic_note_stack),
                     contentDescription = null
                 )
-            },
-            label = { Text(HomeDestination.Notes.label) }
+            }
         )
-        NavigationBarItem(
+        HomeNavItem(
             selected = selectedDestination == HomeDestination.Archive,
             onClick = onShowArchive,
+            label = HomeDestination.Archive.label,
             icon = {
                 Icon(
                     imageVector = Icons.Outlined.Archive,
                     contentDescription = null
                 )
-            },
-            label = { Text(HomeDestination.Archive.label) }
+            }
         )
-        NavigationBarItem(
+        HomeNavItem(
             selected = selectedDestination == HomeDestination.Trash,
             onClick = onShowTrash,
+            label = HomeDestination.Trash.label,
             icon = {
                 Icon(
                     imageVector = Icons.Outlined.Delete,
                     contentDescription = null
                 )
-            },
-            label = { Text(HomeDestination.Trash.label) }
+            }
         )
     }
+}
+
+@Composable
+private fun RowScope.HomeNavItem(
+    selected: Boolean,
+    onClick: () -> Unit,
+    label: String,
+    icon: @Composable () -> Unit
+) {
+    NavigationBarItem(
+        selected = selected,
+        onClick = onClick,
+        icon = icon,
+        label = { Text(label) }
+    )
 }
 
 private val HomeDestination.label: String
@@ -309,15 +325,10 @@ private val HomeDestination.label: String
 
 @Composable
 private fun EmptyNotes(destination: HomeDestination, modifier: Modifier = Modifier) {
-    val title = when (destination) {
-        HomeDestination.Notes -> "No notes yet"
-        HomeDestination.Archive -> "No archived notes"
-        HomeDestination.Trash -> "No notes in the trash"
-    }
-    val description = when (destination) {
-        HomeDestination.Notes -> "Create a note to see it here."
-        HomeDestination.Archive -> "Archive a note to see it here."
-        HomeDestination.Trash -> "Discard a note to see it here."
+    val (title, description) = when (destination) {
+        HomeDestination.Notes -> "No notes yet" to "Create a note to see it here."
+        HomeDestination.Archive -> "No archived notes" to "Archive a note to see it here."
+        HomeDestination.Trash -> "No notes in the trash" to "Discard a note to see it here."
     }
 
     Column(
