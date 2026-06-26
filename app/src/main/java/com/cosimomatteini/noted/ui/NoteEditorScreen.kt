@@ -120,6 +120,11 @@ fun NoteEditorScreen(
             Spacer(Modifier.weight(1f))
             NoteActionsRow {
                 NoteActionIcon(
+                    imageVector = Icons.Filled.AddAlert,
+                    contentDescription = "Set reminder",
+                    onClick = { showReminderPicker = true }
+                )
+                NoteActionIcon(
                     imageVector = Icons.Filled.Archive,
                     contentDescription = "Archive note",
                     onClick = {
@@ -143,11 +148,6 @@ fun NoteEditorScreen(
                             }
                         }
                     }
-                )
-                NoteActionIcon(
-                    imageVector = Icons.Filled.AddAlert,
-                    contentDescription = "Set reminder",
-                    onClick = { showReminderPicker = true }
                 )
                 NoteActionIcon(
                     imageVector = Icons.Filled.Delete,
