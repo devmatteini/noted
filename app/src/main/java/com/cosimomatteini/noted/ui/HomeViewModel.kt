@@ -59,20 +59,20 @@ class HomeViewModel(notes: Notes, private val notesLayoutPreference: NotesLayout
     private val layout = MutableStateFlow(notesLayoutPreference.load())
     private val searchQuery = MutableStateFlow("")
 
-    val uiState: StateFlow<HomeUiState> = notes()
-        .combine(destination) { notes, destination -> notes to destination }
-        .combine(layout) { (notes, destination), layout ->
-            Triple(notes, destination, layout)
-        }
-        .combine(searchQuery) { (notes, destination, layout), searchQuery ->
-            HomeUiState(
-                notes = visibleNotes(notes, destination),
-                destination = destination,
-                layout = layout,
-                searchQuery = searchQuery,
-                searchResults = searchResults(notes, searchQuery)
-            )
-        }
+    val uiState: StateFlow<HomeUiState> = combine(
+        notes(),
+        destination,
+        layout,
+        searchQuery
+    ) { notes, destination, layout, searchQuery ->
+        HomeUiState(
+            notes = visibleNotes(notes, destination),
+            destination = destination,
+            layout = layout,
+            searchQuery = searchQuery,
+            searchResults = searchResults(notes, searchQuery)
+        )
+    }
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
