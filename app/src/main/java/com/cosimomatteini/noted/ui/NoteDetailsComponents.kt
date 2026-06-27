@@ -66,7 +66,7 @@ import kotlinx.coroutines.withTimeoutOrNull
 internal fun NoteDetailsScaffold(
     onBack: () -> Unit,
     content:
-    @Composable()
+    @Composable
     ((PaddingValues) -> Unit)
 ) {
     Scaffold(

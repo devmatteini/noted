@@ -131,7 +131,9 @@ Register it in `AndroidManifest.xml`:
 
 ```xml
 
-<application android:name=".NotedApplication"...></application>
+<application android:name=".NotedApplication">
+    <!-- Other application attributes -->
+</application>
 ```
 
 ## Manifest

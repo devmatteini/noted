@@ -1,6 +1,7 @@
 package com.cosimomatteini.noted.infrastructure
 
 import android.content.Context
+import androidx.core.content.edit
 import com.cosimomatteini.noted.ui.NotesLayout
 import com.cosimomatteini.noted.ui.NotesLayoutPreference
 
@@ -13,9 +14,9 @@ class SharedPreferencesNotesLayoutPreference(context: Context) : NotesLayoutPref
     }
 
     override fun save(layout: NotesLayout) {
-        preferences.edit()
-            .putString(KEY_NOTES_LAYOUT, layout.preferenceValue)
-            .apply()
+        preferences.edit {
+            putString(KEY_NOTES_LAYOUT, layout.preferenceValue)
+        }
     }
 
     private val NotesLayout.preferenceValue: String

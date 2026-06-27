@@ -67,7 +67,11 @@ Bad:
 ```kotlin
 @Composable
 fun NoteCard(note: Note) {
-    val database = Room.databaseBuilder(...)
+    val database = Room.databaseBuilder(
+        context,
+        AppDatabase::class.java,
+        "noted.db",
+    )
 }
 ```
 
@@ -759,16 +763,16 @@ NavHost(
     startDestination = Routes.HOME,
 ) {
     composable(Routes.HOME) {
-        HomeRoute(...)
+        HomeRoute()
     }
 
     composable(Routes.CREATE_NOTE) {
-        NoteEditorRoute(...)
+        NoteEditorRoute()
     }
 
     composable(Routes.EDIT_NOTE) { entry ->
         val noteId = entry.arguments?.getString("noteId")
-        NoteEditorRoute(...)
+        NoteEditorRoute(noteId = noteId)
     }
 }
 ```
@@ -969,7 +973,9 @@ Keep composables stateless when possible.
 Use stable list keys.
 
 ```kotlin
-items(notes, key = { it.id.value.toString() }) { note -> ... }
+items(notes, key = { it.id.value.toString() }) { note ->
+    NoteCard(note = note)
+}
 ```
 
 Use `collectAsStateWithLifecycle()` for `StateFlow`.
@@ -1027,13 +1033,17 @@ state.copy(notes = state.notes + note)
 Forgetting stable lazy list keys:
 
 ```kotlin
-items(notes) { note -> ... }
+items(notes) { note ->
+    NoteCard(note = note)
+}
 ```
 
 Prefer:
 
 ```kotlin
-items(notes, key = { it.id.value.toString() }) { note -> ... }
+items(notes, key = { it.id.value.toString() }) { note ->
+    NoteCard(note = note)
+}
 ```
 
 Doing validation only in UI:
