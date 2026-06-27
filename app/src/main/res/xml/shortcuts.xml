@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+    <shortcut
+        android:enabled="true"
+        android:icon="@drawable/ic_note_stack"
+        android:shortcutId="create_note"
+        android:shortcutLongLabel="@string/shortcut_create_note_long_label"
+        android:shortcutShortLabel="@string/shortcut_create_note_short_label">
+        <intent
+            android:action="com.cosimomatteini.noted.action.CREATE_NOTE"
+            android:targetClass="com.cosimomatteini.noted.MainActivity"
+            android:targetPackage="com.cosimomatteini.noted" />
+    </shortcut>
+</shortcuts>

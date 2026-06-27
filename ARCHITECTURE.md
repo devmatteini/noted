@@ -15,6 +15,7 @@ date/time.
 - Full-screen editor for creating and editing notes.
 - Notes can be filtered to show active notes, archived notes, or trash.
 - Notes can be searched by title and description across all lifecycle states.
+- App icon context actions can create a new note directly.
 - Archived notes can be opened read-only, discarded, or unarchived.
 - Discarded notes can be opened read-only, restored, or permanently deleted.
 - Discarded notes are automatically permanently deleted after 30 days.
@@ -108,6 +109,7 @@ Archived and discarded notes do not have pins in the domain model.
 - Notes sorts pinned notes first, then by most recent updated notes
 - Pinned note cards use a different border.
 - Add note action is visible only on the Notes destination.
+- Launcher `New note` shortcut creates an empty note and opens the editor.
 - Top bar has a search action that opens the search screen.
 - Top-bar overflow has Export and Import actions.
 - Trash empty state title is `No notes in the trash`.

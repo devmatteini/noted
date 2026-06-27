@@ -40,14 +40,16 @@ import kotlinx.coroutines.withContext
 class MainActivity : ComponentActivity() {
     private lateinit var appContainer: NotedAppContainer
     private var noteToOpenFromNotification by mutableStateOf<NoteId?>(null)
+    private var createNoteShortcutRequest by mutableStateOf<CreateNoteShortcutRequest?>(null)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val isFreshActivityLaunch = savedInstanceState == null
         appContainer = NotedAppContainer(applicationContext)
         lifecycleScope.launch(Dispatchers.IO) {
             appContainer.deleteExpiredDiscardedNotes()
         }
-        noteToOpenFromNotification = intent.notificationNote()
+        handleLaunchIntent(intent, handleCreateNoteShortcut = isFreshActivityLaunch)
         enableEdgeToEdge()
         setContent {
             NotedTheme {
@@ -55,7 +57,8 @@ class MainActivity : ComponentActivity() {
                     appContainer = appContainer,
                     activity = this,
                     noteToOpenFromNotification = noteToOpenFromNotification,
-                    onNotificationNoteShown = { noteToOpenFromNotification = null }
+                    onNotificationNoteShown = { noteToOpenFromNotification = null },
+                    createNoteShortcutRequest = createNoteShortcutRequest
                 )
             }
         }
@@ -64,16 +67,25 @@ class MainActivity : ComponentActivity() {
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         setIntent(intent)
+        handleLaunchIntent(intent, handleCreateNoteShortcut = true)
+    }
+
+    private fun handleLaunchIntent(intent: Intent, handleCreateNoteShortcut: Boolean) {
         noteToOpenFromNotification = intent.notificationNote()
+
+        if (handleCreateNoteShortcut && intent.isCreateNoteShortcut()) {
+            createNoteShortcutRequest = CreateNoteShortcutRequest()
+        }
     }
 }
 
 @Composable
-fun NotedApp(
+private fun NotedApp(
     appContainer: NotedAppContainer,
     activity: ComponentActivity,
     noteToOpenFromNotification: NoteId? = null,
-    onNotificationNoteShown: () -> Unit = {}
+    onNotificationNoteShown: () -> Unit = {},
+    createNoteShortcutRequest: CreateNoteShortcutRequest? = null
 ) {
     var screen by remember { mutableStateOf<NotedScreen>(NotedScreen.Home) }
     var notificationMessage by remember { mutableStateOf<String?>(null) }
@@ -167,6 +179,12 @@ fun NotedApp(
         }
     }
 
+    CreateNoteShortcutHandler(
+        request = createNoteShortcutRequest,
+        createEmptyNote = appContainer.createEmptyNote::invoke,
+        onEditNote = ::editNote
+    )
+
     NotificationOpenHandler(
         noteToOpen = noteToOpenFromNotification,
         loadNote = appContainer.noteRepository::loadActive,
@@ -246,6 +264,18 @@ fun NotedApp(
 }
 
 @Composable
+private fun CreateNoteShortcutHandler(
+    request: CreateNoteShortcutRequest?,
+    createEmptyNote: suspend () -> ActiveNote,
+    onEditNote: (ActiveNote) -> Unit
+) {
+    LaunchedEffect(request) {
+        request ?: return@LaunchedEffect
+        onEditNote(createEmptyNote())
+    }
+}
+
+@Composable
 private fun NotificationOpenHandler(
     noteToOpen: NoteId?,
     loadNote: suspend (NoteId) -> ActiveNote?,
@@ -276,3 +306,9 @@ private sealed interface NotedScreen {
 
 private fun Intent.notificationNote(): NoteId? = getStringExtra(ReminderAlarm.EXTRA_NOTE_ID)
     ?.let { runCatching { NoteId(UUID.fromString(it)) }.getOrNull() }
+
+private fun Intent.isCreateNoteShortcut(): Boolean = action == ACTION_CREATE_NOTE
+
+private const val ACTION_CREATE_NOTE = "com.cosimomatteini.noted.action.CREATE_NOTE"
+
+private class CreateNoteShortcutRequest

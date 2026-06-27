@@ -541,3 +541,16 @@
 - Run `./gradlew ktlintFormat`.
 - Run `./gradlew test`.
 - Run `./gradlew ktlintCheck`.
+
+## 33. Add Launcher New Note Shortcut (Done)
+
+- Add static launcher shortcut metadata to `MainActivity`.
+- Add `New note` shortcut XML.
+- Route shortcut intents through `MainActivity`.
+- Reuse existing empty note creation flow.
+- Open editor for the created note.
+- Preserve normal launcher behavior.
+- Preserve reminder notification deep links.
+- Run `./gradlew ktlintFormat`.
+- Run `./gradlew ktlintCheck`.
+- Run `./gradlew test`.
