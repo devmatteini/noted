@@ -8,6 +8,7 @@
 .externalNativeBuild
 .cxx
 local.properties
+signing.properties
 .env*
 .kotlin
 noted-fixture-*.json

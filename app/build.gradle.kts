@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
@@ -10,6 +12,8 @@ plugins {
 ktlint {
     android.set(true)
 }
+
+val isReleaseBuild = gradle.startParameter.taskNames.any { it.contains("Release") }
 
 android {
     namespace = "com.cosimomatteini.noted"
@@ -29,8 +33,29 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    signingConfigs {
+        create("release") {
+            if (!isReleaseBuild) return@create
+
+            val signingProperties =
+                Properties().apply {
+                    rootProject.file("signing.properties").inputStream().use(::load)
+                }
+
+            fun signingProperty(name: String): String = signingProperties.getProperty(name)
+                ?: error("Missing signing.properties property: $name")
+
+            storeFile = file(signingProperty("storeFile"))
+            storePassword = signingProperty("storePassword")
+            keyAlias = signingProperty("keyAlias")
+            keyPassword = signingProperty("keyPassword")
+        }
+    }
+
     buildTypes {
         release {
+            signingConfig = signingConfigs.getByName("release")
+
             optimization {
                 enable = false
             }
