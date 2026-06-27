@@ -71,7 +71,7 @@ android {
     }
     sourceSets {
         getByName("test") {
-            kotlin.srcDir("src/fixture/kotlin")
+            kotlin.directories.add("src/fixture/kotlin")
         }
     }
 }
