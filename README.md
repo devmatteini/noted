@@ -1,6 +1,5 @@
-<h1 style="display: flex; align-items: center; gap: 12px;">
-  <img src="./assets/noted.svg" width="40" alt="Noted logo" style="vertical-align: middle;" />
-  Noted
+<h1 align="left" style="vertical-align: middle;">
+  <img src="./assets/noted.svg" width="24" alt="Noted logo" /> Noted
 </h1>
 
 [![CI](https://github.com/devmatteini/noted/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/devmatteini/noted/actions/workflows/ci.yml)
