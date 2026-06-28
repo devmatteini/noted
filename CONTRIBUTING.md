@@ -45,7 +45,7 @@ Useful commands when testing with Android Emulator:
 
 ## Architecture & Technical Choices
 
-Read [ARCHITECTURE.md](./ARCHITECTURE.md) to have an overview of the product and the technical
+Read [ARCHITECTURE.md](docs/ARCHITECTURE.md) to have an overview of the product and the technical
 choices.
 
 ## License

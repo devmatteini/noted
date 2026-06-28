@@ -11,7 +11,7 @@ Gradle.
   `app/src/main/java/com/cosimomatteini/noted/MainActivity.kt`.
 - Manual DI is wired in `app/src/main/java/com/cosimomatteini/noted/NotedAppContainer.kt`; do not
   add Hilt unless explicitly requested.
-- Keep [ARCHITECTURE.md](./ARCHITECTURE.md) in sync, but verify roadmap claims against code before
+- Keep [ARCHITECTURE.md](docs/ARCHITECTURE.md) in sync, but verify roadmap claims against code before
   treating them as implemented.
 - When modifying code, run `./gradlew ktlintFormat` before any Kotlin lint command.
 
