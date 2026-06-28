@@ -20,7 +20,10 @@ It works completely offline on you device.
 [Contributing](#contributing) •
 [License](#license)
 
-![Noted screenshot](./assets/screenshot.png)
+<p>
+  <img src="./assets/demo/home-screen.png" height="460" alt="Noted home screen" />
+  <img src="./assets/demo/edit-note-screen.png" height="460" alt="Noted edit note screen" />
+</p>
 
 ## Features
 

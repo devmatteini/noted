@@ -1,0 +1,42 @@
+{
+    "schemaVersion": 1,
+    "exportedAt": "2026-06-28T14:43:33.303221Z",
+    "notes": [
+        {
+            "id": "10000000-0000-0000-0000-000000000002",
+            "status": "ACTIVE",
+            "title": "Backup trip photos",
+            "description": "",
+            "createdAt": "2026-06-25T13:40:00Z",
+            "updatedAt": "2026-06-28T14:39:52.399Z",
+            "reminderAt": "2026-06-28T19:15:00Z",
+            "isPinned": false,
+            "archivedAt": null,
+            "discardedAt": null
+        },
+        {
+            "id": "10000000-0000-0000-0000-000000000001",
+            "status": "ACTIVE",
+            "title": "Buy coffee beans",
+            "description": "Try the Ethiopian roast from the corner shop.",
+            "createdAt": "2026-06-24T08:10:00Z",
+            "updatedAt": "2026-06-28T14:39:17.236Z",
+            "reminderAt": null,
+            "isPinned": false,
+            "archivedAt": null,
+            "discardedAt": null
+        },
+        {
+            "id": "10000000-0000-0000-0000-000000000003",
+            "status": "ACTIVE",
+            "title": "Dinner idea",
+            "description": "Pasta with lemon, basil, and zucchini.",
+            "createdAt": "2026-06-26T19:05:00Z",
+            "updatedAt": "2026-06-26T19:05:00Z",
+            "reminderAt": null,
+            "isPinned": false,
+            "archivedAt": null,
+            "discardedAt": null
+        }
+    ]
+}
