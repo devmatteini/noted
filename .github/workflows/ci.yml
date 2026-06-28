@@ -5,6 +5,14 @@ on:
   push:
     branches:
       - main
+    paths:
+      - app/**
+      - gradle/**
+      - build.gradle.kts
+      - settings.gradle.kts
+      - gradle.properties
+      - gradlew
+      - Makefile
 
 permissions:
   contents: read
