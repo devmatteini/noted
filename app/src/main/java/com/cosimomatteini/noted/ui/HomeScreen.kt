@@ -25,6 +25,7 @@ import androidx.compose.material.icons.outlined.ViewAgenda
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -46,6 +47,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.cosimomatteini.noted.BuildConfig
 import com.cosimomatteini.noted.R
 import com.cosimomatteini.noted.domain.ActiveNote
 import com.cosimomatteini.noted.domain.ArchivedNote
@@ -232,6 +234,13 @@ private fun HomeTopBar(
                             menuExpanded = false
                             onImportNotes()
                         }
+                    )
+                    HorizontalDivider()
+                    Text(
+                        text = "Version ${BuildConfig.VERSION_NAME}",
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        style = MaterialTheme.typography.bodySmall
                     )
                 }
             }
