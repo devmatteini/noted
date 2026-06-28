@@ -15,7 +15,6 @@ It works completely offline on you device.
 
 [Features](#features) •
 [Installation](#installation) •
-[Usage](#usage) •
 [Contributing](#contributing) •
 [License](#license)
 
