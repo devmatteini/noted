@@ -6,6 +6,9 @@ TODAY := $(shell date --iso-8601)
 build:
 	./gradlew :app:assembleDebug
 
+check:
+	./gradlew ktlintCheck test :app:assembleDebug
+
 test:
 	./gradlew test
 
@@ -36,4 +39,4 @@ upload-fixture:
 configure-hooks:
 	git config core.hooksPath .githooks
 
-.PHONY: build test android-test lint format release clear-app-data configure-hooks copy-export generate-fixture upload-fixture
+.PHONY: build test android-test lint format release clear-app-data configure-hooks copy-export generate-fixture upload-fixture check

@@ -25,11 +25,5 @@ jobs:
           java-version: 24.0.2
           cache: gradle
 
-      - name: Lint
-        run: make lint
-
-      - name: Test
-        run: make test
-
-      - name: Build (debug)
-        run: make build
+      - name: Lint, test & build
+        run: make check
