@@ -554,3 +554,14 @@
 - Run `./gradlew ktlintFormat`.
 - Run `./gradlew ktlintCheck`.
 - Run `./gradlew test`.
+
+## 34. Add Reminder Notification Actions (Done)
+
+- Add `Done` and `Archive` actions to reminder notifications.
+- Route actions through the reminder broadcast receiver.
+- Done discards the active note to Trash.
+- Archive archives the active note.
+- Dismiss notification after action.
+- Reuse existing lifecycle features and reminder cancellation.
+- Add action labels.
+- Run formatting, lint, and tests.

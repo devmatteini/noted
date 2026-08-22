@@ -2,4 +2,6 @@
     <string name="app_name">Noted</string>
     <string name="shortcut_create_note_short_label">New note</string>
     <string name="shortcut_create_note_long_label">Create new note</string>
+    <string name="reminder_notification_action_done">Done</string>
+    <string name="reminder_notification_action_archive">Archive</string>
 </resources>

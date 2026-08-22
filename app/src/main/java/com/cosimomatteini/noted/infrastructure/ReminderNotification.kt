@@ -12,6 +12,7 @@ import androidx.core.content.ContextCompat
 import com.cosimomatteini.noted.MainActivity
 import com.cosimomatteini.noted.R
 import com.cosimomatteini.noted.domain.ActiveNote
+import com.cosimomatteini.noted.domain.NoteId
 
 class ReminderNotification(private val context: Context) {
     private val notificationManager = context.getSystemService(NotificationManager::class.java)
@@ -37,10 +38,24 @@ class ReminderNotification(private val context: Context) {
                 .setSmallIcon(R.drawable.ic_stat_notification)
                 .setContentTitle(reminderNotificationText(note.title.value, note.description.value))
                 .setContentIntent(contentIntent(note))
+                .addAction(
+                    0,
+                    context.getString(R.string.reminder_notification_action_done),
+                    actionIntent(note, ReminderAlarm.ACTION_DISCARD_REMINDER)
+                )
+                .addAction(
+                    0,
+                    context.getString(R.string.reminder_notification_action_archive),
+                    actionIntent(note, ReminderAlarm.ACTION_ARCHIVE_REMINDER)
+                )
                 .setAutoCancel(true)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .build()
         )
+    }
+
+    fun cancel(noteId: NoteId) {
+        notificationManager.cancel(noteId.value.hashCode())
     }
 
     private fun contentIntent(note: ActiveNote): PendingIntent = PendingIntent.getActivity(
@@ -51,6 +66,16 @@ class ReminderNotification(private val context: Context) {
             .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP),
         PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
     )
+
+    private fun actionIntent(note: ActiveNote, action: String): PendingIntent =
+        PendingIntent.getBroadcast(
+            context,
+            note.id.value.hashCode(),
+            Intent(context, ReminderNotificationReceiver::class.java)
+                .setAction(action)
+                .putExtra(ReminderAlarm.EXTRA_NOTE_ID, note.id.value.toString()),
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
 
     private companion object {
         const val CHANNEL_ID = "reminders"

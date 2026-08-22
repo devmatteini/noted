@@ -73,6 +73,7 @@ Archived and discarded notes do not have pins in the domain model.
 ### Reminder Rules
 
 - Reminders are available only on active notes.
+- Reminder notifications offer Done to discard the note to Trash and Archive to archive it.
 - Reminders require notification permission and exact alarm access.
 - If reminder permissions are denied, no reminder is saved.
 - Saving note content must not fail solely because reminder permission is denied.
