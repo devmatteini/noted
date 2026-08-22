@@ -7,6 +7,13 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-08-22
+
+### Added
+
+- Reminder notifications have two actions available: `Done` to discard the note and `Archive` to
+  archive it
+
 ## [0.1.0] - 2026-06-28
 
 Initial release of `Noted`.
