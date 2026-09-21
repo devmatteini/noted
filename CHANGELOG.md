@@ -7,6 +7,12 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.2.1] - 2026-09-21
+
+### Fixed
+
+- Notes with very long description now correctly shows the actions bottom bar
+
 ## [0.2.0] - 2026-08-22
 
 ### Added
