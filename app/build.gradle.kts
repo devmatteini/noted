@@ -18,9 +18,7 @@ val isReleaseBuild = gradle.startParameter.taskNames.any { it.contains("Release"
 android {
     namespace = "com.cosimomatteini.noted"
     compileSdk {
-        version = release(36) {
-            minorApiLevel = 1
-        }
+        version = release(37)
     }
 
     defaultConfig {
