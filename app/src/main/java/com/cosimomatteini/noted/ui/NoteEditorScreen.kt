@@ -1,7 +1,6 @@
 package com.cosimomatteini.noted.ui
 
 import androidx.activity.compose.BackHandler
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardActions
@@ -106,7 +105,8 @@ fun NoteEditorScreen(
                 onValueChange = { description = it },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .focusRequester(descriptionFocusRequester),
+                    .focusRequester(descriptionFocusRequester)
+                    .weight(1f),
                 placeholder = "Note",
                 textStyle = noteDescriptionTextStyle()
             )
@@ -117,7 +117,6 @@ fun NoteEditorScreen(
                     onClick = { showReminderPicker = true }
                 )
             }
-            Spacer(Modifier.weight(1f))
             NoteActionsRow {
                 NoteActionIcon(
                     imageVector = Icons.Outlined.AddAlert,
