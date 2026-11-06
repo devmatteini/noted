@@ -75,7 +75,7 @@ class HomeViewModel(notes: Notes, private val notesLayoutPreference: NotesLayout
     }
         .stateIn(
             scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5_000),
+            started = SharingStarted.Eagerly,
             initialValue = HomeUiState(layout = layout.value)
         )
 

@@ -11,6 +11,10 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 - Share action on active and archived notes
 
+### Fixed
+
+- Note lists now update immediately after changes
+
 ## [0.2.1] - 2026-09-21
 
 ### Fixed
