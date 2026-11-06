@@ -2,6 +2,7 @@ package com.cosimomatteini.noted.ui
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material.icons.outlined.Unarchive
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
@@ -20,14 +21,16 @@ internal fun ArchivedNoteDetailsRoute(
     note: ArchivedNote,
     onBack: () -> Unit,
     onRestore: suspend () -> Unit,
-    onDelete: suspend () -> Unit
+    onDelete: suspend () -> Unit,
+    onShare: () -> Unit
 ) {
     ArchivedNoteDetailsScreen(
         title = note.title.value,
         description = note.description.value,
         onBack = onBack,
         onRestore = onRestore,
-        onDelete = onDelete
+        onDelete = onDelete,
+        onShare = onShare
     )
 }
 
@@ -37,7 +40,8 @@ fun ArchivedNoteDetailsScreen(
     description: String,
     onBack: () -> Unit,
     onRestore: suspend () -> Unit,
-    onDelete: suspend () -> Unit
+    onDelete: suspend () -> Unit,
+    onShare: () -> Unit
 ) {
     val coroutineScope = rememberCoroutineScope()
 
@@ -64,6 +68,12 @@ fun ArchivedNoteDetailsScreen(
                 }
             }
         )
+        NoteActionIcon(
+            imageVector = Icons.Outlined.Share,
+            contentDescription = "Share note",
+            onClick = onShare,
+            enabled = title.isNotBlank() || description.isNotBlank()
+        )
     }
 }
 
@@ -82,7 +92,8 @@ fun ArchivedNoteDetailsScreenPreview() {
             ),
             onBack = {},
             onRestore = {},
-            onDelete = {}
+            onDelete = {},
+            onShare = {}
         )
     }
 }

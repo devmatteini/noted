@@ -44,6 +44,7 @@ internal fun EditorRoute(
         onUnpin = {
             appContainer.unpinNote(note.id).isSuccess
         },
+        onShare = activity::shareNote,
         onSetReminder = { reminderAt ->
             saveReminder(SaveReminderRequest(note.id, reminderAt))
         },

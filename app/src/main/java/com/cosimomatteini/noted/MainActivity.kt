@@ -31,6 +31,7 @@ import com.cosimomatteini.noted.ui.HomeRoute
 import com.cosimomatteini.noted.ui.HomeViewModel
 import com.cosimomatteini.noted.ui.SearchRoute
 import com.cosimomatteini.noted.ui.rememberImportNotesFile
+import com.cosimomatteini.noted.ui.shareNote
 import com.cosimomatteini.noted.ui.theme.NotedTheme
 import java.util.UUID
 import kotlinx.coroutines.Dispatchers
@@ -243,6 +244,12 @@ private fun NotedApp(
             onDelete = {
                 appContainer.discardNote(currentScreen.note.id)
                 openPreviousScreenOrHome(currentScreen.fromSearch)
+            },
+            onShare = {
+                activity.shareNote(
+                    currentScreen.note.title.value,
+                    currentScreen.note.description.value
+                )
             }
         )
 

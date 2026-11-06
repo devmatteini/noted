@@ -11,6 +11,7 @@ import androidx.compose.material.icons.outlined.AddAlert
 import androidx.compose.material.icons.outlined.Archive
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.PushPin
+import androidx.compose.material.icons.outlined.Share
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -44,6 +45,7 @@ fun NoteEditorScreen(
     onDelete: suspend () -> Unit,
     onPin: suspend () -> Boolean,
     onUnpin: suspend () -> Boolean,
+    onShare: (title: String, description: String) -> Unit,
     onSetReminder: suspend (ReminderAt) -> Boolean,
     onClearReminder: suspend () -> Unit
 ) {
@@ -157,6 +159,12 @@ fun NoteEditorScreen(
                         }
                     }
                 )
+                NoteActionIcon(
+                    imageVector = Icons.Outlined.Share,
+                    contentDescription = "Share note",
+                    onClick = { onShare(title.text, description.text) },
+                    enabled = title.text.isNotBlank() || description.text.isNotBlank()
+                )
             }
         }
     }
@@ -195,6 +203,7 @@ fun NoteEditorScreenEmptyPreview() {
             onDelete = {},
             onPin = { true },
             onUnpin = { true },
+            onShare = { _, _ -> },
             onSetReminder = { true },
             onClearReminder = {},
             initialTitle = "",
@@ -216,6 +225,7 @@ fun NoteEditorScreenOnlyTitlePreview() {
             onDelete = {},
             onPin = { true },
             onUnpin = { true },
+            onShare = { _, _ -> },
             onSetReminder = { true },
             onClearReminder = {},
             initialTitle = "My title",
@@ -237,6 +247,7 @@ fun NoteEditorScreenOnlyDescriptionPreview() {
             onDelete = {},
             onPin = { true },
             onUnpin = { true },
+            onShare = { _, _ -> },
             onSetReminder = { true },
             onClearReminder = {},
             initialTitle = "",
@@ -258,6 +269,7 @@ fun NoteEditorScreenTitleAndDescriptionPreview() {
             onDelete = {},
             onPin = { true },
             onUnpin = { true },
+            onShare = { _, _ -> },
             onSetReminder = { true },
             onClearReminder = {},
             initialTitle = "My title",
@@ -279,6 +291,7 @@ fun NoteEditorScreenReminderPreview() {
             onDelete = {},
             onPin = { true },
             onUnpin = { true },
+            onShare = { _, _ -> },
             onSetReminder = { true },
             onClearReminder = {},
             initialTitle = "My title",

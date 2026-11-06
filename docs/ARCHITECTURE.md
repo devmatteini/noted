@@ -139,6 +139,7 @@ Archived and discarded notes do not have pins in the domain model.
 - Title and description may be empty.
 - Reminder, archive, and delete actions are available for active notes.
 - Pin and unpin actions are available for active notes.
+- Active notes can be shared as plain text through the Android Sharesheet.
 - Delete discards the note into trash.
 
 ### Read-Only Details
@@ -147,6 +148,7 @@ Archived and discarded notes do not have pins in the domain model.
 - Read-only details show title and description only.
 - Read-only details do not show archive or discard timestamps.
 - Archived note details allow unarchive and discard.
+- Archived notes can be shared as plain text through the Android Sharesheet.
 - Discarded note details allow restore and permanent delete.
 - Restore or unarchive opens the restored active note in the editor.
 
