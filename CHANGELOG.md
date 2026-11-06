@@ -10,6 +10,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ### Added
 
 - Share action on active and archived notes
+- Assisted bullet lists in note descriptions
 
 ### Fixed
 

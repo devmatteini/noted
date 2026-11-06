@@ -137,6 +137,7 @@ Archived and discarded notes do not have pins in the domain model.
 - Title and description autosave after 300ms debounce.
 - Back flushes pending autosave before returning home.
 - Title and description may be empty.
+- Assisted bullet lists in note descriptions.
 - Reminder, archive, and delete actions are available for active notes.
 - Pin and unpin actions are available for active notes.
 - Active notes can be shared as plain text through the Android Sharesheet.

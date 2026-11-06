@@ -104,7 +104,9 @@ fun NoteEditorScreen(
             )
             RichTextField(
                 value = description,
-                onValueChange = { description = it },
+                onValueChange = { proposedDescription ->
+                    description = assistBulletListInput(description, proposedDescription)
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .focusRequester(descriptionFocusRequester)
